@@ -1,6 +1,16 @@
-@media (max-width: 768px) {
+.navbar-dark {
+  background-color: #041022;
+}
+
+.navbar-logo {
+  width: 200px;
+  height: auto;
+}
+
+
+@media(max-width: 991px) {
   .sidebar {
-    background-color: rgba(255, 255, 255, 0.15);
+    background-color: rgba(8, 28, 58, 0.15) !important;
     backdrop-filter: blur(10px);
   }
 }

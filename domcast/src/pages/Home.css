@@ -1,17 +1,7 @@
-.page-wrap {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-  }
+.home {
+  height: 100vh;
+  overflow: hidden;
+  background-blend-mode: multiply;
+  background-color: #041022;
 
-  .header {
-    height: 30vh;
-  }
-
-  .body {
-    height: 30vh;
-  }
-  
-  .footer {
-    height: 30vh;
-  }
+}
