@@ -1,11 +1,53 @@
-.navbar-dark {
-  background-color: #041022;
+.navbar-light {
+  background-color: #ececec !important;
 }
 
+.navbar-logo {
+  width: 200px;
+  height: auto;
+  margin-left: 20px;
+}
 
-@media(max-width: 991px) {
-  .sidebar {
-    background-color: rgba(255, 255, 255, 0.15) !important;
-    backdrop-filter: blur(10px);
-  }
+.navbar-toggler {
+  margin-right: 10px;
+}
+
+.offcanvas {
+  background-color: #f0f0f0 !important;
+}
+.offcanvas-header {
+  background-color: #f0f0f0;
+}
+.offcanvas-body {
+  background-color: #f0f0f0;
+}
+.sidebar {
+  background-color: #f0f0f0 !important;
+  backdrop-filter: blur(10px);
+}
+.fw-bold {
+  font-weight: bold !important;
+}
+.custom-dropdown-menu {
+  border: none !important;
+  background-color: #f0f0f0 !important;
+  box-shadow: none !important; /* Remove any shadow */
+}
+
+.custom-dropdown-menu .dropdown-item {
+  color: #081C3A !important;
+}
+
+.custom-dropdown-menu .dropdown-item:hover,
+.custom-dropdown-menu .dropdown-item:focus {
+  background-color: #e0e0e0 !important; /* Optional: Change background color on hover */
+}
+
+.nav-item:hover,
+.nav-item:focus {
+  background-color: #e0e0e0 !important; /* Optional: Change background color on hover */
+}
+
+.padding-left {
+  margin-left: 10px !important;
 }

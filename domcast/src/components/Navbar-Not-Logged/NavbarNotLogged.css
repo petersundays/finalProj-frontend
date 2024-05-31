@@ -1,16 +1,27 @@
-.navbar-dark {
-  background-color: #041022;
+.navbar-light {
+  background-color: #ececec !important;
 }
 
 .navbar-logo {
   width: 200px;
   height: auto;
+  margin-left: 20px;
 }
 
+.navbar-toggler {
+  margin-right: 10px;
+}
 
-@media(max-width: 991px) {
+.offcanvas {
+  background-color: #f0f0f0 !important;
+}
+.offcanvas-header {
+  background-color: #f0f0f0;
+}
+.offcanvas-body {
+  background-color: #f0f0f0;
+}
   .sidebar {
-    background-color: rgba(8, 28, 58, 0.15) !important;
+    background-color: #f0f0f0 !important;
     backdrop-filter: blur(10px);
   }
-}
