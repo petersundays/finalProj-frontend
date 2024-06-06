@@ -3,7 +3,7 @@ import { Offcanvas, Nav } from "react-bootstrap";
 import LoginModal from "../LoginModal/LoginModal";
 import SignUpModal from "../SignUpModal/SignUpModal";
 
-function OffcanvasComponent({
+function OffcanvasNotLogged({
   show,
   handleClose,
   handleLanguageChange,
@@ -94,4 +94,4 @@ function OffcanvasComponent({
   );
 }
 
-export default OffcanvasComponent;
+export default OffcanvasNotLogged;

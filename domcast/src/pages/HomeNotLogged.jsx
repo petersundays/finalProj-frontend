@@ -4,7 +4,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./HomeLogged.css";
 import NavbarNotLogged from "../components/NavbaNotLogged/NavbarNotLogged";
 import OffcanvasNotLogged from "../components/OffcanvasNotLogged/OffcanvasNotLogged";
-import SidebarComponent from "../components/Sidebar/Sidebar";
 import FooterComponent from "../components/Footer/Footer";
 
 function HomeLogged() {

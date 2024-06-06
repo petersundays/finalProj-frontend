@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Navbar, Container, Nav, Button } from "react-bootstrap";
+import { Navbar, Container, Nav } from "react-bootstrap";
 import logo from "../../multimedia/logo/domcast-05-navbar-logo.png";
 import "./NavbarNotLogged.css";
 import LoginModal from "../LoginModal/LoginModal";
