@@ -38,3 +38,23 @@
 .login-btn.nav-link:enabled {
     color: var(--color-water-green-02);
 }
+
+
+.login-btn, .sign-up-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-outline-secondary.active {
+  background-color: #fff;
+  color: #000;
+}
+
+.modal-header {
+  border-bottom: none;
+}
+
+.modal-body h5 {
+  margin-bottom: 20px;
+}
