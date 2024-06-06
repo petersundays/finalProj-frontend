@@ -1,0 +1,40 @@
+.sign-up-btn {
+  background-color: var(--color-water-green-01);
+  color: var(--color-coal);
+  border-radius: 5px;
+  text-align: center;
+  border: var(--color-water-green-01) 1px solid;
+}
+
+.login-btn {
+  background-color: var(--color-coal);
+  color: var(--color-water-green-01);
+  border-radius: 5px;
+  text-align: center;
+  border: var(--color-coal) 1px solid;
+}
+
+.sign-up-btn:hover {
+  background-color: var(--color-water-green-02);
+  border: var(--color-water-green-02) 1px solid;
+  color: var(--color-coal);
+}
+
+.login-btn:hover {
+  border: var(--color-water-green-02) 1px solid;
+  color: var(--color-water-green-02);
+}
+
+.sign-up-btn.nav-link:focus, 
+.sign-up-btn.nav-link:active,
+.sign-up-btn.nav-link:visited,
+ .sign-up-btn.nav-link:enabled{
+    color: var(--color-coal);
+}
+
+.login-btn.nav-link:focus,
+.login-btn.nav-link:active,
+.login-btn.nav-link:visited,
+.login-btn.nav-link:enabled {
+    color: var(--color-water-green-02);
+}

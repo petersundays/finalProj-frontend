@@ -3,7 +3,8 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Routes, Route } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
-import Home from "./pages/Home";
+import HomeNotLogged from "./pages/HomeNotLogged";
+import HomeLogged from "./pages/HomeLogged";
 
 function App() {
   const { t } = useTranslation();
@@ -12,7 +13,8 @@ function App() {
     <>
     <ToastContainer />
     <Routes>
-      <Route path='/' element={<Home />} />
+      <Route path='/' element={<HomeNotLogged />} />
+      <Route path='/home' element={<HomeLogged />} />
 
     </Routes>
     </>
