@@ -6,6 +6,9 @@ import NavbarLogged from "../components/NavbarLogged/NavbarLogged";
 import OffcanvasLogged from "../components/OffcanvasLogged/OffcanvasLogged";
 import Sidebar from "../components/Sidebar/Sidebar";
 import Footer from "../components/Footer/Footer";
+import NewUser from "../components/NewUser/NewUser";
+import EmailTable from "../components/EmailTable/EmailTable";
+import AddAsset from "../components/AddAsset/AddAsset";
 
 function HomeLogged() {
   const [show, setShow] = useState(false);
@@ -44,6 +47,7 @@ function HomeLogged() {
           />
           <Col xs={12} md={10} className="content">
             {/* Add content here */}
+            <AddAsset />
           </Col>
         </Row>
       </Container>

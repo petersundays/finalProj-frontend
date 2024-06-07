@@ -1,18 +1,19 @@
 import React from "react";
+import { Card, Button} from "react-bootstrap";
 import "./ProjCardNotLogged.css";
 
 const ProjCardNotLogged = ({ title, subtitle, description, link }) => {
   return (
-    <div className="card">
-      <div className="card-body">
-        <h4 className="card-title">{title}</h4>
-        <h6 className="card-subtitle mb-2 text-muted">{subtitle}</h6>
-        <p className="card-text">{description}</p>
-        <a href={link} className="btn btn-primary">
+    <Card className="mb-4">
+      <Card.Body>
+        <Card.Title>{title}</Card.Title>
+        <Card.Subtitle className="mb-2 text-muted">{subtitle}</Card.Subtitle>
+        <Card.Text>{description}</Card.Text>
+        <Button href={link} variant="primary" className="mt-3">
           More info...
-        </a>
-      </div>
-    </div>
+        </Button>
+      </Card.Body>
+    </Card>
   );
 };
 

@@ -13,8 +13,8 @@ function App() {
     <>
     <ToastContainer />
     <Routes>
-      <Route path='/' element={<HomeNotLogged />} />
-      <Route path='/home' element={<HomeLogged />} />
+      <Route path='/home' element={<HomeNotLogged />} />
+      <Route path='/' element={<HomeLogged />} />
 
     </Routes>
     </>
