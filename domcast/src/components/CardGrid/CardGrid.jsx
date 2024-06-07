@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Container, Row, Col, Button } from "react-bootstrap";
-import ProjCardLogged from "./ProjCardLogged";
+import ProjCardLogged from "../ProjCardLogged/ProjCardLogged";
 
-const CardGrid = ({ cards }) => {
+const CardGrid = ({ cards = [] }) => {
   const [visibleRows, setVisibleRows] = useState(2);
 
   const handleShowMore = () => {

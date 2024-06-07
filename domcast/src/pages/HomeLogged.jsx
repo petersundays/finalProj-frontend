@@ -9,6 +9,7 @@ import Footer from "../components/Footer/Footer";
 import NewUser from "../components/NewUser/NewUser";
 import EmailTable from "../components/EmailTable/EmailTable";
 import AddAsset from "../components/AddAsset/AddAsset";
+import CardGrid from "../components/CardGrid/CardGrid";
 
 function HomeLogged() {
   const [show, setShow] = useState(false);
@@ -47,7 +48,7 @@ function HomeLogged() {
           />
           <Col xs={12} md={10} className="content">
             {/* Add content here */}
-            <AddAsset />
+            <CardGrid />
           </Col>
         </Row>
       </Container>
