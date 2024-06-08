@@ -1,13 +1,32 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Form, Button, FloatingLabel, Badge } from 'react-bootstrap';
-import { Typeahead } from 'react-bootstrap-typeahead';
-import './EditTask.css';
+import React, { useState } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Form,
+  Button,
+  FloatingLabel,
+  Badge,
+} from "react-bootstrap";
+import { Typeahead } from "react-bootstrap-typeahead";
+import "./EditTask.css";
 
-const EditTask = ({ taskData, onSave, onCancel }) => {
-  const [formData, setFormData] = useState(taskData);
-  const [newRelatedTask, setNewRelatedTask] = useState('');
-  const [newStakeholder, setNewStakeholder] = useState('');
-  const [newPrerequisite, setNewPrerequisite] = useState('');
+const EditTask = ({ onSave, onCancel }) => {
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    state: "",
+    owner: "",
+    startDate: "",
+    endDate: "",
+    dependsOnTask: [],
+    prerequisiteForTask: [],
+    stakeholders: [],
+  });
+
+  const [newDependsOnTask, setNewDependsOnTask] = useState("");
+  const [newPrerequisiteForTask, setNewPrerequisiteForTask] = useState("");
+  const [newStakeholder, setNewStakeholder] = useState("");
 
   const handleChange = (e) => {
     setFormData({
@@ -16,43 +35,76 @@ const EditTask = ({ taskData, onSave, onCancel }) => {
     });
   };
 
-  const handleAddRelatedTask = () => {
-    if (newRelatedTask) {
-      setFormData({ ...formData, dependsOn: [...formData.dependsOn, newRelatedTask] });
-      setNewRelatedTask('');
+  const handleAddDependsOnTask = () => {
+    if (newDependsOnTask) {
+      setFormData((prevState) => ({
+        ...prevState,
+        dependsOnTask: [...prevState.dependsOnTask, newDependsOnTask],
+      }));
+      setNewDependsOnTask("");
     }
   };
 
-  const handleAddPrerequisite = () => {
-    if (newPrerequisite) {
-      setFormData({ ...formData, prerequisiteFor: [...formData.prerequisiteFor, newPrerequisite] });
-      setNewPrerequisite('');
+  const handleRemoveDependsOnTask = (task) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      dependsOnTask: prevState.dependsOnTask.filter(
+        (item) => item !== task
+      ),
+    }));
+  };
+
+  const handleAddPrerequisiteForTask = () => {
+    if (newPrerequisiteForTask) {
+      setFormData((prevState) => ({
+        ...prevState,
+        prerequisiteForTask: [...prevState.prerequisiteForTask, newPrerequisiteForTask],
+      }));
+      setNewPrerequisiteForTask("");
     }
+  };
+
+  const handleRemovePrerequisiteForTask = (task) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      prerequisiteForTask: prevState.prerequisiteForTask.filter(
+        (item) => item !== task
+      ),
+    }));
   };
 
   const handleAddStakeholder = () => {
     if (newStakeholder) {
-      setFormData({ ...formData, stakeholders: [...formData.stakeholders, newStakeholder] });
-      setNewStakeholder('');
+      setFormData((prevState) => ({
+        ...prevState,
+        stakeholders: [...prevState.stakeholders, newStakeholder],
+      }));
+      setNewStakeholder("");
     }
+  };
+
+  const handleRemoveStakeholder = (stakeholder) => {
+    setFormData((prevState) => ({
+      ...prevState,
+      stakeholders: prevState.stakeholders.filter(
+        (item) => item !== stakeholder
+      ),
+    }));
   };
 
   const handleSave = () => {
     onSave(formData);
   };
 
-  const handleRemoveItem = (key, item) => {
-    setFormData({
-      ...formData,
-      [key]: formData[key].filter(i => i !== item),
-    });
-  };
-
   return (
     <Container>
       <Row>
         <Col md={6}>
-          <FloatingLabel controlId="floatingTitle" label="Title" className="mb-3">
+          <FloatingLabel
+            controlId="floatingTitle"
+            label="Title"
+            className="mb-3"
+          >
             <Form.Control
               type="text"
               name="title"
@@ -61,7 +113,11 @@ const EditTask = ({ taskData, onSave, onCancel }) => {
               placeholder="Title"
             />
           </FloatingLabel>
-          <FloatingLabel controlId="floatingDescription" label="Description" className="mb-3">
+          <FloatingLabel
+            controlId="floatingDescription"
+            label="Description"
+            className="mb-3"
+          >
             <Form.Control
               as="textarea"
               name="description"
@@ -70,7 +126,11 @@ const EditTask = ({ taskData, onSave, onCancel }) => {
               placeholder="Description"
             />
           </FloatingLabel>
-          <FloatingLabel controlId="floatingState" label="State" className="mb-3">
+          <FloatingLabel
+            controlId="floatingState"
+            label="State"
+            className="mb-3"
+          >
             <Form.Select
               name="state"
               value={formData.state}
@@ -83,7 +143,11 @@ const EditTask = ({ taskData, onSave, onCancel }) => {
               <option value="Finished">Finished</option>
             </Form.Select>
           </FloatingLabel>
-          <FloatingLabel controlId="floatingOwner" label="Owner" className="mb-3">
+          <FloatingLabel
+            controlId="floatingOwner"
+            label="Owner"
+            className="mb-3"
+          >
             <Typeahead
               id="owner"
               onChange={(selected) => {
@@ -91,12 +155,16 @@ const EditTask = ({ taskData, onSave, onCancel }) => {
                   setFormData({ ...formData, owner: selected[0] });
                 }
               }}
-              options={['Owner1', 'Owner2', 'Owner3']} // Example options
-              placeholder="Choose an owner"
+              options={["Owner1", "Owner2", "Owner3"]} // Example options
+              placeholder="Owner"
               selected={formData.owner ? [formData.owner] : []}
             />
           </FloatingLabel>
-          <FloatingLabel controlId="floatingStartDate" label="Start Date" className="mb-3">
+          <FloatingLabel
+            controlId="floatingStartDate"
+            label="Start Date"
+            className="mb-3"
+          >
             <Form.Control
               type="date"
               name="startDate"
@@ -105,7 +173,11 @@ const EditTask = ({ taskData, onSave, onCancel }) => {
               placeholder="DDMMYYYY"
             />
           </FloatingLabel>
-          <FloatingLabel controlId="floatingEndDate" label="End Date" className="mb-3">
+          <FloatingLabel
+            controlId="floatingEndDate"
+            label="End Date"
+            className="mb-3"
+          >
             <Form.Control
               type="date"
               name="endDate"
@@ -116,55 +188,89 @@ const EditTask = ({ taskData, onSave, onCancel }) => {
           </FloatingLabel>
         </Col>
         <Col md={6}>
-          <FloatingLabel controlId="floatingDependsOn" label="Depends On" className="mb-3">
+          <FloatingLabel
+            controlId="floatingDependsOnTask"
+            label="Depends On Task"
+            className="mb-3"
+          >
             <Typeahead
-              id="dependsOn"
+              id="dependsOnTask"
               onChange={(selected) => {
                 if (selected.length > 0) {
-                  setNewRelatedTask(selected[0]);
+                  setNewDependsOnTask(selected[0]);
                 }
               }}
-              options={['Task1', 'Task2', 'Task3']} // Example options
-              placeholder="Choose related tasks"
-              selected={newRelatedTask ? [newRelatedTask] : []}
+              options={["Task1", "Task2", "Task3"]} // Example options
+              placeholder="Choose depends on..."
+              selected={newDependsOnTask ? [newDependsOnTask] : []}
             />
-            <Button variant="primary" onClick={handleAddRelatedTask} className="mt-2">
+            <Button
+              variant="primary"
+              onClick={handleAddDependsOnTask}
+              className="mt-2"
+            >
               Add
             </Button>
           </FloatingLabel>
           <div>
-            {formData.dependsOn.map((task, index) => (
+            {formData.dependsOnTask.map((task, index) => (
               <Badge key={index} pill bg="primary" className="me-1">
                 {task}
-                <Button variant="danger" size="sm" className="ms-2" onClick={() => handleRemoveItem('dependsOn', task)}>x</Button>
+                <Button
+                  variant="danger"
+                  size="sm"
+                  className="ms-2"
+                  onClick={() => handleRemoveDependsOnTask(task)}
+                >
+                  x
+                </Button>
               </Badge>
             ))}
           </div>
-          <FloatingLabel controlId="floatingPrerequisiteFor" label="Is Prerequisite For" className="mb-3">
+          <FloatingLabel
+            controlId="floatingPrerequisiteForTask"
+            label="Is Prerequisite For Task"
+            className="mb-3"
+          >
             <Typeahead
-              id="prerequisiteFor"
+              id="prerequisiteForTask"
               onChange={(selected) => {
                 if (selected.length > 0) {
-                  setNewPrerequisite(selected[0]);
+                  setNewPrerequisiteForTask(selected[0]);
                 }
               }}
-              options={['Task1', 'Task2', 'Task3']} // Example options
-              placeholder="Choose prerequisite tasks"
-              selected={newPrerequisite ? [newPrerequisite] : []}
+              options={["Task1", "Task2", "Task3"]} // Example options
+              placeholder="Choose prerequisite for..."
+              selected={newPrerequisiteForTask ? [newPrerequisiteForTask] : []}
             />
-            <Button variant="primary" onClick={handleAddPrerequisite} className="mt-2">
+            <Button
+              variant="primary"
+              onClick={handleAddPrerequisiteForTask}
+              className="mt-2"
+            >
               Add
             </Button>
           </FloatingLabel>
           <div>
-            {formData.prerequisiteFor.map((task, index) => (
+            {formData.prerequisiteForTask.map((task, index) => (
               <Badge key={index} pill bg="secondary" className="me-1">
                 {task}
-                <Button variant="danger" size="sm" className="ms-2" onClick={() => handleRemoveItem('prerequisiteFor', task)}>x</Button>
+                <Button
+                  variant="danger"
+                  size="sm"
+                  className="ms-2"
+                  onClick={() => handleRemovePrerequisiteForTask(task)}
+                >
+                  x
+                </Button>
               </Badge>
             ))}
           </div>
-          <FloatingLabel controlId="floatingStakeholders" label="Other Stakeholders" className="mb-3">
+          <FloatingLabel
+            controlId="floatingStakeholders"
+            label="Other Stakeholders"
+            className="mb-3"
+          >
             <Typeahead
               id="stakeholders"
               onChange={(selected) => {
@@ -172,11 +278,15 @@ const EditTask = ({ taskData, onSave, onCancel }) => {
                   setNewStakeholder(selected[0]);
                 }
               }}
-              options={['Stakeholder1', 'Stakeholder2', 'Stakeholder3']} // Example options
+              options={["Stakeholder1", "Stakeholder2", "Stakeholder3"]} // Example options
               placeholder="Choose other stakeholders"
               selected={newStakeholder ? [newStakeholder] : []}
             />
-            <Button variant="primary" onClick={handleAddStakeholder} className="mt-2">
+            <Button
+              variant="primary"
+              onClick={handleAddStakeholder}
+              className="mt-2"
+            >
               Add
             </Button>
           </FloatingLabel>
@@ -184,7 +294,14 @@ const EditTask = ({ taskData, onSave, onCancel }) => {
             {formData.stakeholders.map((stakeholder, index) => (
               <Badge key={index} pill bg="success" className="me-1">
                 {stakeholder}
-                <Button variant="danger" size="sm" className="ms-2" onClick={() => handleRemoveItem('stakeholders', stakeholder)}>x</Button>
+                <Button
+                  variant="danger"
+                  size="sm"
+                  className="ms-2"
+                  onClick={() => handleRemoveStakeholder(stakeholder)}
+                >
+                  x
+                </Button>
               </Badge>
             ))}
           </div>

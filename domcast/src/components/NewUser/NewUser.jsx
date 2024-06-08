@@ -8,7 +8,7 @@ import defaultProfilePic from "../../multimedia/default-profile-pic.png";
 const NewUser = () => {
   const [skills, setSkills] = useState([]);
   const [interests, setInterests] = useState([]);
-  const [privacy, setPrivacy] = useState("private");
+  const [visibility, setVisibility] = useState("private");
 
   const handleAddSkill = () => {
     const skillInput = document.getElementById("skillInput").value;
@@ -91,7 +91,7 @@ const NewUser = () => {
               <div>
                 {skills.map((skill, index) => (
                   <Badge pill bg="secondary" key={index} className="me-2">
-                    {skill} <Button variant="light" size="sm" onClick={() => handleRemoveSkill(skill)}>x</Button>
+                    {skill.name} <Button variant="light" size="sm" onClick={() => handleRemoveSkill(skill)}>x</Button>
                   </Badge>
                 ))}
               </div>
@@ -114,7 +114,7 @@ const NewUser = () => {
               <div>
                 {interests.map((interest, index) => (
                   <Badge pill bg="secondary" key={index} className="me-2">
-                    {interest} <Button variant="light" size="sm" onClick={() => handleRemoveInterest(interest)}>x</Button>
+                    {interest.name} <Button variant="light" size="sm" onClick={() => handleRemoveInterest(interest)}>x</Button>
                   </Badge>
                 ))}
               </div>
@@ -123,10 +123,10 @@ const NewUser = () => {
             <Form.Group className="mb-3">
               <Form.Label>Privacy</Form.Label>
               <div className="d-flex">
-                <Button variant={privacy === "private" ? "primary" : "secondary"} onClick={() => setPrivacy("private")} className="me-2">
+                <Button variant={visibility === "private" ? "primary" : "secondary"} onClick={() => setVisibility("private")} className="me-2">
                   Private
                 </Button>
-                <Button variant={privacy === "public" ? "primary" : "secondary"} onClick={() => setPrivacy("public")}>
+                <Button variant={visibility === "public" ? "primary" : "secondary"} onClick={() => setVisibility("public")}>
                   Public
                 </Button>
               </div>
