@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Form, Button, FloatingLabel, Badge } from 'react-bootstrap';
-import Typeahead from 'react-bootstrap-typeahead';
+import { Typeahead } from 'react-bootstrap-typeahead';
+import 'react-bootstrap-typeahead/css/Typeahead.css';
 import "./NewProj.css";
 
 const NewProj = ({ onCreate, onCancel }) => {
@@ -19,40 +20,44 @@ const NewProj = ({ onCreate, onCancel }) => {
   const [newTeam, setNewTeam] = useState('');
   const [newKeyword, setNewKeyword] = useState('');
   const [newSkill, setNewSkill] = useState('');
-  const [newAsset, setNewAsset] = useState('');
+  const [newAsset, setNewAsset] = useState({ name: '', type: '', quantity: '' });
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
   };
 
-  const handleAddTeam = () => {
-    if (newTeam) {
-      setFormData({ ...formData, team: [...formData.team, newTeam] });
+  const handleAddTeam = (selected) => {
+    if (selected.length > 0) {
+      const role = document.getElementById('team-role').value;
+      setFormData({ ...formData, team: [...formData.team, { name: selected[0], role }] });
       setNewTeam('');
     }
   };
 
-  const handleAddKeyword = () => {
-    if (newKeyword) {
-      setFormData({ ...formData, keywords: [...formData.keywords, newKeyword] });
+  const handleAddKeyword = (selected) => {
+    if (selected.length > 0) {
+      setFormData({ ...formData, keywords: [...formData.keywords, selected[0]] });
       setNewKeyword('');
     }
   };
 
-  const handleAddSkill = () => {
-    if (newSkill) {
-      setFormData({ ...formData, skills: [...formData.skills, newSkill] });
+  const handleAddSkill = (selected) => {
+    if (selected.length > 0) {
+      const category = document.getElementById('skill-category').value;
+      setFormData({ ...formData, skills: [...formData.skills, { name: selected[0], category }] });
       setNewSkill('');
     }
   };
 
-  const handleAddAsset = () => {
-    if (newAsset) {
-      setFormData({ ...formData, assets: [...formData.assets, newAsset] });
-      setNewAsset('');
+  const handleAddAsset = (selected) => {
+    if (selected.length > 0 && newAsset.quantity) {
+      const asset = { ...newAsset, name: selected[0] };
+      setFormData({ ...formData, assets: [...formData.assets, asset] });
+      setNewAsset({ name: '', type: '', quantity: '' });
     }
   };
 
@@ -114,77 +119,106 @@ const NewProj = ({ onCreate, onCancel }) => {
         </Col>
         <Col md={6}>
           <FloatingLabel controlId="floatingTeam" label="Team" className="mb-3">
-            <Form.Control
-              type="text"
-              name="newTeam"
-              value={newTeam}
-              onChange={(e) => setNewTeam(e.target.value)}
+            <Typeahead
+              id="team-search"
+              onChange={handleAddTeam}
+              options={[]}
+              placeholder="Search for team member..."
             />
-            <Button variant="primary" onClick={handleAddTeam} className="mt-2">
+            <Form.Select id="team-role" className="mt-2">
+              <option value="Manager">Manager</option>
+              <option value="Member">Member</option>
+            </Form.Select>
+            <Button variant="primary" onClick={() => handleAddTeam([{ name: newTeam }])} className="mt-2">
               Add
             </Button>
           </FloatingLabel>
           <div>
             {formData.team.map((member, index) => (
               <Badge key={index} pill bg="primary" className="me-1">
-                {member}
+                {member.name} ({member.role})
               </Badge>
             ))}
           </div>
 
           <FloatingLabel controlId="floatingKeywords" label="Keywords" className="mb-3">
-            <Form.Control
-              type="text"
-              name="newKeyword"
-              value={newKeyword}
-              onChange={(e) => setNewKeyword(e.target.value)}
+            <Typeahead
+              id="keyword-search"
+              onChange={handleAddKeyword}
+              options={[]}
+              placeholder="Search for keyword..."
             />
-            <Button variant="primary" onClick={handleAddKeyword} className="mt-2">
+            <Button variant="primary" onClick={() => handleAddKeyword([{ name: newKeyword }])} className="mt-2">
               Add
             </Button>
           </FloatingLabel>
           <div>
             {formData.keywords.map((keyword, index) => (
               <Badge key={index} pill bg="secondary" className="me-1">
-                {keyword}
+                {keyword.name}
               </Badge>
             ))}
           </div>
 
           <FloatingLabel controlId="floatingSkills" label="Skills" className="mb-3">
-            <Form.Control
-              type="text"
-              name="newSkill"
-              value={newSkill}
-              onChange={(e) => setNewSkill(e.target.value)}
+            <Typeahead
+              id="skill-search"
+              onChange={handleAddSkill}
+              options={[]}
+              placeholder="Search for skill..."
             />
-            <Button variant="primary" onClick={handleAddSkill} className="mt-2">
+            <Form.Select id="skill-category" className="mt-2">
+              <option value="Knowledge">Knowledge</option>
+              <option value="Software">Software</option>
+              <option value="Hardware">Hardware</option>
+              <option value="Tools">Tools</option>
+            </Form.Select>
+            <Button variant="primary" onClick={() => handleAddSkill([{ name: newSkill }])} className="mt-2">
               Add
             </Button>
           </FloatingLabel>
           <div>
             {formData.skills.map((skill, index) => (
               <Badge key={index} pill bg="success" className="me-1">
-                {skill}
+                {skill.name} ({skill.category})
               </Badge>
             ))}
           </div>
 
           <FloatingLabel controlId="floatingAssets" label="Assets" className="mb-3">
-            <Form.Control
-              type="text"
-              name="newAsset"
-              value={newAsset}
-              onChange={(e) => setNewAsset(e.target.value)}
+            <Typeahead
+              id="asset-search"
+              onChange={handleAddAsset}
+              options={[]}
+              placeholder="Search for asset..."
             />
-            <Button variant="primary" onClick={handleAddAsset} className="mt-2">
+            <Form.Select
+              id="asset-type"
+              name="type"
+              value={newAsset.type}
+              onChange={(e) => setNewAsset({ ...newAsset, type: e.target.value })}
+              className="mt-2"
+            >
+              <option value="">Choose Asset</option>
+              <option value="Component">Component</option>
+              <option value="Resource">Resource</option>
+            </Form.Select>
+            <FloatingLabel controlId="floatingAssetQuantity" label="Quantity" className="mt-2">
+              <Form.Control
+                type="number"
+                name="quantity"
+                value={newAsset.quantity}
+                onChange={(e) => setNewAsset({ ...newAsset, quantity: e.target.value })}
+              />
+            </FloatingLabel>
+            <Button variant="primary" onClick={() => handleAddAsset([{ name: newAsset.name }])} className="mt-2">
               Add
             </Button>
           </FloatingLabel>
           <div>
             {formData.assets.map((asset, index) => (
               <Badge key={index} pill bg="warning" className="me-1">
-                {asset}
+                {asset.name} ({asset.type} - {asset.quantity})
               </Badge>
             ))}
           </div>

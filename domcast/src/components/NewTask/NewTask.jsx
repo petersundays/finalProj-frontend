@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Form, Button, FloatingLabel, Badge } from 'react-bootstrap';
-import Typeahead from 'react-bootstrap-typeahead';
+import { Typeahead } from 'react-bootstrap-typeahead';
+import 'react-bootstrap-typeahead/css/Typeahead.css';
 import "./NewTask.css";
 
 const NewTask = ({ onAdd, onCancel }) => {
@@ -14,26 +15,36 @@ const NewTask = ({ onAdd, onCancel }) => {
     otherStakeholders: [],
   });
 
-  const [newRelatedTask, setNewRelatedTask] = useState('');
+  const [newOwner, setNewOwner] = useState('');
+  const [newRelatedTask, setNewRelatedTask] = useState({ name: '', dependency: '' });
   const [newStakeholder, setNewStakeholder] = useState('');
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
   };
 
-  const handleAddRelatedTask = () => {
-    if (newRelatedTask) {
-      setFormData({ ...formData, relatedTasks: [...formData.relatedTasks, newRelatedTask] });
-      setNewRelatedTask('');
+  const handleAddOwner = (selected) => {
+    if (selected.length > 0) {
+      setFormData({ ...formData, owner: selected[0] });
+      setNewOwner('');
     }
   };
 
-  const handleAddStakeholder = () => {
-    if (newStakeholder) {
-      setFormData({ ...formData, otherStakeholders: [...formData.otherStakeholders, newStakeholder] });
+  const handleAddRelatedTask = (selected) => {
+    if (selected.length > 0) {
+      const dependency = document.getElementById('task-dependency').value;
+      setFormData({ ...formData, relatedTasks: [...formData.relatedTasks, { name: selected[0], dependency }] });
+      setNewRelatedTask({ name: '', dependency: '' });
+    }
+  };
+
+  const handleAddStakeholder = (selected) => {
+    if (selected.length > 0) {
+      setFormData({ ...formData, otherStakeholders: [...formData.otherStakeholders, selected[0]] });
       setNewStakeholder('');
     }
   };
@@ -63,12 +74,15 @@ const NewTask = ({ onAdd, onCancel }) => {
             />
           </FloatingLabel>
           <FloatingLabel controlId="floatingOwner" label="Owner" className="mb-3">
-            <Form.Control
-              type="text"
-              name="owner"
-              value={formData.owner}
-              onChange={handleChange}
+            <Typeahead
+              id="owner-search"
+              onChange={handleAddOwner}
+              options={[]}
+              placeholder="Search for owner..."
             />
+            <Button variant="primary" onClick={() => handleAddOwner([{ name: newOwner }])} className="mt-2">
+              Add
+            </Button>
           </FloatingLabel>
           <FloatingLabel controlId="floatingStartDate" label="Start Date" className="mb-3">
             <Form.Control
@@ -89,39 +103,43 @@ const NewTask = ({ onAdd, onCancel }) => {
         </Col>
         <Col md={6}>
           <FloatingLabel controlId="floatingRelatedTasks" label="Related Tasks" className="mb-3">
-            <Form.Control
-              type="text"
-              name="newRelatedTask"
-              value={newRelatedTask}
-              onChange={(e) => setNewRelatedTask(e.target.value)}
+            <Typeahead
+              id="related-task-search"
+              onChange={handleAddRelatedTask}
+              options={[]}
+              placeholder="Search for related task..."
             />
-            <Button variant="primary" onClick={handleAddRelatedTask} className="mt-2">
+            <Form.Select id="task-dependency" className="mt-2">
+              <option value="depends on">Depends on</option>
+              <option value="is prerequisite for">Is prerequisite for</option>
+            </Form.Select>
+            <Button variant="primary" onClick={() => handleAddRelatedTask([{ name: newRelatedTask.name }])} className="mt-2">
               Add
             </Button>
           </FloatingLabel>
           <div>
             {formData.relatedTasks.map((task, index) => (
               <Badge key={index} pill bg="primary" className="me-1">
-                {task}
+                {task.name} ({task.dependency})
               </Badge>
             ))}
           </div>
 
           <FloatingLabel controlId="floatingOtherStakeholders" label="Other Stakeholders" className="mb-3">
-            <Form.Control
-              type="text"
-              name="newStakeholder"
-              value={newStakeholder}
-              onChange={(e) => setNewStakeholder(e.target.value)}
+            <Typeahead
+              id="stakeholder-search"
+              onChange={handleAddStakeholder}
+              options={[]}
+              placeholder="Search for stakeholder..."
             />
-            <Button variant="primary" onClick={handleAddStakeholder} className="mt-2">
+            <Button variant="primary" onClick={() => handleAddStakeholder([{ name: newStakeholder }])} className="mt-2">
               Add
             </Button>
           </FloatingLabel>
           <div>
             {formData.otherStakeholders.map((stakeholder, index) => (
               <Badge key={index} pill bg="secondary" className="me-1">
-                {stakeholder}
+                {stakeholder.name}
               </Badge>
             ))}
           </div>
