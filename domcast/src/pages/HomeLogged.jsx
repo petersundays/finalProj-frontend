@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, Card } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./HomeLogged.css";
 import NavbarLogged from "../components/NavbarLogged/NavbarLogged";
@@ -46,9 +46,13 @@ function HomeLogged() {
             expandedProjects={expandedProjects}
             toggleExpandProjects={toggleExpandProjects}
           />
-          <Col xs={12} md={10} className="content">
-            {/* Add content here */}
-            <CardGrid />
+          <Col xs={12} md={10} className="content d-flex justify-content-center align-items-center">
+            <Card className="central-card">
+              <Card.Body>
+                {/* Render any component here */}
+                <NewUser />
+              </Card.Body>
+            </Card>
           </Col>
         </Row>
       </Container>

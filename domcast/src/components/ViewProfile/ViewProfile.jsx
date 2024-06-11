@@ -2,7 +2,7 @@ import React from 'react';
 import { Card, Badge, Button } from 'react-bootstrap';
 import './ViewProfile.css';
 
-const ViewProfile = ({ profilePic, firstName, lastName, nickname, lab, bio, skills, interests, visibility }) => {
+const ViewProfile = ({ profilePic, firstName, lastName, nickname, lab, bio, skills, interests, privacy }) => {
     const handleSendMessage = () => {
         console.log('Message sent');
     };
@@ -15,7 +15,7 @@ const ViewProfile = ({ profilePic, firstName, lastName, nickname, lab, bio, skil
             <Card.Text>{nickname}</Card.Text>
             <Card.Text>{lab}</Card.Text>
             <Card.Text>{bio}</Card.Text>
-            <Card.Text>Visibility: {visibility}</Card.Text>
+            <Card.Text>Privacy: {privacy}</Card.Text>
             <div>
             <h6>Skills:</h6>
             {skills.map((skill, index) => (

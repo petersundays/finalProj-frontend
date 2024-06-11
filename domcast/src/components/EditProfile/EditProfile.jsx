@@ -24,11 +24,11 @@ const EditProfile = ({ onSave, onCancel }) => {
     bio: "",
     skills: [],
     interests: [],
-    visibility: "private",
+    privacy: "private",
   });
   const [newSkill, setNewSkill] = useState("");
   const [newInterest, setNewInterest] = useState("");
-  const [visibility, setVisibility] = useState("private");
+  const [privacy, setPrivacy] = useState("private");
 
   const handleChange = (e) => {
     setFormData({
@@ -238,15 +238,15 @@ const EditProfile = ({ onSave, onCancel }) => {
             <Form.Label>Privacy</Form.Label>
             <div className="d-flex">
               <Button
-                variant={visibility === "private" ? "primary" : "secondary"}
-                onClick={() => setVisibility("private")}
+                variant={privacy === "private" ? "primary" : "secondary"}
+                onClick={() => setPrivacy("private")}
                 className="me-2"
               >
                 Private
               </Button>
               <Button
-                variant={visibility === "public" ? "primary" : "secondary"}
-                onClick={() => setVisibility("public")}
+                variant={privacy === "public" ? "primary" : "secondary"}
+                onClick={() => setPrivacy("public")}
               >
                 Public
               </Button>

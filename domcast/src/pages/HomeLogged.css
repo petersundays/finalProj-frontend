@@ -27,10 +27,6 @@ body,
   overflow-y: auto; /* Barra lateral rolável */
 }
 
-.content {
-  padding: 20px;
-}
-
 @media (max-width: 992px) {
   .sidebar {
     display: none;
@@ -180,4 +176,16 @@ body,
 
 .hr {
   border-top: 1px solid var(--color-water-green-01);
+}
+
+.content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.central-card {
+  min-width: 70%;
+  min-height: 70%;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
 }
