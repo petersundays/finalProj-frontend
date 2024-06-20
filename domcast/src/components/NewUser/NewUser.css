@@ -1,208 +1,51 @@
-/* NewUser.css */
-
-.row-step2-new-user,
-.dropdowns-step3 {
-  margin-top: 100px;
+@media (max-width: 992px) {
+  .row [class^="col"] {
+    width: 100%;
+    margin-bottom: 20px;
+  }
 }
 
-.progress-container {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.step-label {
-  flex: 1;
-  text-align: center;
-  color: var(--color-water-green-02);
-  background-color: var(--color-coal);
-  padding: 5px 0;
-  border-radius: 5px;
+.edit-profile-pic-link {
+  color: var(--color-blue-01);
   cursor: pointer;
-  transition: background-color 0.3s, color 0.3s;
-  text-decoration: none;
-  font-weight: bold;
-  font-size: 14px;
 }
 
-.step-label.active {
-  background-color: var(--color-water-green-02);
-  color: var(--color-coal);
-  font-weight: bold;
-  font-size: 14px;
-}
-
-.step-label.active:hover {
-  background-color: var(--color-water-green-03);
-  color: var(--color-coal);
-}
-
-.step-label:hover {
-  text-decoration: none;
-  background-color: var(--color-grey-01);
-}
-
-.profile-pic-new-user {
-  width: 150px;
-  height: 150px;
-}
-
-.edit-profile-btn {
-  background-color: white !important;
-  border: none;
-  color: var(--color-grey-02);
-  font-weight: bolder;
-  font-size: 14px;
-  margin-bottom: 40px;
-}
-
-.edit-profile-btn:hover {
-  background-color: white !important;
-  color: var(--color-coal) !important;
+.edit-profile-pic-link:hover {
+  color: var(--color-blue-03);
   text-decoration: underline;
 }
 
-textarea {
-  resize: none;
-}
-
-.floating-label-custom {
-  color: var(--color-grey-01);
-  margin-bottom: 15px;
-  border: var(--color-light-grey-02) 1px solid rounded;
-}
-
-.fl-nickname {
-  max-width: 50%;
-}
-
-.floating-label-custom .form-floating-label {
-  color: var(--color-light-grey-01);
-}
-
-.dropdown-item-default {
-  color: var(--color-coal);
-}
-
-.dropdown-item-default:hover {
-  background-color: var(--color-water-green-03);
-  border-radius: 3px;
-  color: var(--color-grey-01);
-  font-weight: bold;
-}
-
-.add-btn-skills-new-user,
-.add-btn-interests-new-user {
-  background-color: var(--color-water-green-01);
-  color: var(--color-coal);
-  font-size: 14px;
-  font-weight: bold;
+.btn-add
+ {
+  background-color: var(--color-blue-01);
+  color: var(--color-white);
   border: none;
-  width: 160px;
-  height: 40px;
-  border-radius: 5px !important;
+  cursor: pointer;
 }
 
-.add-btn-skills-new-user:hover,
-.add-btn-interests-new-user:hover {
-  background-color: var(--color-coal);
-  color: var(--color-water-green-01);
+.btn-add:hover {
+  background-color: var(--color-blue-03);
 }
 
 .nav-btn {
-  background-color: var(--color-water-green-01);
-  color: var(--color-coal);
-  font-weight: bold;
-  font-size: 14px;
-  width: 160px;
+  background-color: white !important;
+  color: var(--color-blue-04) !important;
   border: none;
+  font-weight: bold;
+  cursor: pointer;
 }
 
-.save-btn-new-user {
-  background-color: var(--color-coal);
-  color: var(--color-water-green-01);
-  font-weight: bold;
-  font-size: 14px;
-  width: 160px;
+.btn-save,
+.btn-cancel {
+  padding: 0.5rem;
+  background-color: var(--color-yellow-01);
+  color: var(--color-grey-01);
   border: none;
-}
-
-.nav-btn:hover,
-.nav-btn:focus {
-  background-color: var(--color-coal) !important;
-  color: var(--color-water-green-01) !important;
-}
-
-.save-btn-new-user:hover {
-  background-color: var(--color-water-green-01);
-  color: var(--color-coal);
-}
-
-.progress-container {
-  display: flex;
-  justify-content: space-around;
-  gap: 30px;
-  margin-top: 20px;
-  margin-inline: 50px;
-}
-
-.progress-bar-custom {
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  text-align: center;
-}
-
-.row-bottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: last baseline !important;
-  margin-bottom: 20px;
-}
-
-.privacy-btn {
-  width: 160px;
   font-weight: bold;
+  cursor: pointer;
 }
 
-.privacy-btn.private {
-    background-color: var(--color-green-01);
-    color: var(--color-coal);
-  }
-  
-  .privacy-btn.private.active {
-    background-color: var(--color-coal);
-    color: var(--color-green-01);
-  }
-  
-  .privacy-btn.public {
-    background-color: var(--color-white);
-    color: var(--color-coal);
-  }
-  
-  .privacy-btn.public.active {
-    background-color: var(--color-coal);
-    color: var(--color-white);
-  }
-
-.bio-textarea {
-  height: 200px;
-}
-
-.skills-input-new-user,
-.interests-input-new-user {
-  max-width: 80% !important;
-  height: 50% !important;
-  margin-bottom: 20px;
-  border-radius: 5px !important;
-}
-
-.dropdown-toggle-skills-new-user,
-.dropdown-toggle-interests-new-user {
-  width: 20% !important;
-  height: 50%;
-  margin-bottom: 20px;
-  border-radius: 5px !important;
-  background-color: var(--color-water-green-03) !important;
-  color: var(--color-coal) !important;
+.btn-save:hover,
+.btn-cancel:hover {
+  background-color: var(--color-yellow-02);
 }

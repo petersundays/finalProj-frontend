@@ -2,7 +2,7 @@ import React from "react";
 import { Navbar, Container, Nav, NavDropdown } from "react-bootstrap";
 import defaultProfilePic from "../../multimedia/default-profile-pic.png";
 import logo from "../../multimedia/logo/domcast-05-navbar-logo.png";
-import "../../pages/HomeLogged.css";
+import "./NavbarLogged.css";
 
 function NavbarLogged({ handleShow, handleLanguageChange, language }) {
   return (
@@ -17,7 +17,7 @@ function NavbarLogged({ handleShow, handleLanguageChange, language }) {
             <img src={defaultProfilePic} alt="Profile" className="profile-pic me-2" />
             <NavDropdown title={<span className="dropdown-title">first name</span>} id="basic-nav-dropdown" className="ms-2 me-5 dropdown-profile">
               <NavDropdown.Item href="#profile">Profile</NavDropdown.Item>
-              <NavDropdown.Item href="#inbox">Inbox</NavDropdown.Item>
+              <NavDropdown.Item href="#messages">Messages</NavDropdown.Item>
               <NavDropdown.Divider />
               <NavDropdown.Item href="#logout">Logout</NavDropdown.Item>
             </NavDropdown>

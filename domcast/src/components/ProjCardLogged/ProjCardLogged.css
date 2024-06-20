@@ -1,13 +1,16 @@
-.card {
+.projcard-logged {
     width: 350px;
     height: 230px;
+    margin-inline: 50px;
     margin-bottom: 20px; /* Espaçamento entre os cards */
   }
   
   @media (max-width: 768px) {
-    .card {
+    .projcard-logged {
       width: 100%; /* Torna o card responsivo */
       max-width: 350px; /* Largura máxima em telas menores */
+      margin-inline: 20px;
+
     }
   }
   

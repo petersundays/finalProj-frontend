@@ -10,11 +10,15 @@ import NewUser from "../components/NewUser/NewUser";
 import EmailTable from "../components/EmailTable/EmailTable";
 import AddAsset from "../components/AddAsset/AddAsset";
 import CardGrid from "../components/CardGrid/CardGrid";
+import NewProj from "../components/NewProj/NewProj";
+import NewTask from "../components/NewTask/NewTask";
 
 function HomeLogged() {
   const [show, setShow] = useState(false);
   const [expandedProjects, setExpandedProjects] = useState(false);
   const [language, setLanguage] = useState("EN");
+  const [Projects, setProjects] = useState(false);
+
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -26,7 +30,7 @@ function HomeLogged() {
   };
 
   return (
-    <div className="Teste">
+    <div className="Layout">
       <NavbarLogged
         handleShow={handleShow}
         handleLanguageChange={handleLanguageChange}
@@ -46,17 +50,21 @@ function HomeLogged() {
             expandedProjects={expandedProjects}
             toggleExpandProjects={toggleExpandProjects}
           />
-          <Col xs={12} md={10} className="content d-flex justify-content-center align-items-center">
-            <Card className="central-card">
-              <Card.Body>
+          <Col
+            xs={12}
+            md={10}
+            className="content d-flex justify-content-center align-items-center"
+          >
+            <Card className="custom-card">
+              <Card.Body className="card-body-custom">
                 {/* Render any component here */}
-                <NewUser />
+                <NewProj />
               </Card.Body>
             </Card>
           </Col>
         </Row>
       </Container>
-      <Footer/>
+      <Footer />
     </div>
   );
 }

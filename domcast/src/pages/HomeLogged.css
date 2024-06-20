@@ -1,6 +1,6 @@
 html,
 body,
-.Teste {
+.Layout {
   height: 100%;
   background-color: var(--color-white);
   background-color: var();
@@ -23,8 +23,7 @@ body,
 
 .sidebar {
   padding-top: 56px; /* Altura da navbar */
-  height: calc(100vh - 56px - 56px); /* Altura total menos a navbar */
-  overflow-y: auto; /* Barra lateral rolável */
+  height: calc(100vh-56px-56px); /* Altura total menos a navbar */
 }
 
 @media (max-width: 992px) {
@@ -76,75 +75,14 @@ body,
   justify-content: space-between;
 }
 
-.navbar-top-changes {
-  background-color: var(--color-coal);
-  color: var(--color-white);
-}
-
-.username-dropdown {
-  color: var(--color-white) !important;
-}
-
-.dropdown-title {
-  color: var(--color-white);
-}
-
-.btn-group .btn.active {
-  background-color: var(--color-water-green-01);
-  color: var(--color-coal);
-}
-
-.btn-group .btn {
-  border-color: var(--color-water-green-01);
-  color: var(--color-white);
-}
-
-.btn-group .btn:hover {
-  background-color: transparent;
-  color: var(--color-water-green-01);
-}
-
-.btn-group .btn.active:focus {
-  background-color: var(--color-water-green-01);
-  color: var(--color-coal);
-}
-
-.navbar .dropdown-menu {
-  background-color: var(--color-coal) !important;
-}
-
-.navbar .dropdown-item {
-  color: var(--color-white) !important;
-}
-
-.navbar .dropdown-item:hover,
-.navbar .dropdown-item:focus {
-  color: var(--color-water-green-01) !important;
-  background-color: var(--color-coal) !important;
-}
-
-.dropdown-profile:hover,
-.dropdown-profile:focus {
-  background-color: transparent !important;
-}
-
-.dropdown-title:hover,
-.dropdown-title:focus {
-  color: var(--color-water-green-01) !important;
-}
-
-.navbar .navbar-nav .nav-link.dropdown-toggle:hover,
-.navbar .navbar-nav .nav-link.dropdown-toggle:focus {
-  color: var(--color-water-green-01) !important;
-}
 
 .sidebar-changed {
-  background-color: var(--color-water-green-04) !important;
+  background-color: var(--color-blue-031) !important;
 }
 
 .sidebar .nav-link,
 .offcanvas-main-changed .nav-link {
-  color: var(--color-grey-02);
+  color: var(--color-coal);
   font-size: 18px;
   text-transform: uppercase;
   font-weight: 500;
@@ -152,8 +90,8 @@ body,
 
 .sidebar .nav-link:hover,
 .offcanvas-main-changed .nav-link:hover {
-  color: var(--color-grey-01);
-  background-color: var(--color-water-green-03);
+  color: var(--color-white);
+  background-color: var(--color-blue-03);
   border-radius: 8px;
 }
 
@@ -163,29 +101,46 @@ body,
 }
 
 .btn-offcanvas-main .btn:hover {
-  color: var(--color-dark-blue-02) !important;
+  color: var(--color-coal) !important;
 }
 
 .btn-offcanvas-main .btn.active {
   color: var(--color-grey-01) !important;
 }
 
-.offcanvas-main-title {
-  color: var(--color-water-green-01);
-}
-
 .hr {
   border-top: 1px solid var(--color-water-green-01);
 }
 
-.content {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.central-card {
+  width: 70%;
+  height: 70%;
 }
 
-.central-card {
-  min-width: 70%;
-  min-height: 70%;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+.new-user-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.custom-card {
+  width: 95%;
+  height: 85%;
+  max-width: none !important;
+  max-height: none !important;
+  border-radius: 10px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.card-body-custom {
+  overflow: auto; /* Permite rolagem vertical se o conteúdo ultrapassar o tamanho do Card.Body */
+  max-height: 80vh; /* Define a altura máxima do Card.Body */
+}
+
+@media (max-width: 992px) {
+  .custom-card {
+    width: 95%;
+    height: 95%;
+    margin: 0 auto !important;
+  }
 }

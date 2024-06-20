@@ -5,21 +5,32 @@ import {
   Row,
   Col,
   FloatingLabel,
-  Dropdown,
   Badge,
-  Container,
-  InputGroup,
   Card,
 } from "react-bootstrap";
+import { Typeahead } from "react-bootstrap-typeahead";
 import "./NewUser.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import defaultProfilePic from "../../multimedia/default-profile-pic.png";
+import ProgressBarComponent from "../ProgressBar/ProgressBar";
 
 const NewUser = () => {
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    lab: "",
+    bio: "",
+    nickname: "",
+    privacy: "",
+    skills: [],
+    interests: [],
+  });
+
   const [skills, setSkills] = useState([]);
   const [interests, setInterests] = useState([]);
-  const [privacy, setPrivacy] = useState("private");
+  const [visible, setVisible] = useState("private");
   const [step, setStep] = useState(1);
+  const steps = ["Step 1", "Step 2", "Step 3"];
 
   const handleAddSkill = () => {
     const skillInput = document.getElementById("skillInput").value;
@@ -45,6 +56,35 @@ const NewUser = () => {
     setInterests(interests.filter((interest) => interest !== interestToRemove));
   };
 
+  const handleCreate = () => {
+    onCreate(formData);
+  };
+
+  const handleCancel = () => {
+    setFormData({
+      firstName: "",
+      lastName: "",
+      lab: "",
+      bio: "",
+      nickname: "",
+      privacy: "",
+      skills: [],
+      interests: [],
+    });
+    setSkills([]);
+    setInterests([]);
+    setVisible("private");
+    setStep(1);
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  const onCreate = (formData) => {
+    console.log(formData);
+  };
+
   const nextStep = () => {
     if (step < 3) {
       setStep(step + 1);
@@ -57,61 +97,67 @@ const NewUser = () => {
     }
   };
 
-  const goToStep = (stepNumber) => {
-    setStep(stepNumber);
-  };
-
   const renderStep = () => {
     switch (step) {
       case 1:
         return (
-          <div className="text-center my-3 p-3">
-            <div>
-              <img
-                src={defaultProfilePic}
-                alt="Default Profile"
-                className="img-fluid rounded-circle profile-pic-new-user"
-              />
-            </div>
-            <div>
-              <Button className="mt-4 edit-profile-btn">
-                Edit Profile Photo
-              </Button>
-            </div>
-            <FloatingLabel
-              controlId="floatingNickname"
-              label="Nickname"
-              className="mb-3 floating-label-custom fl-nickname"
-            >
-              <Form.Control type="text" placeholder="Nickname" />
-            </FloatingLabel>
-          </div>
-        );
-      case 2:
-        return (
-          <Row className="row-step2-new-user">
-            <Col md={6}>
-              <FloatingLabel
-                controlId="floatingFirstName"
-                label="First Name *"
-                className="mb-3 floating-label-custom"
+          <Card className="mx-lg-3 my-lg-3" style={{ border: "none" }}>
+            <div className="row" style={{ justifyContent: "center" }}>
+              <Card
+                className="justify-content-center align-items-center my-3"
+                style={{ border: "none" }}
               >
-                <Form.Control type="text" placeholder="First Name" required />
-              </FloatingLabel>
-              <FloatingLabel
-                controlId="floatingLastName"
-                label="Last Name *"
-                className="mb-3 floating-label-custom"
+                <img
+                  className="my-3"
+                  src={defaultProfilePic}
+                  alt="Default Profile"
+                  style={{ width: "7.5rem", height: "7.5rem" }}
+                />
+                <p
+                  className="edit-profile-pic-link mb-3"
+                >
+                  Edit Profile Photo
+                </p>
+              </Card>
+              <Card
+                className="justify-content-center align-items-center"
+                style={{ border: "none" }}
               >
-                <Form.Control type="text" placeholder="Last Name" required />
-              </FloatingLabel>
-              <FloatingLabel
-                controlId="floatingLab"
-                label="Lab *"
-                className="mb-3 floating-label-custom"
-              >
-                <Form.Select required className="options-dd-lab-new-user">
-                  <option disabled>Choose your Lab</option>
+                <FloatingLabel
+                  controlId="floatingFirstName"
+                  label="First Name *"
+                  className="mb-3"
+                  style={{ width: "25rem" }}
+                >
+                  <Form.Control
+                    type="text"
+                    placeholder="First Name"
+                    onChange={handleChange}
+                    required
+                  />
+                </FloatingLabel>
+                <FloatingLabel
+                  controlId="floatingLastName"
+                  label="Last Name *"
+                  className="mb-3"
+                  style={{ width: "25rem" }}
+                >
+                  <Form.Control
+                    type="text"
+                    placeholder="Last Name"
+                    onChange={handleChange}
+                    required
+                  />
+                </FloatingLabel>
+                <Form.Select
+                  required
+                  controlId="floatingLab"
+                  className="mb-3"
+                  style={{ width: "25rem" }}
+                >
+                  <option value="" disabled selected>
+                    Choose your Lab*
+                  </option>
                   <option>Coimbra</option>
                   <option>Lisboa</option>
                   <option>Porto</option>
@@ -119,154 +165,245 @@ const NewUser = () => {
                   <option>Vila Real</option>
                   <option>Viseu</option>
                 </Form.Select>
-              </FloatingLabel>
-            </Col>
-            <Col md={6}>
+              </Card>
+            </div>
+            <span className="d-block text-center">* Required fields</span>
+          </Card>
+        );
+      case 2:
+        return (
+          <Card className="mt-3" style={{ border: "none" }}>
+            <Row style={{ justifyContent: "center" }}>
               <FloatingLabel
                 controlId="floatingBio"
                 label="Bio"
-                className="mb-3 floating-label-custom"
+                className="mb-3 ps-1"
+                style={{ width: "25rem" }}
               >
                 <Form.Control
                   as="textarea"
-                  placeholder="Bio"
-                  style={{ height: "200px" }}
-                  className="bio-textarea"
+                  onChange={handleChange}
+                  style={{
+                    height: "12.5rem",
+                    resize: "none",
+                    width: "24rem",
+                    overflow: "auto",
+                  }}
                 />
               </FloatingLabel>
-            </Col>
-            <span className="d-block mt-3 mb-5 ms-2">* Required fields</span>
-          </Row>
+            </Row>
+            <Row style={{ justifyContent: "center" }}>
+              <FloatingLabel
+                controlId="floatingNickname"
+                label="Nickname"
+                className="mb-3 ps-1"
+                style={{ width: "25rem" }}
+                onChange={handleChange}
+              >
+                <Form.Control type="text" placeholder="Nickname" />
+              </FloatingLabel>
+            </Row>
+            <Card
+              className="justify-content-center align-items-center my-3"
+              style={{ border: "none" }}
+            >
+              <Row style={{ justifyContent: "center", width: "17rem" }}>
+                <Col style={{ width: "5rem" }}>
+                  <p>Privacy</p>
+                </Col>
+                <Col className="mx-0" style={{ width: "5rem" }}>
+                  <Button
+                    onClick={() => setVisible("private")}
+                    className="mx-2 visible-btn-new-user"
+                    style={{
+                      width: "5rem",
+                      backgroundColor:
+                        visible === "private"
+                          ? "var(--color-blue-01)"
+                          : "var(--color-white)",
+                      borderColor:
+                        visible === "private"
+                          ? "var(--color-blue-01)"
+                          : "var(--color-blue-01)",
+                      color:
+                        visible === "private"
+                          ? "var(--color-white)"
+                          : "var(--color-blue-01)",
+                    }}
+                  >
+                    Private
+                  </Button>
+                </Col>
+                <Col style={{ width: "5rem" }}>
+                  <Button
+                    onClick={() => setVisible("public")}
+                    className="mx-2 visible-btn-new-user"
+                    style={{
+                      width: "5rem",
+                      backgroundColor:
+                        visible === "public"
+                          ? "var(--color-blue-01)"
+                          : "var(--color-white)",
+                      borderColor:
+                        visible === "public"
+                          ? "var(--color-blue-01)"
+                          : "var(--color-blue-01)",
+                      color:
+                        visible === "public"
+                          ? "var(--color-white)"
+                          : "var(--color-blue-01)",
+                    }}
+                  >
+                    Public
+                  </Button>
+                </Col>
+              </Row>
+            </Card>
+          </Card>
         );
       case 3:
         return (
           <>
-            <Form.Group className="mb-3 dropdowns-step3">
-              <InputGroup className="mb-3">
-                <FloatingLabel
-                  controlId="floatingSkillInput"
-                  label="Skills - type to search or add"
-                  className="floating-label-custom me-5 skills-input-new-user"
-                >
-                  <Form.Control
-                    type="text"
-                    placeholder="Type to search or add"
-                    id="skillInput"
-                  />
-                </FloatingLabel>
-                <Dropdown className="me-2 dropdown-skills-new-user">
-                  <Dropdown.Toggle variant="secondary dropdown-toggle-skills-new-user me-5">
-                    Choose skill category
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu>
-                    <Dropdown.Item className="dropdown-item-default">
-                      Knowledge
-                    </Dropdown.Item>
-                    <Dropdown.Item className="dropdown-item-default">
-                      Software
-                    </Dropdown.Item>
-                    <Dropdown.Item className="dropdown-item-default">
-                      Hardware
-                    </Dropdown.Item>
-                    <Dropdown.Item className="dropdown-item-default">
-                      Tools
-                    </Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
-                <Button
-                  className="add-btn add-btn-skills-new-user mx-2"
-                  onClick={handleAddSkill}
-                >
-                  Add
-                </Button>
-              </InputGroup>
-              <div>
-                {skills.map((skill, index) => (
-                  <Badge pill bg="secondary" key={index} className="me-2">
-                    {skill}{" "}
-                    <Button
-                      variant="light"
-                      size="sm"
-                      onClick={() => handleRemoveSkill(skill)}
+              <Card
+                className="justify-content-center align-items-center mt-3"
+                style={{ border: "none" }}
+              >
+                <Row className="mb-2" style={{ justifyContent: "center" }}>
+                  <FloatingLabel controlId="floatingSkillInput">
+                    <Typeahead
+                      id="skill-search"
+                      type="text"
+                      placeholder="Search or add skill..."
+                      style={{ width: "25rem" }}
+                      options={[]}
+                    />
+                  </FloatingLabel>
+                </Row>
+                <Row style={{ justifyContent: "center" }}>
+                  <Col className="my-2">
+                    <Form.Select
+                      controlId="floatingSkillCategory"
+                      style={{ width: "18.5rem" }}
                     >
-                      x
-                    </Button>
-                  </Badge>
-                ))}
-              </div>
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-              <InputGroup className="mb-3">
-                <FloatingLabel
-                  controlId="floatingInterestInput"
-                  label="Interests - type to search or add"
-                  className="floating-label-custom me-5 interests-input-new-user"
-                >
-                  <Form.Control
+                      <option value="" disabled selected>
+                        Choose skill category
+                      </option>
+                      <option>Knowledge</option>
+                      <option>Software</option>
+                      <option>Hardware</option>
+                      <option>Tools</option>
+                    </Form.Select>
+                  </Col>
+                  <Col className="my-2">
+                    <Button
+                      onClick={handleAddSkill}
+                      className="btn-add"
+                      style={{ width: "5rem" }}
+                    >
+                      Add
+                    </Button>{" "}
+                  </Col>
+                </Row>
+                <Row className="mt-2 mb-4">
+                  {skills.map((skill, index) => (
+                    <Badge pill bg="secondary" key={index} className="me-2">
+                      {skill}{" "}
+                      <span
+                        variant="light"
+                        size="sm"
+                        className="ps-2 mb-3"
+                        onClick={() => handleRemoveSkill(skill)}
+                        style={{
+                          cursor: "pointer",
+                          position: "relative",
+                          top: "-2px",
+                        }}
+                      >
+                        x
+                      </span>
+                    </Badge>
+                  ))}
+                </Row>
+              </Card>
+            <Card
+              className="justify-content-center align-items-center mt-3"
+              style={{ border: "none" }}
+            >
+              <Row className="mb-2" style={{ justifyContent: "center" }}>
+                <FloatingLabel controlId="floatingInterestInput">
+                  <Typeahead
+                    id="interest-search"
                     type="text"
-                    placeholder="Type to search or add"
-                    id="interestInput"
+                    style={{ width: "25rem" }}
+                    placeholder="Search or add interests..."
+                    options={[]}
+                    onClick={handleAddInterest}
                   />
                 </FloatingLabel>
-                <Dropdown className="me-2 dropdown-interests-new-user">
-                  <Dropdown.Toggle variant="secondary dropdown-toggle-interests-new-user me-5">
-                    Choose interest category
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu>
-                    <Dropdown.Item className="dropdown-item-default">
-                      Themes
-                    </Dropdown.Item>
-                    <Dropdown.Item className="dropdown-item-default">
-                      Causes
-                    </Dropdown.Item>
-                    <Dropdown.Item className="dropdown-item-default">
-                      Fields of Expertise
-                    </Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
-                <Button
-                  className="add-btn add-btn-interests-new-user mx-2"
-                  onClick={handleAddInterest}
-                >
-                  Add
-                </Button>
-              </InputGroup>
-              <div>
+              </Row>
+              <Row style={{ justifyContent: "center" }}>
+                <Col className="my-2">
+                  <Form.Select
+                    controlId="floatingInterestCategory"
+                    style={{ width: "18.5rem" }}
+                  >
+                    <option value="" disabled selected>
+                      Choose interest category
+                    </option>
+                    <option>Themes</option>
+                    <option>Causes</option>
+                    <option>Fields of Expertise</option>
+                  </Form.Select>
+                </Col>
+                <Col className="my-2">
+                  <Button
+                    onClick={handleAddInterest}
+                    className="btn-add"
+                    style={{ width: "5rem" }}
+                  >
+                    Add
+                  </Button>
+                </Col>
+              </Row>
+              <Row className="mt-2 mb-4">
                 {interests.map((interest, index) => (
                   <Badge pill bg="secondary" key={index} className="me-2">
                     {interest}{" "}
-                    <Button
+                    <span
                       variant="light"
                       size="sm"
+                      className="ps-2 mb-3"
                       onClick={() => handleRemoveInterest(interest)}
+                      style={{
+                        cursor: "pointer",
+                        position: "relative",
+                        top: "-2px",
+                      }}
                     >
                       x
-                    </Button>
+                    </span>
                   </Badge>
                 ))}
-              </div>
-            </Form.Group>
-
-            <Form.Group className="mb-3">
-              <Form.Label>Privacy</Form.Label>
-              <div className="d-flex">
+              </Row>
+            </Card>
+            <Card className="my-5 mx-3" style={{ border: "none" }}>
+              <Row style={{ justifyContent: "center", gap: "3rem" }}>
                 <Button
-                  variant={privacy === "private" ? "primary" : "secondary"}
-                  onClick={() => setPrivacy("private")}
-                  className="me-2 nav-btn privacy-btn-new-user"
+                  onClick={handleCreate}
+                  className="btn-save"
+                  style={{ width: "10rem" }}
                 >
-                  Private
+                  Save
                 </Button>
                 <Button
-                  variant={privacy === "public" ? "primary" : "secondary"}
-                  onClick={() => setPrivacy("public")}
-                  className="nav-btn privacy-btn-new-user"
+                  onClick={handleCancel}
+                  className="btn-cancel"
+                  style={{ width: "10rem" }}
                 >
-                  Public
+                  Cancel
                 </Button>
-              </div>
-            </Form.Group>
+              </Row>
+            </Card>
           </>
         );
       default:
@@ -276,66 +413,65 @@ const NewUser = () => {
 
   const renderProgress = () => {
     return (
-      <div className="progress-container">
-        <div
-          className={`step-label ${step === 1 ? "active" : ""}`}
-          onClick={() => goToStep(1)}
-        >
-          Step 1
-        </div>
-        <div
-          className={`step-label ${step === 2 ? "active" : ""}`}
-          onClick={() => goToStep(2)}
-        >
-          Step 2
-        </div>
-        <div
-          className={`step-label ${step === 3 ? "active" : ""}`}
-          onClick={() => goToStep(3)}
-        >
-          Step 3
-        </div>
-      </div>
+      <Row className="mb-2" style={{ justifyContent: "center", gap: "2rem" }}>
+        {step > 1 && (
+          <Button
+            onClick={prevStep}
+            className="nav-btn nav-btn-prev"
+            style={{
+              maxWidth: "8rem",
+            }}
+          >
+            « Previous
+          </Button>
+        )}
+        {step < 3 && (
+          <Button
+            onClick={nextStep}
+            className="nav-btn nav-btn-next"
+            style={{
+              maxWidth: "8rem",
+            }}
+          >
+            Next »
+          </Button>
+        )}
+      </Row>
     );
   };
 
   return (
-    <Container
-      className="d-flex flex-column justify-content-between"
-      style={{ height: "100%" }}
+    <Card
+      style={{
+        border: "none",
+        height: "100%",
+        width: "100%",
+        position: "relative", // Add this to enable absolute positioning for children
+      }}
     >
-      <Form>
-        <Row>
-          <Col md={12}>{renderStep()}</Col>
-        </Row>
-      </Form>
-      <div className="mt-3">
-        <Row className="row-bottom w-100 justify-content-between">
-          {step > 1 && (
-            <Col xs="auto">
-              <Button onClick={prevStep} className="nav-btn nav-btn-prev">
-                « Previous
-              </Button>
-            </Col>
-          )}
-          <Col>
-            <div className="progress-bar-custom">{renderProgress()}</div>
-          </Col>
-          {step < 3 && (
-            <Col xs="auto">
-              <Button onClick={nextStep} className="nav-btn nav-btn-next">
-                Next »
-              </Button>
-            </Col>
-          )}
-          {step === 3 && (
-            <Col xs="auto">
-              <Button className="nav-btn nav-btn-save">Save</Button>
-            </Col>
-          )}
-        </Row>
+      <div
+        className="progress-bar-div"
+        style={{
+          width: "30%",
+          justifyContent: "center",
+          position: "absolute", // Absolute positioning
+          top: "2rem", // 10rem from the top
+          left: "50%", // Center horizontally
+          transform: "translateX(-50%)", // Center align by translating half of its width
+        }}
+      >
+        <ProgressBarComponent step={step} steps={steps} />
       </div>
-    </Container>
+
+      <div style={{ paddingTop: "2.5rem" }}>
+        {" "}
+        {/* Add paddingTop to push the content down */}
+        <Card style={{ border: "none" }} className="my-3">
+          {renderStep()}
+        </Card>
+        <div className="my-2">{renderProgress()}</div>
+      </div>
+    </Card>
   );
 };
 

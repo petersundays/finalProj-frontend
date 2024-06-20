@@ -1,20 +1,20 @@
 import React from "react";
-import { Card, Button} from "react-bootstrap";
+import { Card, Button } from "react-bootstrap";
 import "./ProjCardLogged.css";
 
-const ProjCardLogged = ({ title, subtitle, description, link }) => {
+const ProjCardLogged = ({ title, lab, description, members, state, link }) => {
   return (
-    <Card className="mb-4">
+    <Card className="mb-4 projcard-logged" style={{ width: "22rem" }}>
       <Card.Body>
         <Card.Title>{title}</Card.Title>
-        <Card.Subtitle className="mb-2 text-muted">{subtitle}</Card.Subtitle>
+        <Card.Subtitle className="mb-2 text-muted">{lab}</Card.Subtitle>
         <Card.Text>{description}</Card.Text>
         <div className="d-flex justify-content-between">
           <div>
-            <h6 className="h6">Members</h6>
+            <h6 className="h6">Members: {members}</h6>
           </div>
           <div>
-            <h6 className="h6">State</h6>
+            <h6 className="h6">State: {state}</h6>
           </div>
         </div>
         <Button href={link} variant="primary" className="mt-3">

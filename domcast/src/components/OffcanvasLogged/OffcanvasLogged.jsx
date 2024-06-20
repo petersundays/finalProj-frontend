@@ -23,7 +23,7 @@ function OffcanvasLogged({
         <div>
           <Nav className="flex-column profileNavbar">
             <Nav.Link href="#myProfile">My Profile</Nav.Link>
-            <Nav.Link href="#inbox">Inbox</Nav.Link>
+            <Nav.Link href="#messages">Messages</Nav.Link>
           </Nav>
           <hr />
           <Nav className="d-flex flex-column justify-content-between sidebarNavbar">
