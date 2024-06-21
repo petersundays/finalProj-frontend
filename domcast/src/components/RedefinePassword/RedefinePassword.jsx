@@ -19,6 +19,7 @@ const RedefinePassword = () => {
 
   const passwordRegex =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
+    
 
   const handleSubmit = async (event) => {
     event.preventDefault();

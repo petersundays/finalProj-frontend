@@ -7,17 +7,23 @@ function SignUpModal({ show, handleClose }) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const emailRegex = /^[a-zA-Z0-9_+&*-]+(?:\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,7}$/;
   const passwordRegex =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
+
+  
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (password !== confirmPassword) {
-      console.log("Passwords do not match");
+    if (email === "" || password === "" || confirmPassword === "") {
+      console.log("All fields must be filled in");
       return;
-    } else if (password === "" || confirmPassword === "") {
-      console.log("Password fields must be filled in");
+    } else if (emailRegex.test(email) === false) {
+      console.log("Invalid email");
+      return;
+    } else if (password !== confirmPassword) {
+      console.log("Passwords do not match");
       return;
     } else if (email === "") {
       console.log("Email field must be filled in");

@@ -5,8 +5,20 @@ import { BASE_URL } from "../../functions/UsersFunctions";
 function ForgotPasswordModal({ show, handleClose }) {
   const [email, setEmail] = useState("");
 
+  const emailRegex =
+    /^[a-zA-Z0-9_+&*-]+(?:\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,7}$/;
+
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    if (email === "") {
+      console.log("Email field must be filled in");
+      return;
+    } else if (emailRegex.test(email) === false) {
+      console.log("Invalid email");
+      return;
+    } else {
+      console.log("Email is valid");
 
       try {
         const response = await fetch(`${BASE_URL}forgot-password`, {
@@ -26,8 +38,8 @@ function ForgotPasswordModal({ show, handleClose }) {
       } catch (error) {
         console.error("Error:", error);
       }
-  }
-
+    }
+  };
 
   return (
     <Modal show={show} onHide={handleClose}>

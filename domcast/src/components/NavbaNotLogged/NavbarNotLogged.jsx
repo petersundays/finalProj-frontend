@@ -16,25 +16,13 @@ function NavbarNotLogged({ handleShow, handleLanguageChange, language }) {
   const handleCloseLoginModal = () => {
     setShowLoginModal(false);
   };
-
-  const handleSubmitLogin = (event) => {
-    event.preventDefault();
-    // Handle login logic here
-    console.log("Login form submitted");
-  };
-
+  
   const handleSignUp = () => {
     setShowSignUpModal(true);
   };
 
   const handleCloseSignUpModal = () => {
     setShowSignUpModal(false);
-  };
-
-  const handleSubmitSignUp = (event) => {
-    event.preventDefault();
-    // Handle sign up logic here
-    console.log("Sign Up form submitted");
   };
 
   return (
@@ -128,12 +116,10 @@ function NavbarNotLogged({ handleShow, handleLanguageChange, language }) {
       <LoginModal
         show={showLoginModal}
         handleClose={handleCloseLoginModal}
-        handleSubmit={handleSubmitLogin}
       />
       <SignUpModal
         show={showSignUpModal}
         handleClose={handleCloseSignUpModal}
-        handleSubmit={handleSubmitSignUp}
       />
     </>
   );
