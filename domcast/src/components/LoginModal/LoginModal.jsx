@@ -1,9 +1,14 @@
 import React, { useState } from "react";
-import { Modal, Form, Button, FloatingLabel } from "react-bootstrap";
+import { Modal, Form, Button, FloatingLabel, Toast } from "react-bootstrap";
 import ForgotPasswordModal from "../ForgotPasswordModal/ForgotPasswordModal";
+import { useNavigate } from "react-router-dom";
+import { BASE_URL } from "../../functions/UsersFunctions";
 
-function LoginModal({ show, handleClose, handleSubmit }) {
+function LoginModal({ show, handleClose }) {
+  const navigate = useNavigate();
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleForgotPassword = () => {
     setShowForgotPasswordModal(true);
@@ -20,37 +25,93 @@ function LoginModal({ show, handleClose, handleSubmit }) {
     console.log("Forgot password form submitted");
   };
 
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (email && password) {
+      const login = {
+        email: email,
+        password: password,
+      };
+
+      try {
+        const response = await fetch(`${BASE_URL}login`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(login),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+          Toast.show("Welcome to DomCast!");
+          localStorage.setItem("user", JSON.stringify(data.user));
+          navigate("/home", { replace: true });
+        } else {
+          console.log("Login failed");
+          Toast.show("Login failed.");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    } else {
+      Toast.show("Email and password must be filled in");
+      console.log("Email and password must be filled in");
+    }
+  };
+
   return (
     <>
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Login</Modal.Title>
+      <Modal show={show} onHide={handleClose} centered>
+        <Modal.Header closeButton className="mt-2 p-4">
+          <Modal.Title style={{ width: "100%", textAlign: "center" }}>
+            Login
+          </Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          <h5>Let's move your projects forward</h5>
+        <Modal.Body style={{ textAlign: "center" }}>
+          <h5 className="mb-4 modal-title">Let's move your projects forward</h5>
           <Form onSubmit={handleSubmit}>
             <FloatingLabel
               controlId="floatingInput"
               label="Email address"
-              className="mb-3"
+              className="mb-3 mx-5"
             >
               <Form.Control
                 type="email"
                 placeholder="name@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </FloatingLabel>
             <FloatingLabel
               controlId="floatingPassword"
               label="Password"
-              className="mb-3"
+              className="mb-3 mx-5"
             >
-              <Form.Control type="password" placeholder="Password" required />
+              <Form.Control
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
             </FloatingLabel>
-            <Button variant="primary" type="submit" className="w-100">
+            <Button
+              type="submit"
+              className="my-3 custom-btn"
+              style={{
+                width: "15rem",
+                backgroundColor: "var(--color-yellow-01)",
+                borderColor: "var(--color-yellow-01)",
+                color: "var(--color-coal)",
+                fontWeight: "bold",
+              }}
+            >
               Submit
             </Button>
-            <div className="mt-3 text-center">
+            <div className="mb-3 text-center">
               <span>
                 <a href="#forgot-password" onClick={handleForgotPassword}>
                   Forgot your password?

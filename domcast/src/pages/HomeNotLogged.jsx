@@ -5,6 +5,7 @@ import "./HomeLogged.css";
 import NavbarNotLogged from "../components/NavbaNotLogged/NavbarNotLogged";
 import OffcanvasNotLogged from "../components/OffcanvasNotLogged/OffcanvasNotLogged";
 import FooterComponent from "../components/Footer/Footer";
+import CardGridNotLogged from "../components/CardGridNotLogged/CardGridNotLogged";
 
 function HomeLogged() {
   const [show, setShow] = useState(false);
@@ -37,8 +38,8 @@ function HomeLogged() {
       />
       <Container fluid className="main-container">
         <Row className="flex-grow-1">
-          <Col xs={12} md={10} className="content">
-            {/* Add content here */}
+          <Col className="content">
+            <CardGridNotLogged />
           </Col>
         </Row>
       </Container>
