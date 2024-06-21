@@ -19,7 +19,7 @@ const RedefinePassword = () => {
 
   const passwordRegex =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
-    
+
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -38,7 +38,7 @@ const RedefinePassword = () => {
       console.log("Passwords match");
 
       try {
-        const response = await fetch(`${BASE_URL}redefine-password`, {
+        const response = await fetch(`${BASE_URL}reset-password`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
