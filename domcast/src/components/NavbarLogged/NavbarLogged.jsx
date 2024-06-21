@@ -3,8 +3,32 @@ import { Navbar, Container, Nav, NavDropdown } from "react-bootstrap";
 import defaultProfilePic from "../../multimedia/default-profile-pic.png";
 import logo from "../../multimedia/logo/domcast-05-navbar-logo.png";
 import "./NavbarLogged.css";
+import { useNavigate } from "react-router-dom";
+import { userStore } from "../../stores/UserStore.jsx";
 
 function NavbarLogged({ handleShow, handleLanguageChange, language }) {
+  const navigate = useNavigate();
+  const { setUser } = userStore();
+
+
+const handleLogout = () => {
+    setUser({
+      id: null,
+      sessionToken: "",
+      firstName: "",
+      lastName: "",
+      nickname: "",
+      photo: "",
+      biography: "",
+      visible: false,
+      workplace: "",
+      interests: [],
+      skills: [],
+    });
+    navigate("/", { replace: true });
+  };
+   
+
   return (
     <Navbar bg="dark" variant="dark" expand="lg" fixed="top" className="navbar-top-changes">
       <Container>
@@ -19,7 +43,7 @@ function NavbarLogged({ handleShow, handleLanguageChange, language }) {
               <NavDropdown.Item href="#profile">Profile</NavDropdown.Item>
               <NavDropdown.Item href="#messages">Messages</NavDropdown.Item>
               <NavDropdown.Divider />
-              <NavDropdown.Item href="#logout">Logout</NavDropdown.Item>
+              <NavDropdown.Item onClick={handleLogout}>Logout</NavDropdown.Item>
             </NavDropdown>
             <div className="btn-group" role="group">
               <button

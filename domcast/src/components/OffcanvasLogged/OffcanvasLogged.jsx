@@ -1,6 +1,8 @@
 import React from "react";
 import { Offcanvas, Nav } from "react-bootstrap";
 import defaultProfilePic from "../../multimedia/default-profile-pic.png";
+import { useNavigate } from "react-router-dom";
+import { userStore } from "../../stores/UserStore.jsx";
 
 function OffcanvasLogged({
   show,
@@ -10,6 +12,27 @@ function OffcanvasLogged({
   handleLanguageChange,
   language,
 }) {
+  const navigate = useNavigate();
+  const { setUser } = userStore();
+
+  const handleLogout = () => {
+    setUser({
+      id: null,
+      sessionToken: "",
+      firstName: "",
+      lastName: "",
+      nickname: "",
+      photo: "",
+      biography: "",
+      visible: false,
+      workplace: "",
+      interests: [],
+      skills: [],
+    });
+    navigate("/", { replace: true });
+  };
+
+
   return (
     <Offcanvas show={show} onHide={handleClose} className="offcanvas-main-changed">
       <Offcanvas.Header closeButton>

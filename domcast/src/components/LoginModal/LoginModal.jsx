@@ -3,9 +3,11 @@ import { Modal, Form, Button, FloatingLabel, Toast } from "react-bootstrap";
 import ForgotPasswordModal from "../ForgotPasswordModal/ForgotPasswordModal";
 import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "../../functions/UsersFunctions";
+import { userStore } from "../../stores/UserStore.jsx";
 
 function LoginModal({ show, handleClose }) {
   const navigate = useNavigate();
+  const { setUser } = userStore();
   const [showForgotPasswordModal, setShowForgotPasswordModal] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -46,7 +48,7 @@ function LoginModal({ show, handleClose }) {
           const data = await response.json();
           console.log(data);
           Toast.show("Welcome to DomCast!");
-          localStorage.setItem("user", JSON.stringify(data.user));
+          setUser(data.user);
           navigate("/home", { replace: true });
         } else {
           console.log("Login failed");
