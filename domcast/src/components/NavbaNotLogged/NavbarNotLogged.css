@@ -1,28 +1,28 @@
 .sign-up-btn {
-  background-color: var(--color-blue-01);
+  background-color: var(--color-yellow-01);
   color: var(--color-coal);
   border-radius: 5px;
   text-align: center;
-  border: var(--color-blue-01) 1px solid;
+  border: var(--color-yellow-01) 1px solid;
 }
 
 .login-btn {
   background-color: var(--color-coal);
-  color: var(--color-blue-01);
+  color: var(--color-yellow-01);
   border-radius: 5px;
   text-align: center;
   border: var(--color-coal) 1px solid;
 }
 
 .sign-up-btn:hover {
-  background-color: var(--color-blue-03);
-  border: var(--color-blue-03) 1px solid;
+  background-color: var(--color-yellow-02);
+  border: var(--color-yellow-02) 1px solid;
   color: var(--color-coal);
 }
 
 .login-btn:hover {
-  border: var(--color-blue-03) 1px solid;
-  color: var(--color-blue-03);
+  border: var(--color-yellow-02) 1px solid;
+  color: var(--color-yellow-02);
 }
 
 .sign-up-btn.nav-link:focus, 
@@ -36,7 +36,7 @@
 .login-btn.nav-link:active,
 .login-btn.nav-link:visited,
 .login-btn.nav-link:enabled {
-    color: var(--color-blue-01);
+    color: var(--color-yellow-01);
 }
 
 
@@ -57,4 +57,45 @@
 
 .modal-body h5 {
   margin-bottom: 20px;
+}
+
+.btn-group {
+  border-radius: 0.3rem;
+  overflow: hidden; /* Ensures that the buttons fit within the rounded corners of the parent */
+  display: inline-flex; /* Makes sure the buttons are displayed inline */
+}
+
+.btn-language {
+  border-width: 1px;
+  border-style: solid;
+  font-weight: bold;
+  transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.btn-language.selected {
+  background-color: var(--color-blue-01);
+  border-color: var(--color-blue-01);
+  color: var(--color-coal);
+}
+
+.btn-language.unselected {
+  background-color: var(--color-coal);
+  border-color: var(--color-blue-01);
+  color: var(--color-blue-01);
+}
+
+/* To prevent buttons from showing the individual border-radius */
+.btn-language:first-child {
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+
+.btn-language:last-child {
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.btn-language:last-child {
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
 }

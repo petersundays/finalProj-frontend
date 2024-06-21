@@ -54,7 +54,10 @@ function NavbarNotLogged({ handleShow, handleLanguageChange, language }) {
           >
             <img src={logo} alt="DomCast" className="navbar-logo" />
           </Navbar.Brand>
-          <Navbar.Toggle aria-controls="basic-navbar-nav" onClick={handleShow} />
+          <Navbar.Toggle
+            aria-controls="basic-navbar-nav"
+            onClick={handleShow}
+          />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="ms-auto align-items-center">
               <Nav.Link
@@ -62,8 +65,8 @@ function NavbarNotLogged({ handleShow, handleLanguageChange, language }) {
                 onClick={handleLogin}
                 className="login-btn me-lg-3"
                 style={{
-                  width: "100px",
-                  height: "40px",
+                  width: "6.25rem",
+                  height: "2.5rem",
                   fontSize: "16px",
                   fontWeight: "bold",
                   verticalAlign: "middle",
@@ -76,8 +79,8 @@ function NavbarNotLogged({ handleShow, handleLanguageChange, language }) {
                 onClick={handleSignUp}
                 className="sign-up-btn me-lg-5"
                 style={{
-                  width: "100px",
-                  height: "40px",
+                  width: "6.25rem",
+                  height: "2.5rem",
                   fontSize: "16px",
                   fontWeight: "bold",
                   verticalAlign: "middle",
@@ -88,13 +91,13 @@ function NavbarNotLogged({ handleShow, handleLanguageChange, language }) {
               <div className="btn-group ms-lg-5" role="group">
                 <button
                   type="button"
-                  className={`btn btn-outline-secondary ${
-                    language === "EN" ? "active" : ""
+                  className={`btn-language ${
+                    language === "EN" ? "selected" : "unselected"
                   }`}
                   onClick={() => handleLanguageChange("EN")}
                   style={{
-                    width: "50px",
-                    height: "32px",
+                    width: "3.25rem",
+                    height: "2rem",
                     fontSize: "12px",
                     fontWeight: "bold",
                   }}
@@ -103,13 +106,13 @@ function NavbarNotLogged({ handleShow, handleLanguageChange, language }) {
                 </button>
                 <button
                   type="button"
-                  className={`btn btn-outline-secondary ${
-                    language === "PT" ? "active" : ""
+                  className={`btn-language ${
+                    language === "PT" ? "selected" : "unselected"
                   }`}
                   onClick={() => handleLanguageChange("PT")}
                   style={{
-                    width: "50px",
-                    height: "32px",
+                    width: "3.25rem",
+                    height: "2rem",
                     fontSize: "12px",
                     fontWeight: "bold",
                   }}

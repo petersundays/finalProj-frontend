@@ -1,54 +1,100 @@
-import React, { useState } from 'react';
-import { Container, Row, Col, Form, Button, FloatingLabel } from 'react-bootstrap';
-import './RedefinePassword.css';
+import React, { useState } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Form,
+  Button,
+  FloatingLabel,
+} from "react-bootstrap";
+import "./RedefinePassword.css";
+import { BASE_URL } from "../../functions/UsersFunctions";
+import { useParams, useNavigate } from "react-router-dom";
 
-const RedefinePassword = ({ onConfirm, onCancel }) => {
-  const [formData, setFormData] = useState({
-    password: '',
-    confirmPassword: '',
-  });
+const RedefinePassword = () => {
+  const navigate = useNavigate();
+  const { token } = useParams();
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
+  const passwordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
 
-  const handleConfirm = () => {
-    if (formData.password === formData.confirmPassword) {
-      onConfirm(formData.password);
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    if (password !== confirmPassword) {
+      console.log("Passwords do not match");
+    } else if (password === "" || confirmPassword === "") {
+      console.log("Password fields must be filled in");
+    } else if (password.length < 12 || confirmPassword.length < 12) {
+      console.log("Password must be at least 12 characters long");
+    } else if (!passwordRegex.test(password)) {
+      console.log(
+        "Password must have one capital letter, one small letter, one number, and one symbol"
+      );
     } else {
-      alert('Passwords do not match');
+      console.log("Passwords match");
+
+      try {
+        const response = await fetch(`${BASE_URL}redefine-password`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            token: token,
+          },
+          body: JSON.stringify({ password: password }),
+        });
+
+        if (response.ok) {
+          console.log("Password redefined");
+          navigate("/", { replace: true });
+        } else {
+          console.log("Password not redefined");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
     }
   };
+
+  const handleCancel = () => {
+    navigate("/", { replace: true });
+  }
 
   return (
     <Container>
       <Row className="justify-content-md-center">
         <Col md={6}>
           <h3>Choose your new password</h3>
-          <FloatingLabel controlId="floatingPassword" label="Password" className="mb-3">
+          <FloatingLabel
+            controlId="floatingPassword"
+            label="Password"
+            className="mb-3"
+          >
             <Form.Control
               type="password"
               name="password"
-              value={formData.password}
-              onChange={handleChange}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </FloatingLabel>
-          <FloatingLabel controlId="floatingConfirmPassword" label="Confirm Password" className="mb-3">
+          <FloatingLabel
+            controlId="floatingConfirmPassword"
+            label="Confirm Password"
+            className="mb-3"
+          >
             <Form.Control
               type="password"
               name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
             />
           </FloatingLabel>
-          <Button variant="primary" onClick={handleConfirm} className="me-2">
+          <Button variant="primary" onClick={handleSubmit} className="me-2">
             Confirm
           </Button>
-          <Button variant="secondary" onClick={onCancel}>
+          <Button variant="secondary" onClick={handleCancel}>
             Cancel
           </Button>
         </Col>

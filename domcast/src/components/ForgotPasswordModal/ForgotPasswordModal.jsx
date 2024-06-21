@@ -1,8 +1,33 @@
 import React, { useState } from "react";
 import { Modal, Form, Button, FloatingLabel } from "react-bootstrap";
+import { BASE_URL } from "../../functions/UsersFunctions";
 
-function ForgotPasswordModal({ show, handleClose, handleSubmit }) {
+function ForgotPasswordModal({ show, handleClose }) {
   const [email, setEmail] = useState("");
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+      try {
+        const response = await fetch(`${BASE_URL}forgot-password`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            email: email,
+          },
+        });
+
+        if (response.ok) {
+          console.log("Email sent");
+          handleClose();
+        } else {
+          console.log("Email not sent");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+  }
+
 
   return (
     <Modal show={show} onHide={handleClose}>

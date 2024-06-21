@@ -5,27 +5,53 @@ import logo from "../../multimedia/logo/domcast-05-navbar-logo.png";
 import "./NavbarLogged.css";
 import { useNavigate } from "react-router-dom";
 import { userStore } from "../../stores/UserStore.jsx";
+import { BASE_URL } from "../../functions/UsersFunctions";
 
 function NavbarLogged({ handleShow, handleLanguageChange, language }) {
   const navigate = useNavigate();
   const { setUser } = userStore();
 
 
-const handleLogout = () => {
-    setUser({
-      id: null,
-      sessionToken: "",
-      firstName: "",
-      lastName: "",
-      nickname: "",
-      photo: "",
-      biography: "",
-      visible: false,
-      workplace: "",
-      interests: [],
-      skills: [],
+const handleLogout = async (event) => {
+  event.preventDefault();
+
+  const token = userStore.getState().user.sessionToken;
+  console.log(token);
+  const id = userStore.getState().user.id;
+  console.log(id);
+
+  try {
+    const response = await fetch(`${BASE_URL}logout`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        token: token,
+        id: id,
+      },
     });
-    navigate("/", { replace: true });
+
+    if (response.ok) {
+      console.log("Logout successful");
+      setUser({
+        id: null,
+        sessionToken: "",
+        firstName: "",
+        lastName: "",
+        nickname: "",
+        photo: "",
+        biography: "",
+        visible: false,
+        workplace: "",
+        interests: [],
+        skills: [],
+      });
+      navigate("/", { replace: true });
+    } else {
+      console.log("Logout failed");
+    }
+  } catch (error) {
+    console.error("Error:", error);
+  }
   };
    
 

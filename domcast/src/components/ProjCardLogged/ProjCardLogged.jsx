@@ -18,7 +18,7 @@ const ProjCardLogged = ({ title, lab, description, members, state, link }) => {
           </div>
         </div>
         <Button href={link} variant="primary" className="mt-3">
-          More info...
+          More info »
         </Button>
       </Card.Body>
     </Card>

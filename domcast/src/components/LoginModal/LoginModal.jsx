@@ -47,18 +47,16 @@ function LoginModal({ show, handleClose }) {
         if (response.ok) {
           const data = await response.json();
           console.log(data);
-          Toast.show("Welcome to DomCast!");
-          setUser(data.user);
+          await setUser(data);
+          console.log(userStore.getState().user);
           navigate("/home", { replace: true });
         } else {
           console.log("Login failed");
-          Toast.show("Login failed.");
         }
       } catch (error) {
         console.error("Error:", error);
       }
     } else {
-      Toast.show("Email and password must be filled in");
       console.log("Email and password must be filled in");
     }
   };
