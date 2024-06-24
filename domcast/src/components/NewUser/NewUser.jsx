@@ -8,6 +8,7 @@ import {
   Badge,
   Card,
   Modal,
+  Dropdown,
 } from "react-bootstrap";
 import { Base_url_users } from "../../functions/UsersFunctions";
 import { Base_url_skills } from "../../functions/UsersFunctions";
@@ -44,13 +45,28 @@ const NewUser = () => {
 
   const [photoPreview, setPhotoPreview] = useState(defaultProfilePic);
   const { user, setUser } = useStore(userStore);
+  const token = user.sessionToken;
+  const idUser = user.id;
+
+  console.log("Token:", token);
+  console.log("Id:", idUser);
 
   useEffect(() => {
     const fetchSkills = async () => {
       try {
-        const response = await fetch(Base_url_skills);
-        const data = await response.json();
-        setSkillsList(data);
+        const response = await fetch(Base_url_skills, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            token: token,
+            id: idUser,
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setSkillsList(data);
+          console.log("Skills fetched:", data);
+        }
       } catch (error) {
         console.error("Error fetching skills:", error);
       }
@@ -58,9 +74,19 @@ const NewUser = () => {
 
     const fetchInterests = async () => {
       try {
-        const response = await fetch(Base_url_interests);
-        const data = await response.json();
-        setInterestsList(data);
+        const response = await fetch(Base_url_interests, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            token: token,
+            id: idUser,
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setInterestsList(data);
+          console.log("Interests fetched:", data);
+        }
       } catch (error) {
         console.error("Error fetching interests:", error);
       }
@@ -74,37 +100,24 @@ const NewUser = () => {
     setUser({ ...user, skills: [...user.skills, newSkill] });
     setShowSkillModal(false);
   };
- 
-
-  const handleRemoveSkill = (skillToRemove) => {
-    setUser({
-      ...user,
-      skills: user.skills.filter((skill) => skill !== skillToRemove),
-    });
-  };
 
   const handleAddCustomInterest = (newInterest) => {
     setUser({ ...user, interests: [...user.interests, newInterest] });
     setShowInterestModal(false);
   };
 
-  const handleRemoveInterest = (interestToRemove) => {
-    setUser({
-      ...user,
-      interests: user.interests.filter(
-        (interest) => interest !== interestToRemove
-      ),
-    });
-  };
-
   const handleInputChange = (value) => {
     setInputValue(value);
   };
-  
+
   const handleTypeaheadChange = (labelKey, selected) => {
     const trimmedInputValue = inputValue.trim();
-  
-    if (trimmedInputValue.length > 0 && selected.length > 0 && selected[selected.length - 1].startsWith('Add "')) {
+
+    if (
+      trimmedInputValue.length > 0 &&
+      selected.length > 0 &&
+      selected[selected.length - 1].startsWith('Add "')
+    ) {
       if (labelKey === "skills") {
         setCustomSkill(trimmedInputValue);
         setShowSkillModal(true);
@@ -120,7 +133,6 @@ const NewUser = () => {
       }
     }
   };
-  
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -332,55 +344,21 @@ const NewUser = () => {
               className="justify-content-center align-items-center my-3"
               style={{ border: "none" }}
             >
-              <Row style={{ justifyContent: "center", width: "17rem" }}>
-                <Col style={{ width: "5rem" }}>
-                  <p>Privacy</p>
+              <Row style={{ width: "25rem", height: "2rem", alignContent: "center"  }}>
+                <Col style={{ display: "flex", justifyContent: "right"}}>
+                  <h6 className="me-3 h6-privacy">Privacy: </h6>
                 </Col>
-                <Col className="mx-0" style={{ width: "5rem" }}>
-                  <Button
-                    onClick={() => setVisible("private")}
-                    className="mx-2 visible-btn-new-user"
-                    style={{
-                      width: "5rem",
-                      backgroundColor:
-                        visible === "private"
-                          ? "var(--color-blue-01)"
-                          : "var(--color-white)",
-                      borderColor:
-                        visible === "private"
-                          ? "var(--color-blue-01)"
-                          : "var(--color-blue-01)",
-                      color:
-                        visible === "private"
-                          ? "var(--color-white)"
-                          : "var(--color-blue-01)",
-                    }}
-                  >
-                    Private
-                  </Button>
-                </Col>
-                <Col style={{ width: "5rem" }}>
-                  <Button
-                    onClick={() => setVisible("public")}
-                    className="mx-2 visible-btn-new-user"
-                    style={{
-                      width: "5rem",
-                      backgroundColor:
-                        visible === "public"
-                          ? "var(--color-blue-01)"
-                          : "var(--color-white)",
-                      borderColor:
-                        visible === "public"
-                          ? "var(--color-blue-01)"
-                          : "var(--color-blue-01)",
-                      color:
-                        visible === "public"
-                          ? "var(--color-white)"
-                          : "var(--color-blue-01)",
-                    }}
-                  >
-                    Public
-                  </Button>
+                <Col style={{ display: "flex", justifyContent: "left" }}>
+                  <Form.Check
+                    type="switch"
+                    id="privacy"
+                    label={`${visible === "public" ? "Public" : "Private"}`}
+                    checked={visible === "public"}
+                    onChange={() =>
+                      setVisible(visible === "public" ? "private" : "public")
+                    }
+                    className="check-slider-privacy"
+                  />{" "}
                 </Col>
               </Row>
             </Card>
@@ -389,92 +367,78 @@ const NewUser = () => {
       case 3:
         return (
           <>
-      <Card className="justify-content-center align-items-center mt-3" style={{ border: "none" }}>
-        <Row className="mb-2" style={{ justifyContent: "center" }}>
-          <Col style={{ display: "flex", justifyContent: "center" }}>
-            <Typeahead
-              id="skills-typeahead"
-              labelKey="name"
-              multiple
-              options={skillsList.map(skill => skill.name || skill).concat(inputValue ? [`Add "${inputValue}" as a skill`] : [])}
-              selected={user.skills}
-              onInputChange={handleInputChange}
-              onChange={(selected) => handleTypeaheadChange("skills", selected)}
-              placeholder="Choose your skills..."
-              className="mb-3"
-              style={{ width: "25rem" }}
-            />
-          </Col>
-        </Row>
-        <Row className="mt-2 mb-4">
-          {user.skills.map((skill, index) => (
-            <Badge pill bg="secondary" key={index} className="me-2">
-              {skill}{" "}
-              <span
-                variant="light"
-                size="sm"
-                className="ps-2 mb-3"
-                onClick={() => handleRemoveSkill(skill)}
-                style={{
-                  cursor: "pointer",
-                  position: "relative",
-                  top: "-2px",
-                }}
-              >
-                x
-              </span>
-            </Badge>
-          ))}
-        </Row>
-      </Card>
-      <Card className="justify-content-center align-items-center mt-3" style={{ border: "none" }}>
-        <Row className="mb-2" style={{ justifyContent: "center" }}>
-          <Col style={{ display: "flex", justifyContent: "center" }}>
-            <Typeahead
-              id="interests-typeahead"
-              labelKey="name"
-              multiple
-              options={interestsList.map(interest => interest.name || interest).concat(inputValue ? [`Add "${inputValue}" as an interest`] : [])}
-              selected={user.interests}
-              onInputChange={handleInputChange}
-              onChange={(selected) => handleTypeaheadChange("interests", selected)}
-              placeholder="Choose your interests..."
-              className="mb-3"
-              style={{ width: "25rem" }}
-            />
-          </Col>
-        </Row>
-        <Row className="mt-2 mb-4">
-          {user.interests.map((interest, index) => (
-            <Badge pill bg="secondary" key={index} className="me-2">
-              {interest}{" "}
-              <span
-                variant="light"
-                size="sm"
-                className="ps-2 mb-3"
-                onClick={() => handleRemoveInterest(interest)}
-                style={{
-                  cursor: "pointer",
-                  position: "relative",
-                  top: "-2px",
-                }}
-              >
-                x
-              </span>
-            </Badge>
-          ))}
-        </Row>
-      </Card>
-      <Card className="my-5 mx-3" style={{ border: "none" }}>
-        <Row style={{ justifyContent: "center", gap: "3rem" }}>
-          <Button onClick={handleSubmit} className="btn-save" style={{ width: "10rem" }}>
-            Save
-          </Button>
-          <Button onClick={handleCancel} className="btn-cancel" style={{ width: "10rem" }}>
-            Cancel
-          </Button>
-        </Row>
-      </Card>
+            <Card
+              className="justify-content-center align-items-center mt-3"
+              style={{ border: "none" }}
+            >
+              <Row className="mb-2" style={{ justifyContent: "center" }}>
+                <Col style={{ display: "flex", justifyContent: "center" }}>
+                  <Typeahead
+                    id="skills-typeahead"
+                    labelKey="name"
+                    multiple
+                    options={skillsList
+                      .map((skill) => skill.name || skill)
+                      .concat(
+                        inputValue ? [`Add "${inputValue}" as a skill`] : []
+                      )}
+                    selected={user.skills}
+                    onInputChange={handleInputChange}
+                    onChange={(selected) =>
+                      handleTypeaheadChange("skills", selected)
+                    }
+                    placeholder="Choose your skills..."
+                    className="mb-3"
+                    style={{ width: "25rem" }}
+                  />
+                </Col>
+              </Row>
+            </Card>
+            <Card
+              className="justify-content-center align-items-center mt-3"
+              style={{ border: "none" }}
+            >
+              <Row className="mb-2" style={{ justifyContent: "center" }}>
+                <Col style={{ display: "flex", justifyContent: "center" }}>
+                  <Typeahead
+                    id="interests-typeahead"
+                    labelKey="name"
+                    multiple
+                    options={interestsList
+                      .map((interest) => interest.name || interest)
+                      .concat(
+                        inputValue ? [`Add "${inputValue}" as an interest`] : []
+                      )}
+                    selected={user.interests}
+                    onInputChange={handleInputChange}
+                    onChange={(selected) =>
+                      handleTypeaheadChange("interests", selected)
+                    }
+                    placeholder="Choose your interests..."
+                    className="mb-3"
+                    style={{ width: "25rem" }}
+                  />
+                </Col>
+              </Row>
+            </Card>
+            <Card className="my-5 mx-3" style={{ border: "none" }}>
+              <Row style={{ justifyContent: "center", gap: "3rem" }}>
+                <Button
+                  onClick={handleCancel}
+                  className="btn-cancel"
+                  style={{ width: "10rem" }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleSubmit}
+                  className="btn-save"
+                  style={{ width: "10rem" }}
+                >
+                  Save
+                </Button>
+              </Row>
+            </Card>
           </>
         );
       default:
@@ -514,8 +478,10 @@ const NewUser = () => {
   return (
     <>
       <Modal show={showSkillModal} onHide={() => setShowSkillModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Add Custom Skill</Modal.Title>
+        <Modal.Header closeButton className="mt-2 p-4">
+          <Modal.Title style={{ width: "100%", textAlign: "center" }}>
+            Add Custom Skill
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form.Control
@@ -523,13 +489,36 @@ const NewUser = () => {
             placeholder="Enter custom skill"
             value={customSkill}
             onChange={(e) => setCustomSkill(e.target.value)}
+            className="mb-3 mx-5"
+            style={{ width: "22.5rem" }}
           />
+          <Form.Select
+            controlId="floatingSkill"
+            style={{ width: "22.5rem" }}
+            className="mb-3 mx-5"
+          >
+            <option value="" disabled selected>
+              Choose skill category
+            </option>
+            <option>Knowledge</option>
+            <option>Software</option>
+            <option>Hardware</option>
+            <option>Tools</option>
+          </Form.Select>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowSkillModal(false)}>
+          <Button
+            variant="secondary"
+            onClick={() => setShowSkillModal(false)}
+            className="modal-skill-interest-cancel-btn"
+          >
             Cancel
           </Button>
-          <Button variant="primary" onClick={handleAddCustomSkill}>
+          <Button
+            variant="primary"
+            onClick={handleTypeaheadChange("skills", customSkill)}
+            className="modal-skill-interest-save-btn"
+          >
             Add Skill
           </Button>
         </Modal.Footer>
@@ -539,8 +528,10 @@ const NewUser = () => {
         show={showInterestModal}
         onHide={() => setShowInterestModal(false)}
       >
-        <Modal.Header closeButton>
-          <Modal.Title>Add Custom Interest</Modal.Title>
+        <Modal.Header closeButton className="mt-2 p-4">
+          <Modal.Title style={{ width: "100%", textAlign: "center" }}>
+            Add Custom Interest
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form.Control
@@ -548,16 +539,35 @@ const NewUser = () => {
             placeholder="Enter custom interest"
             value={customInterest}
             onChange={(e) => setCustomInterest(e.target.value)}
+            className="mb-3 mx-5"
+            style={{ width: "22.5rem" }}
           />
+          <Form.Select
+            controlId="floatingInterest"
+            style={{ width: "22.5rem" }}
+            className="mb-3 mx-5"
+          >
+            <option value="" disabled selected>
+              Choose interest category
+            </option>
+            <option>Themes</option>
+            <option>Causes</option>
+            <option>Fields of expertise</option>
+          </Form.Select>
         </Modal.Body>
         <Modal.Footer>
           <Button
             variant="secondary"
             onClick={() => setShowInterestModal(false)}
+            className="modal-skill-interest-cancel-btn"
           >
             Cancel
           </Button>
-          <Button variant="primary" onClick={handleAddCustomInterest}>
+          <Button
+            variant="primary"
+            onClick={handleAddCustomInterest}
+            className="modal-skill-interest-save-btn"
+          >
             Add Interest
           </Button>
         </Modal.Footer>

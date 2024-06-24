@@ -35,21 +35,32 @@
   cursor: pointer;
 }
 
-.btn-save,
-.btn-cancel {
+.btn-save {
   padding: 0.5rem;
-  background-color: var(--color-yellow-01);
-  color: var(--color-grey-01);
+  background-color: var(--color-blue-04);
+  color: var(--color-white);
   border: none;
   font-weight: bold;
   cursor: pointer;
 }
 
-.btn-save:hover,
-.btn-cancel:hover {
-  background-color: var(--color-yellow-02);
+.btn-save:hover {
+  background-color: var(--color-blue-03);
 }
 
+
+.btn-cancel {
+  padding: 0.5rem;
+  background-color: var(--color-yellow-02) !important;
+  color: var(--color-white) !important;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-cancel:hover {
+  background-color: var(--color-yellow-01) !important;
+}
 
 .btn-upload {
   background-color: var(--color-blue-01) !important;
@@ -64,4 +75,44 @@
 .btn-upload:hover {
   background-color: var(--color-blue-03) !important;
   border-color: var(--color-blue-03) !important;
+}
+
+.modal-skill-interest-cancel-btn {
+  background-color: var(--color-grey-02);
+  color: var(--color-white);
+  border: none;
+  cursor: pointer;
+}
+
+.modal-skill-interest-cancel-btn:hover {
+  background-color: var(--color-grey-01);
+}
+
+.modal-skill-interest-save-btn {
+  background-color: var(--color-yellow-01);
+  color: var(--color-grey-01);
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+}
+
+.modal-skill-interest-save-btn:hover {
+  background-color: var(--color-yellow-02);
+}
+
+.form-check-input {
+  width: 3rem !important;
+  height: 1.25rem !important;
+  margin-right: 1rem;
+  border-color: var(--color-silver) !important;
+}
+
+.form-check-input:checked {
+  background-color: var(--color-blue-03) !important;
+  border-color: var(--color-blue-03) !important;
+}
+
+.h6-privacy {
+  color: var(--color-blue-03);
+  margin-top: 0.1rem;
 }

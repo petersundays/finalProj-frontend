@@ -11,14 +11,15 @@
 
 .custom-button {
   color: var(--color-blue-02) !important;
-  background-color: var(--color-white) !important;
-  border-color: var(--color-blue-02) !important;
+  background: none !important;
+  border: none !important;
 }
 
 .custom-button:hover {
-  background-color: var(--color-blue-02) !important;
-  color: var(--color-white) !important;
-  border-color: var(--color-blue-02) !important;
+  background: none !important;
+  color: var(--color-blue-03) !important;
+  text-decoration: underline !important;
+  border: none !important;
 }
 
 @media (max-width: 962px) {
