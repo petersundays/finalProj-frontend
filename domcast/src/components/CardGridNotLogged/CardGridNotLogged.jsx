@@ -255,7 +255,7 @@ const CardGridNotLogged = () => {
     setVisibleRows(visibleRows + 2);
   };
 
-  const visibleCards = cards.slice(0, visibleRows * 4);
+  const visibleCards = cards.slice(0, visibleRows * 3);
 
   return (
     <Card className="mt-5" style={{ border: "none" }}>

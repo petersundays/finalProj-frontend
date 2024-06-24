@@ -5,10 +5,8 @@ import {
   Row,
   Col,
   FloatingLabel,
-  Badge,
   Card,
   Modal,
-  Dropdown,
 } from "react-bootstrap";
 import { Base_url_users } from "../../functions/UsersFunctions";
 import { Base_url_skills } from "../../functions/UsersFunctions";
@@ -47,9 +45,6 @@ const NewUser = () => {
   const { user, setUser } = useStore(userStore);
   const token = user.sessionToken;
   const idUser = user.id;
-
-  console.log("Token:", token);
-  console.log("Id:", idUser);
 
   useEffect(() => {
     const fetchSkills = async () => {
@@ -97,13 +92,31 @@ const NewUser = () => {
   }, []);
 
   const handleAddCustomSkill = (newSkill) => {
-    setUser({ ...user, skills: [...user.skills, newSkill] });
-    setShowSkillModal(false);
+    // Update skillsList state to include the new custom skill
+    setSkillsList([...skillsList, { name: customSkill }]);
+    
+    // Update user skills
+    setUser({ ...user, skills: [...user.skills, customSkill] });
+
+    // Close the modal
+    setShowSkillModal(false);    setShowSkillModal(false);
+
+    setCustomSkill("");
+    setInputValue("");
   };
 
   const handleAddCustomInterest = (newInterest) => {
-    setUser({ ...user, interests: [...user.interests, newInterest] });
+    // Update interestsList state to include the new custom interest
+    setInterestsList([...interestsList, { name: customInterest }]);
+
+    // Update user interests
+    setUser({ ...user, interests: [...user.interests, customInterest] });
+
+    // Close the modal
     setShowInterestModal(false);
+
+    setCustomInterest("");
+    setInputValue("");
   };
 
   const handleInputChange = (value) => {
@@ -516,7 +529,7 @@ const NewUser = () => {
           </Button>
           <Button
             variant="primary"
-            onClick={handleTypeaheadChange("skills", customSkill)}
+            onClick={handleAddCustomSkill}
             className="modal-skill-interest-save-btn"
           >
             Add Skill

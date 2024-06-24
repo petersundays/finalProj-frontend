@@ -37,15 +37,15 @@
 
 .btn-save {
   padding: 0.5rem;
-  background-color: var(--color-blue-04);
-  color: var(--color-white);
+  background-color: var(--color-blue-04) !important;
+  color: var(--color-white) !important;
   border: none;
   font-weight: bold;
   cursor: pointer;
 }
 
 .btn-save:hover {
-  background-color: var(--color-blue-03);
+  background-color: var(--color-blue-03) !important;
 }
 
 
