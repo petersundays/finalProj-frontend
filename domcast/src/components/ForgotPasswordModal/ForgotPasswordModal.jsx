@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Modal, Form, Button, FloatingLabel } from "react-bootstrap";
-import { BASE_URL } from "../../functions/UsersFunctions";
+import { Base_url_users } from "../../functions/UsersFunctions";
 
 function ForgotPasswordModal({ show, handleClose }) {
   const [email, setEmail] = useState("");
@@ -21,7 +21,7 @@ function ForgotPasswordModal({ show, handleClose }) {
       console.log("Email is valid");
 
       try {
-        const response = await fetch(`${BASE_URL}forgot-password`, {
+        const response = await fetch(`${Base_url_users}forgot-password`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

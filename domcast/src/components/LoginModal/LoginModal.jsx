@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Modal, Form, Button, FloatingLabel, Toast } from "react-bootstrap";
 import ForgotPasswordModal from "../ForgotPasswordModal/ForgotPasswordModal";
 import { useNavigate } from "react-router-dom";
-import { BASE_URL } from "../../functions/UsersFunctions";
+import { Base_url_users } from "../../functions/UsersFunctions";
 import { userStore } from "../../stores/UserStore.jsx";
 
 function LoginModal({ show, handleClose }) {
@@ -36,7 +36,7 @@ function LoginModal({ show, handleClose }) {
       };
 
       try {
-        const response = await fetch(`${BASE_URL}login`, {
+        const response = await fetch(`${Base_url_users}login`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

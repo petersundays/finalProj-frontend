@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Modal, Form, Button, FloatingLabel } from "react-bootstrap";
-import { BASE_URL } from "../../functions/UsersFunctions";
+import { Base_url_users } from "../../functions/UsersFunctions";
 
 function SignUpModal({ show, handleClose }) {
   const [email, setEmail] = useState("");
@@ -43,7 +43,7 @@ function SignUpModal({ show, handleClose }) {
       };
 
       try {
-        const response = await fetch(`${BASE_URL}registerUser`, {
+        const response = await fetch(`${Base_url_users}registerUser`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

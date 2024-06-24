@@ -8,7 +8,7 @@ import {
   FloatingLabel,
 } from "react-bootstrap";
 import "./RedefinePassword.css";
-import { BASE_URL } from "../../functions/UsersFunctions";
+import { Base_url_users } from "../../functions/UsersFunctions";
 import { useParams, useNavigate } from "react-router-dom";
 
 const RedefinePassword = () => {
@@ -38,7 +38,7 @@ const RedefinePassword = () => {
       console.log("Passwords match");
 
       try {
-        const response = await fetch(`${BASE_URL}reset-password`, {
+        const response = await fetch(`${Base_url_users}reset-password`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

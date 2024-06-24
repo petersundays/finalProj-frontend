@@ -58,7 +58,7 @@ function HomeLogged() {
             <Card className="custom-card">
               <Card.Body className="card-body-custom">
                 {/* Render any component here */}
-                <NewProj />
+                <NewUser />
               </Card.Body>
             </Card>
           </Col>

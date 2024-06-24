@@ -5,7 +5,7 @@ import logo from "../../multimedia/logo/domcast-05-navbar-logo.png";
 import "./NavbarLogged.css";
 import { useNavigate } from "react-router-dom";
 import { userStore } from "../../stores/UserStore.jsx";
-import { BASE_URL } from "../../functions/UsersFunctions";
+import { Base_url_users } from "../../functions/UsersFunctions";
 
 function NavbarLogged({ handleShow, handleLanguageChange, language }) {
   const navigate = useNavigate();
@@ -21,7 +21,7 @@ const handleLogout = async (event) => {
   console.log(id);
 
   try {
-    const response = await fetch(`${BASE_URL}logout`, {
+    const response = await fetch(`${Base_url_users}logout`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
