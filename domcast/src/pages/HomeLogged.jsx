@@ -3,28 +3,28 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { Container, Row, Col, Card } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./HomeLogged.css";
-import NavbarLogged from "../components/NavbarLogged/NavbarLogged";
-import OffcanvasLogged from "../components/OffcanvasLogged/OffcanvasLogged";
-import Sidebar from "../components/Sidebar/Sidebar";
-import Footer from "../components/Footer/Footer";
-import EmailTable from "../components/EmailTable/EmailTable";
-import AddAsset from "../components/AddAsset/AddAsset";
-import CardGrid from "../components/CardGrid/CardGrid";
-import NewProj from "../components/NewProj/NewProj";
-import NewTask from "../components/NewTask/NewTask";
+import MainNavbarLogged from "../components/MainNavbarLogged/MainNavbarLogged";
+import MainOffcanvasLogged from "../components/MainOffcanvasLogged/MainOffcanvasLogged";
+import MainSidebar from "../components/MainSidebar/MainSidebar";
+import MainFooter from "../components/MainFooter/MainFooter";
+import MessageHub from "../components/MessageHub/MessageHub";
+import NewAsset from "../components/AssetNew/AssetNew";
+import CardGrid from "../components/ProjectsListLogged/ProjectsListLogged";
+import NewProj from "../components/ProjectNew/ProjectNew";
+import NewTask from "../components/TaskNew/TaskNew";
 import AdminSettings from "../components/AdminSettings/AdminSettings";
-import EditAsset from "../components/EditAsset/EditAsset";
-import EditProj from "../components/EditProj/EditProj";
-import EditTask from "../components/EditTask/EditTask";
-import EditProfile from "../components/EditProfile/EditProfile";
-import GanttChart from "../components/GanttChart/GanttChart";
-import ProjPublic from "../components/ProjPublic/ProjPublic";
-import ProjPrivate from "../components/ProjPrivate/ProjPrivate";
+import EditAsset from "../components/AssetEdit/AssetEdit";
+import EditProj from "../components/ProjectEdit/ProjectEdit";
+import EditTask from "../components/TaskEdit/TaskEdit";
+import EditProfile from "../components/UserEditProfile/UserEditProfile";
+import GanttChart from "../components/TasksListGantt/TasksListGantt";
+import ProjPublic from "../components/ProjectPublic/ProjPublic";
+import ProjPrivate from "../components/ProjectPrivate/ProjPrivate";
 import AdminStats from "../components/AdminStats/AdminStats";
 //import UsersList from "../components/UsersList/UsersList";
-import ViewProfile from "../components/ViewProfile/ViewProfile";
-import ViewAsset from "../components/ViewAsset/ViewAsset";
-import ViewTask from "../components/ViewTask/ViewTask";
+import ViewProfile from "../components/UserViewProfilePublic/UserViewProfilePublic";
+import ViewAsset from "../components/AssetView/AssetView";
+import ViewTask from "../components/TaskView/TaskView";
 
 function HomeLogged() {
   const [show, setShow] = useState(false);
@@ -43,12 +43,12 @@ function HomeLogged() {
   return (
     <Router>
       <div className="Layout">
-        <NavbarLogged
+        <MainNavbarLogged
           handleShow={handleShow}
           handleLanguageChange={handleLanguageChange}
           language={language}
         />
-        <OffcanvasLogged
+        <MainOffcanvasLogged
           show={show}
           handleClose={handleClose}
           expandedProjects={expandedProjects}
@@ -58,7 +58,7 @@ function HomeLogged() {
         />
         <Container fluid className="main-container">
           <Row className="flex-grow-1">
-            <Sidebar
+            <MainSidebar
               expandedProjects={expandedProjects}
               toggleExpandProjects={toggleExpandProjects}
             />
@@ -71,8 +71,8 @@ function HomeLogged() {
                 <Card.Body className="card-body-custom">
                   <Routes>
                     <Route path="/" element={<CardGrid />} />
-                    <Route path="/message-hub" element={<EmailTable />} />
-                    <Route path="/add-asset" element={<AddAsset />} />
+                    <Route path="/message-hub" element={<MessageHub />} />
+                    <Route path="/add-asset" element={<NewAsset />} />
                     <Route path="/new-project" element={<NewProj />} />
                     <Route path="/new-task" element={<NewTask />} />
                     <Route path="/settings" element={<AdminSettings />} />
@@ -97,7 +97,7 @@ function HomeLogged() {
             </Col>
           </Row>
         </Container>
-        <Footer />
+        <MainFooter />
       </div>
     </Router>
   );
