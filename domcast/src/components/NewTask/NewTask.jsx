@@ -22,7 +22,6 @@ const NewTask = ({ onAdd, onCancel }) => {
     endDate: "",
     relatedTasks: [],
     otherStakeholders: [],
-    owner: "",
     stakeholders: [],
     dependsOn: [],
     isPrerequisiteFor: [],

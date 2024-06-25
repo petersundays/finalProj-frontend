@@ -29,6 +29,8 @@ const EditProfile = ({ onSave, onCancel }) => {
   const [newSkill, setNewSkill] = useState("");
   const [newInterest, setNewInterest] = useState("");
   const [privacy, setPrivacy] = useState("private");
+  const [skills, setSkills] = useState([]);
+  const [interests, setInterests] = useState([]);
 
   const handleChange = (e) => {
     setFormData({

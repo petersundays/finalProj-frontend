@@ -26,7 +26,7 @@ const EditProj = ({ onCreate, onCancel }) => {
   });
 
   const [newMember, setNewMember] = useState("");
-  const [setMembers] = useState([]);
+  const [members, setMembers] = useState([]);
   const [newKeyword, setNewKeyword] = useState("");
   const [newSkill, setNewSkill] = useState("");
   const [newAsset, setNewAsset] = useState({
@@ -34,6 +34,8 @@ const EditProj = ({ onCreate, onCancel }) => {
     type: "",
     quantity: "",
   });
+  const [keywords, setKeywords] = useState([]);
+  const [skills, setSkills] = useState([]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

@@ -16,7 +16,7 @@ function App() {
     <Routes>
       <Route path='/' element={<HomeNotLogged />} />
       <Route path='/domcast' element={<HomeLogged />} />
-      <Route path='confirm-email/:token' element={<ConfirmRegistration />} />
+      <Route path='/confirm-email/:token' element={<ConfirmRegistration />} />
 
     </Routes>
     </>
