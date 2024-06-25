@@ -1,10 +1,12 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import { I18nextProvider } from "react-i18next"; // Importe o I18nextProvider
 import i18n from './translations'; // Importe o objeto i18n com suas configurações
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min';
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(

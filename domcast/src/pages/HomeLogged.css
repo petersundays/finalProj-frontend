@@ -1,0 +1,146 @@
+html,
+body,
+.Layout {
+  height: 100%;
+  background-color: var(--color-white);
+  background-color: var();
+}
+
+.bg-dark {
+  background-color: var(--color-coal) !important;
+}
+
+.main-container {
+  min-height: calc(100vh - 56px); /* Altura total menos a navbar */
+  display: flex;
+  flex-direction: column;
+  padding-top: 56px; /* Altura da navbar */
+}
+
+.row.flex-grow-1 {
+  flex-grow: 1;
+}
+
+.sidebar {
+  padding-top: 56px; /* Altura da navbar */
+  height: calc(100vh-56px-56px); /* Altura total menos a navbar */
+}
+
+@media (max-width: 992px) {
+  .sidebar {
+    display: none;
+  }
+  .navbar-collapse {
+    display: none !important;
+  }
+}
+
+.footer {
+  position: relative; /* Ajuste para evitar sobreposição */
+  bottom: 0;
+  width: 100%;
+}
+
+.ml-3 {
+  margin-left: 1rem;
+}
+
+.profile-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 20px;
+}
+
+.profileNavbar {
+  text-align: left;
+}
+
+.sidebarNavbar {
+  text-align: left;
+}
+
+.bottomNavbar {
+  margin-bottom: 20px; /* Espaço na parte inferior */
+  text-align: center;
+}
+
+.btn-group .btn {
+  width: 80px;
+}
+
+.offcanvas-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+
+.sidebar-changed {
+  background-color: var(--color-yellow-01) !important;
+}
+
+.sidebar .nav-link,
+.offcanvas-main-changed .nav-link {
+  color: var(--color-coal);
+  font-size: 18px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.sidebar .nav-link:hover,
+.offcanvas-main-changed .nav-link:hover {
+  color: var(--color-white);
+  background-color: var(--color-blue-02);
+  border-radius: 8px;
+}
+
+.btn-offcanvas-main .btn {
+  color: var(--color-grey-02) !important;
+  font-weight: bold !important;
+}
+
+.btn-offcanvas-main .btn:hover {
+  color: var(--color-coal) !important;
+}
+
+.btn-offcanvas-main .btn.active {
+  color: var(--color-grey-01) !important;
+}
+
+.hr {
+  border-top: 1px solid var(--color-water-green-01);
+}
+
+.central-card {
+  width: 70%;
+  height: 70%;
+}
+
+.new-user-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.custom-card {
+  width: 95%;
+  height: 85%;
+  max-width: none !important;
+  max-height: none !important;
+  border-radius: 10px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.card-body-custom {
+  overflow: auto; /* Permite rolagem vertical se o conteúdo ultrapassar o tamanho do Card.Body */
+  max-height: 80vh; /* Define a altura máxima do Card.Body */
+}
+
+@media (max-width: 992px) {
+  .custom-card {
+    width: 95%;
+    height: 95%;
+    margin: 0 auto !important;
+  }
+}

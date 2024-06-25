@@ -1,0 +1,41 @@
+@media (max-width: 992px) {
+  .row [class^="col"] {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+}
+
+.btn-add
+ {
+  background-color: var(--color-blue-01);
+  color: var(--color-white);
+  border: none;
+  cursor: pointer;
+}
+
+.btn-add:hover {
+  background-color: var(--color-blue-03);
+}
+
+.nav-btn {
+  background-color: white !important;
+  color: var(--color-blue-04) !important;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-save,
+.btn-cancel {
+  padding: 0.5rem;
+  background-color: var(--color-yellow-01);
+  color: var(--color-grey-01);
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-save:hover,
+.btn-cancel:hover {
+  background-color: var(--color-yellow-02);
+}
