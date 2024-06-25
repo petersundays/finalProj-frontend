@@ -11,11 +11,12 @@ import "./RedefinePassword.css";
 import { Base_url_users } from "../../functions/UsersFunctions";
 import { useParams, useNavigate } from "react-router-dom";
 
-const RedefinePassword = () => {
+const RedefinePasswordModal = () => {
   const navigate = useNavigate();
   const { token } = useParams();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [oldPassword, setOldPassword] = useState("");
 
   const passwordRegex =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
@@ -70,6 +71,18 @@ const RedefinePassword = () => {
           <h3>Choose your new password</h3>
           <FloatingLabel
             controlId="floatingPassword"
+            label="Old Password"
+            className="mb-3"
+          >
+            <Form.Control
+              type="password"
+              name="oldPassword"
+              value={oldPassword}
+              onChange={(e) => setOldPassword(e.target.value)}
+            />
+          </FloatingLabel>
+          <FloatingLabel
+            controlId="floatingPassword"
             label="Password"
             className="mb-3"
           >
@@ -104,4 +117,4 @@ const RedefinePassword = () => {
   );
 };
 
-export default RedefinePassword;
+export default RedefinePasswordModal;

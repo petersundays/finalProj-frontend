@@ -1,17 +1,28 @@
 import React, { useState } from "react";
 import { Modal, Form, Button, FloatingLabel } from "react-bootstrap";
 import { Base_url_users } from "../../functions/UsersFunctions";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 function SignUpModal({ show, handleClose }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const emailRegex = /^[a-zA-Z0-9_+&*-]+(?:\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,7}$/;
+  const emailRegex =
+    /^[a-zA-Z0-9_+&*-]+(?:\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,7}$/;
   const passwordRegex =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
 
-  
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleShowConfirmPassword = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -42,8 +53,11 @@ function SignUpModal({ show, handleClose }) {
         password: password,
       };
 
+      console.log(user.email);
+      console.log(user.password);
+
       try {
-        const response = await fetch(`${Base_url_users}registerUser`, {
+        const response = await fetch(Base_url_users, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -88,29 +102,55 @@ function SignUpModal({ show, handleClose }) {
           </FloatingLabel>
           <FloatingLabel
             controlId="floatingPassword"
-            label="Password"
             className="mb-3 mx-5"
           >
-            <Form.Control
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            <div style={{ position: "relative" }}>
+              <Form.Control
+                type={showPassword ? "text" : "password"}
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <span
+                onClick={toggleShowPassword}
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  right: "10px",
+                  transform: "translateY(-50%)",
+                  cursor: "pointer",
+                }}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </span>
+            </div>
           </FloatingLabel>
           <FloatingLabel
             controlId="floatingConfirmPassword"
-            label="Confirm Password"
             className="mb-3 mx-5"
           >
-            <Form.Control
-              type="password"
-              placeholder="Confirm password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-            />
+            <div style={{ position: "relative" }}>
+              <Form.Control
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="Confirm password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+              <span
+                onClick={toggleShowConfirmPassword}
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  right: "10px",
+                  transform: "translateY(-50%)",
+                  cursor: "pointer",
+                }}
+              >
+                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+              </span>
+            </div>
           </FloatingLabel>
           <Button
             type="submit"

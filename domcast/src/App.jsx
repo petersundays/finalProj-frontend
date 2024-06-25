@@ -5,6 +5,7 @@ import { Routes, Route } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
 import HomeNotLogged from "./pages/HomeNotLogged";
 import HomeLogged from "./pages/HomeLogged";
+import ConfirmRegistration from "./pages/ConfirmRegistration";
 
 function App() {
   const { t } = useTranslation();
@@ -14,7 +15,8 @@ function App() {
     <ToastContainer />
     <Routes>
       <Route path='/' element={<HomeNotLogged />} />
-      <Route path='/home' element={<HomeLogged />} />
+      <Route path='/domcast' element={<HomeLogged />} />
+      <Route path='confirm-email/:token' element={<ConfirmRegistration />} />
 
     </Routes>
     </>

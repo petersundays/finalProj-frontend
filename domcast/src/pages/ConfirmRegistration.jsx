@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./HomeLogged.css";
+import "./ConfirmRegistration.css";
 import NavbarNotLogged from "../components/NavbaNotLogged/NavbarNotLogged";
 import OffcanvasNotLogged from "../components/OffcanvasNotLogged/OffcanvasNotLogged";
 import FooterComponent from "../components/Footer/Footer";
-import CardGridNotLogged from "../components/CardGridNotLogged/CardGridNotLogged";
+import NewUser from "../components/NewUser/NewUser";
 
-function HomeLogged() {
+function ConfirmRegistration() {
   const [show, setShow] = useState(false);
   const [expandedProjects, setExpandedProjects] = useState(false);
   const [language, setLanguage] = useState("EN");
@@ -39,7 +39,7 @@ function HomeLogged() {
       <Container fluid className="main-container">
         <Row className="flex-grow-1">
           <Col className="content">
-            <CardGridNotLogged />
+            <NewUser />
           </Col>
         </Row>
       </Container>
@@ -48,4 +48,4 @@ function HomeLogged() {
   );
 }
 
-export default HomeLogged;
+export default ConfirmRegistration;
