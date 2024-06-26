@@ -23,21 +23,26 @@ const UserNew = () => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
-    lab: "",
-    bio: "",
+    workplace: "",
+    biography: "",
     nickname: "",
-    privacy: "",
+    visible: false,
     skills: [],
     interests: [],
+    photo: "",
+    skillsDtos: [],
+    interestDtos: [],
   });
   const [skillsList, setSkillsList] = useState([]);
   const [interestsList, setInterestsList] = useState([]);
   const [customSkill, setCustomSkill] = useState("");
   const [customInterest, setCustomInterest] = useState("");
+  const [skillType, setSkillType] = useState(1);
+  const [interestType, setInterestType] = useState(1);
   const [showSkillModal, setShowSkillModal] = useState(false);
   const [showInterestModal, setShowInterestModal] = useState(false);
   const [inputValue, setInputValue] = useState("");
-  const [visible, setVisible] = useState("private");
+  const [visibility, setVisibility] = useState(false);
   const [step, setStep] = useState(1);
   const steps = ["Step 1", "Step 2", "Step 3"];
 
@@ -91,33 +96,42 @@ const UserNew = () => {
     fetchInterests();
   }, []);
 
-  const handleAddCustomSkill = (newSkill) => {
-    // Update skillsList state to include the new custom skill
-    setSkillsList([...skillsList, { name: customSkill }]);
-    
-    // Update user skills
-    setUser({ ...user, skills: [...user.skills, customSkill] });
-
-    // Close the modal
-    setShowSkillModal(false);    setShowSkillModal(false);
-
+  const handleAddCustomSkill = () => {
+    if (!customSkill || !skillType) {
+      // Handle validation if necessary
+      console.log("Custom skill or skill type is missing");
+      return;
+    }
+  
+    const newSkillDto = { name: customSkill, type: skillType };
+    setFormData({
+      ...formData,
+      skillsDtos: [...formData.skillsDtos, newSkillDto],
+    });
+  
+    setShowSkillModal(false);
     setCustomSkill("");
-    setInputValue("");
+    setSkillType(""); // Clear selected skill type
   };
-
-  const handleAddCustomInterest = (newInterest) => {
-    // Update interestsList state to include the new custom interest
-    setInterestsList([...interestsList, { name: customInterest }]);
-
-    // Update user interests
-    setUser({ ...user, interests: [...user.interests, customInterest] });
-
-    // Close the modal
+  
+  const handleAddCustomInterest = () => {
+    if (!customInterest || !interestType) {
+      // Handle validation if necessary
+      console.log("Custom interest or interest type is missing");
+      return;
+    }
+  
+    const newInterestDto = { name: customInterest, type: interestType };
+    setFormData({
+      ...formData,
+      interestDtos: [...formData.interestDtos, newInterestDto],
+    });
+  
     setShowInterestModal(false);
-
     setCustomInterest("");
-    setInputValue("");
+    setInterestType(""); // Clear selected interest type
   };
+  
 
   const handleInputChange = (value) => {
     setInputValue(value);
@@ -202,17 +216,19 @@ const UserNew = () => {
     setUser({
       firstName: "",
       lastName: "",
-      lab: "",
-      bio: "",
+      workplace: "",
+      biography: "",
       nickname: "",
-      privacy: "",
+      visible: "",
       skills: [],
       interests: [],
       photo: defaultProfilePic,
+      skillsDtos: [],
+      interestDtos: [],
     });
     setSkillsList([]);
     setInterestsList([]);
-    setVisible("private");
+    setVisibility("private");
     setStep(1);
   };
 
@@ -273,6 +289,7 @@ const UserNew = () => {
                     type="text"
                     placeholder="First Name"
                     onChange={handleChange}
+                    value={formData.firstName}
                     required
                   />
                 </FloatingLabel>
@@ -286,6 +303,7 @@ const UserNew = () => {
                     type="text"
                     placeholder="Last Name"
                     onChange={handleChange}
+                    value={formData.lastName}
                     required
                   />
                 </FloatingLabel>
@@ -294,16 +312,20 @@ const UserNew = () => {
                   controlId="floatingLab"
                   className="mb-3"
                   style={{ width: "25rem" }}
+                  value={formData.workplace}
+                  onChange={(e) =>
+                    setFormData({ ...formData, workplace: e.target.value })
+                  }
                 >
                   <option value="" disabled selected>
                     Choose your Lab*
                   </option>
-                  <option>Coimbra</option>
-                  <option>Lisboa</option>
-                  <option>Porto</option>
-                  <option>Tomar</option>
-                  <option>Vila Real</option>
-                  <option>Viseu</option>
+                  <option value="COIMBRA">Coimbra</option>
+                  <option value="LISBOA">Lisboa</option>
+                  <option value="PORTO">Porto</option>
+                  <option value="TOMAR">Tomar</option>
+                  <option value="VILA_REAL">Vila Real</option>
+                  <option value="VISEU">Viseu</option>
                 </Form.Select>
               </Card>
             </div>
@@ -339,6 +361,7 @@ const UserNew = () => {
                     width: "24rem",
                     overflow: "auto",
                   }}
+                  value={formData.biography}
                 />
               </FloatingLabel>
             </Row>
@@ -348,30 +371,40 @@ const UserNew = () => {
                 label="Nickname"
                 className="mb-3 ps-1"
                 style={{ width: "25rem" }}
-                onChange={handleChange}
               >
-                <Form.Control type="text" placeholder="Nickname" />
+                <Form.Control
+                  type="text"
+                  placeholder="Nickname"
+                  onChange={handleChange}
+                  value={formData.nickname}
+                />
               </FloatingLabel>
             </Row>
             <Card
               className="justify-content-center align-items-center my-3"
               style={{ border: "none" }}
             >
-              <Row style={{ width: "25rem", height: "2rem", alignContent: "center"  }}>
-                <Col style={{ display: "flex", justifyContent: "right"}}>
+              <Row
+                style={{
+                  width: "25rem",
+                  height: "2rem",
+                  alignContent: "center",
+                }}
+              >
+                <Col style={{ display: "flex", justifyContent: "right" }}>
                   <h6 className="me-3 h6-privacy">Privacy: </h6>
                 </Col>
                 <Col style={{ display: "flex", justifyContent: "left" }}>
                   <Form.Check
                     type="switch"
                     id="privacy"
-                    label={`${visible === "public" ? "Public" : "Private"}`}
-                    checked={visible === "public"}
-                    onChange={() =>
-                      setVisible(visible === "public" ? "private" : "public")
+                    label={formData.visible ? "Public" : "Private"}
+                    checked={formData.visible}
+                    onChange={(e) =>
+                      setFormData({ ...formData, visible: !formData.visible })
                     }
                     className="check-slider-privacy"
-                  />{" "}
+                  />
                 </Col>
               </Row>
             </Card>
@@ -509,14 +542,15 @@ const UserNew = () => {
             controlId="floatingSkill"
             style={{ width: "22.5rem" }}
             className="mb-3 mx-5"
+            onChange={(e) => setSkillType(parseInt(e.target.value))}
           >
             <option value="" disabled selected>
               Choose skill category
             </option>
-            <option>Knowledge</option>
-            <option>Software</option>
-            <option>Hardware</option>
-            <option>Tools</option>
+            <option value={1}>Knowledge</option>
+            <option value={2}>Software</option>
+            <option value={3}>Hardware</option>
+            <option value={4}>Tools</option>
           </Form.Select>
         </Modal.Body>
         <Modal.Footer>
@@ -559,13 +593,14 @@ const UserNew = () => {
             controlId="floatingInterest"
             style={{ width: "22.5rem" }}
             className="mb-3 mx-5"
+            onChange={(e) => setInterestType(parseInt(e.target.value))}
           >
             <option value="" disabled selected>
               Choose interest category
             </option>
-            <option>Themes</option>
-            <option>Causes</option>
-            <option>Fields of expertise</option>
+            <option value={1}>Themes</option>
+            <option value={2}>Causes</option>
+            <option value={3}>Fields of expertise</option>
           </Form.Select>
         </Modal.Body>
         <Modal.Footer>
