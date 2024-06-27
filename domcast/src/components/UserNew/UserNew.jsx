@@ -26,7 +26,7 @@ import { useTranslation } from "react-i18next";
 import { useParams, useNavigate } from "react-router-dom";
 
 const UserNew = () => {
-  const { token } = useParams();
+  const { validationtoken } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -57,8 +57,6 @@ const UserNew = () => {
   const steps = ["Step 1", "Step 2", "Step 3"];
   const [photoPreview, setPhotoPreview] = useState(defaultProfilePic);
 
-  const userToken 
-
   // falta testar a criação de um novo user, simples, sem photo e completo
 
   useEffect(() => {
@@ -70,7 +68,7 @@ const UserNew = () => {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              token: token,
+              validationtoken: validationtoken,
             },
           }
         );
@@ -92,7 +90,7 @@ const UserNew = () => {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              token: token,
+              validationtoken: validationtoken,
             },
           }
         );
@@ -112,7 +110,7 @@ const UserNew = () => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            token: token,
+            validationtoken: validationtoken,
           },
         });
         if (labsResponse.ok) {
@@ -133,7 +131,7 @@ const UserNew = () => {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              token: token,
+              validationtoken: validationtoken,
             },
           }
         );
@@ -155,7 +153,7 @@ const UserNew = () => {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              token: token,
+              validationtoken: validationtoken,
             },
           }
         );
@@ -175,7 +173,7 @@ const UserNew = () => {
     fetchLabs();
     fetchSkillCategories();
     fetchInterestCategories();
-  }, [token]);
+  }, [validationtoken]);
 
   const formatCategoryName = (name) => {
     return name
@@ -322,6 +320,9 @@ const UserNew = () => {
   const handleInterestCategoryChange = (e) => {
     setInterestType(e.target.value);
   };
+
+  setUser({ ...user, validationToken: validationtoken });
+
 
   const handleSubmit = async () => {
     const formData = new FormData();
