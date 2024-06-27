@@ -8,9 +8,12 @@ import {
   Card,
   Modal,
 } from "react-bootstrap";
-import { Base_url_users } from "../../functions/UsersFunctions.jsx";
-import { Base_url_skills } from "../../functions/UsersFunctions.jsx";
-import { Base_url_interests } from "../../functions/UsersFunctions.jsx";
+import {
+  Base_url_users,
+  Base_url_skills,
+  Base_url_interests,
+  Base_url_lab,
+} from "../../functions/UsersFunctions.jsx";
 import OthersProgressBar from "../OthersProgressBar/OthersProgressBar.jsx";
 import defaultProfilePic from "../../multimedia/default-profile-pic.png";
 import { userStore } from "../../stores/UserStore.jsx";
@@ -18,54 +21,63 @@ import { useStore } from "zustand";
 import { Typeahead } from "react-bootstrap-typeahead";
 import "./UserNew.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
+import { useParams, useNavigate } from "react-router-dom";
 
 const UserNew = () => {
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    workplace: "",
-    biography: "",
-    nickname: "",
-    visible: false,
-    skills: [],
-    interests: [],
-    photo: "",
-    skillsDtos: [],
-    interestDtos: [],
-  });
+  const { token } = useParams();
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+
   const [skillsList, setSkillsList] = useState([]);
   const [interestsList, setInterestsList] = useState([]);
   const [customSkill, setCustomSkill] = useState("");
   const [customInterest, setCustomInterest] = useState("");
   const [skillType, setSkillType] = useState(1);
   const [interestType, setInterestType] = useState(1);
+  const [skillsInputValue, setSkillsInputValue] = useState("");
+  const [interestsInputValue, setInterestsInputValue] = useState("");
+
+  const user = useStore(userStore, (state) => state.user);
+  const setUser = useStore(userStore, (state) => state.setUser);
+  const photo = useStore(userStore, (state) => state.photo);
+  const setPhoto = useStore(userStore, (state) => state.setPhoto);
+  const clearUser = useStore(userStore, (state) => state.clearUser);
+
+  const [labList, setLabList] = useState([]);
+  const [skillCategoryList, setSkillCategoryList] = useState([]);
+  const [interestCategoryList, setInterestCategoryList] = useState([]);
+
   const [showSkillModal, setShowSkillModal] = useState(false);
   const [showInterestModal, setShowInterestModal] = useState(false);
-  const [inputValue, setInputValue] = useState("");
+
   const [visibility, setVisibility] = useState(false);
   const [step, setStep] = useState(1);
   const steps = ["Step 1", "Step 2", "Step 3"];
-
   const [photoPreview, setPhotoPreview] = useState(defaultProfilePic);
-  const { user, setUser } = useStore(userStore);
-  const token = user.sessionToken;
-  const idUser = user.id;
+
+  const userToken 
+
+  // falta testar a criação de um novo user, simples, sem photo e completo
 
   useEffect(() => {
     const fetchSkills = async () => {
       try {
-        const response = await fetch(Base_url_skills, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            token: token,
-            id: idUser,
-          },
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setSkillsList(data);
-          console.log("Skills fetched:", data);
+        const skillsResponse = await fetch(
+          `${Base_url_skills}unconfirmed-user`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              token: token,
+            },
+          }
+        );
+        if (skillsResponse.ok) {
+          const skillsData = await skillsResponse.json();
+          setSkillsList(skillsData);
+          console.log("Skills fetched:", skillsData);
         }
       } catch (error) {
         console.error("Error fetching skills:", error);
@@ -74,91 +86,219 @@ const UserNew = () => {
 
     const fetchInterests = async () => {
       try {
-        const response = await fetch(Base_url_interests, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            token: token,
-            id: idUser,
-          },
-        });
-        if (response.ok) {
-          const data = await response.json();
-          setInterestsList(data);
-          console.log("Interests fetched:", data);
+        const interestsResponse = await fetch(
+          `${Base_url_interests}unconfirmed-user`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              token: token,
+            },
+          }
+        );
+        if (interestsResponse.ok) {
+          const interestsData = await interestsResponse.json();
+          setInterestsList(interestsData);
+          console.log("Interests fetched:", interestsData);
         }
       } catch (error) {
         console.error("Error fetching interests:", error);
       }
     };
 
+    const fetchLabs = async () => {
+      try {
+        const labsResponse = await fetch(`${Base_url_lab}enum-unconfirmed`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            token: token,
+          },
+        });
+        if (labsResponse.ok) {
+          const labsData = await labsResponse.json();
+          setLabList(labsData);
+          console.log("Labs fetched:", labsData);
+        }
+      } catch (error) {
+        console.error("Error fetching labs:", error);
+      }
+    };
+
+    const fetchSkillCategories = async () => {
+      try {
+        const skillCategoriesResponse = await fetch(
+          `${Base_url_skills}enum-unconfirmed`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              token: token,
+            },
+          }
+        );
+        if (skillCategoriesResponse.ok) {
+          const skillCategoriesData = await skillCategoriesResponse.json();
+          setSkillCategoryList(skillCategoriesData);
+          console.log("Skill categories fetched:", skillCategoriesData);
+        }
+      } catch (error) {
+        console.error("Error fetching skill categories:", error);
+      }
+    };
+
+    const fetchInterestCategories = async () => {
+      try {
+        const interestCategoriesResponse = await fetch(
+          `${Base_url_interests}enum-unconfirmed`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              token: token,
+            },
+          }
+        );
+        if (interestCategoriesResponse.ok) {
+          const interestCategoriesData =
+            await interestCategoriesResponse.json();
+          setInterestCategoryList(interestCategoriesData);
+          console.log("Interest categories fetched:", interestCategoriesData);
+        }
+      } catch (error) {
+        console.error("Error fetching interest categories:", error);
+      }
+    };
+
     fetchSkills();
     fetchInterests();
-  }, []);
+    fetchLabs();
+    fetchSkillCategories();
+    fetchInterestCategories();
+  }, [token]);
 
-  const handleAddCustomSkill = () => {
-    if (!customSkill || !skillType) {
-      // Handle validation if necessary
-      console.log("Custom skill or skill type is missing");
-      return;
-    }
-  
-    const newSkillDto = { name: customSkill, type: skillType };
-    setFormData({
-      ...formData,
-      skillsDtos: [...formData.skillsDtos, newSkillDto],
-    });
-  
-    setShowSkillModal(false);
-    setCustomSkill("");
-    setSkillType(""); // Clear selected skill type
+  const formatCategoryName = (name) => {
+    return name
+      .toLowerCase()
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
   };
-  
-  const handleAddCustomInterest = () => {
-    if (!customInterest || !interestType) {
-      // Handle validation if necessary
-      console.log("Custom interest or interest type is missing");
-      return;
-    }
-  
-    const newInterestDto = { name: customInterest, type: interestType };
-    setFormData({
-      ...formData,
-      interestDtos: [...formData.interestDtos, newInterestDto],
-    });
-  
-    setShowInterestModal(false);
-    setCustomInterest("");
-    setInterestType(""); // Clear selected interest type
-  };
-  
 
-  const handleInputChange = (value) => {
-    setInputValue(value);
+  const handleSkillsInputChange = (value) => {
+    setSkillsInputValue(value);
+  };
+
+  const handleInterestsInputChange = (value) => {
+    setInterestsInputValue(value);
+  };
+
+  const generateSkillOptions = () => {
+    let options = skillsList.map((skill) => skill.name || skill);
+    if (skillsInputValue.trim().length > 0) {
+      const isSkillExist = skillsList.some(
+        (skill) =>
+          (skill.name || skill).toLowerCase() ===
+          skillsInputValue.trim().toLowerCase()
+      );
+      if (!isSkillExist) {
+        options = options.concat(`Add "${skillsInputValue}" as a skill`);
+      }
+    }
+    return options;
+  };
+
+  const generateInterestOptions = () => {
+    let options = interestsList.map((interest) => interest.name || interest);
+    if (interestsInputValue.trim().length > 0) {
+      const isInterestExist = interestsList.some(
+        (interest) =>
+          (interest.name || interest).toLowerCase() ===
+          interestsInputValue.trim().toLowerCase()
+      );
+      if (!isInterestExist) {
+        options = options.concat(`Add "${interestsInputValue}" as an interest`);
+      }
+    }
+    return options;
   };
 
   const handleTypeaheadChange = (labelKey, selected) => {
-    const trimmedInputValue = inputValue.trim();
-
-    if (
-      trimmedInputValue.length > 0 &&
-      selected.length > 0 &&
-      selected[selected.length - 1].startsWith('Add "')
-    ) {
-      if (labelKey === "skills") {
+    if (labelKey === "skills") {
+      const trimmedInputValue = skillsInputValue.trim();
+      if (
+        trimmedInputValue.length > 0 &&
+        selected.length > 0 &&
+        selected[selected.length - 1].startsWith('Add "')
+      ) {
         setCustomSkill(trimmedInputValue);
         setShowSkillModal(true);
       } else {
+        setUser({ ...user, skills: selected });
+      }
+    } else if (labelKey === "interests") {
+      const trimmedInputValue = interestsInputValue.trim();
+      if (
+        trimmedInputValue.length > 0 &&
+        selected.length > 0 &&
+        selected[selected.length - 1].startsWith('Add "')
+      ) {
         setCustomInterest(trimmedInputValue);
         setShowInterestModal(true);
-      }
-    } else {
-      if (labelKey === "skills") {
-        setUser({ ...user, skills: selected });
       } else {
         setUser({ ...user, interests: selected });
       }
     }
+  };
+
+  const handleAddCustomSkill = () => {
+    if (!customSkill || !skillType) {
+      console.log("Custom skill or skill type is missing");
+      toast.error(t("skillNameTypeRequired"));
+      return;
+    }
+
+    const newSkillDto = { name: customSkill, type: skillType };
+    const updatedSkillsList = [...skillsList, newSkillDto];
+
+    setUser({
+      ...user,
+      skillDtos: [...user.skillDtos, newSkillDto],
+      skills: [...user.skills, customSkill],
+    });
+
+    setSkillsList(updatedSkillsList);
+    handleTypeaheadChange("skills", [...user.skills, customSkill]);
+
+    setShowSkillModal(false);
+    setCustomSkill("");
+    setSkillType("");
+    setSkillsInputValue(""); // Clear the input value after adding
+  };
+
+  const handleAddCustomInterest = () => {
+    if (!customInterest || !interestType) {
+      console.log("Custom interest or interest type is missing");
+      toast.error(t("interestNameTypeRequired"));
+      return;
+    }
+
+    const newInterestDto = { name: customInterest, type: interestType };
+    const updatedInterestsList = [...interestsList, newInterestDto];
+
+    setUser({
+      ...user,
+      interestDtos: [...user.interestDtos, newInterestDto],
+      interests: [...user.interests, customInterest],
+    });
+
+    setInterestsList(updatedInterestsList);
+    handleTypeaheadChange("interests", [...user.interests, customInterest]);
+
+    setShowInterestModal(false);
+    setCustomInterest("");
+    setInterestType("");
+    setInterestsInputValue(""); // Clear the input value after adding
   };
 
   const handleFileChange = (e) => {
@@ -166,41 +306,74 @@ const UserNew = () => {
     if (file) {
       const photoUrl = URL.createObjectURL(file);
       setPhotoPreview(photoUrl);
-      setUser({ ...user, photo: photoUrl });
+      setPhoto(file);
     }
   };
 
   const handleChange = (e) => {
-    setUser({ ...user, [e.target.id]: e.target.value });
+    const { name, value } = e.target;
+    setUser({ ...user, [name]: value });
+  };
+
+  const handleSkillCategoryChange = (e) => {
+    setSkillType(e.target.value);
+  };
+
+  const handleInterestCategoryChange = (e) => {
+    setInterestType(e.target.value);
   };
 
   const handleSubmit = async () => {
     const formData = new FormData();
     formData.append("user", JSON.stringify(user));
-    if (user.photo !== defaultProfilePic) {
-      const photoFile = document.getElementById("fileInput").files[0];
-      if (photoFile) {
-        formData.append("photo", photoFile);
-      }
+    console.log("User data:", user);
+    if (photo !== defaultProfilePic) {
+      formData.append("photo", photo);
     }
 
     try {
-      const response = await fetch(`${Base_url_users}/confirm`, {
+      const response = await fetch(`${Base_url_users}confirm`, {
         method: "POST",
         body: formData,
       });
       if (response.ok) {
         const data = await response.json();
         console.log("User confirmed:", data);
+        toast.success(t("registrationSuccess"));
+        clearUser();
+        setSkillsList([]);
+        setInterestsList([]);
+        setVisibility("private");
+        setStep(1);
+        navigate("/"); // Redirect to the home page for user to login
       } else {
-        console.error("Failed to confirm user:", response.statusText);
+        const errorData = await response.json();
+        console.error("Failed to confirm user:", errorData);
+        toast.error(t("registrationFailure"));
       }
     } catch (error) {
       console.error("Error:", error);
+      toast.error(t("registrationFailure"));
     }
   };
 
+  const validateStep1 = () => {
+    if (
+      user.firstName === "" ||
+      user.lastName === "" ||
+      user.workplace === ""
+    ) {
+      console.log("Please fill in all required fields");
+      toast.error(t("requiredFieldsMissing"));
+      return false;
+    }
+    return true;
+  };
+
   const nextStep = () => {
+    if (step === 1 && !validateStep1()) {
+      return;
+    }
     if (step < 3) {
       setStep(step + 1);
     }
@@ -213,19 +386,7 @@ const UserNew = () => {
   };
 
   const handleCancel = () => {
-    setUser({
-      firstName: "",
-      lastName: "",
-      workplace: "",
-      biography: "",
-      nickname: "",
-      visible: "",
-      skills: [],
-      interests: [],
-      photo: defaultProfilePic,
-      skillsDtos: [],
-      interestDtos: [],
-    });
+    clearUser();
     setSkillsList([]);
     setInterestsList([]);
     setVisibility("private");
@@ -274,36 +435,38 @@ const UserNew = () => {
                 >
                   Choose Profile Photo
                 </Button>
-              </Card>{" "}
+              </Card>
               <Card
                 className="justify-content-center align-items-center"
                 style={{ border: "none" }}
               >
                 <FloatingLabel
                   controlId="floatingFirstName"
-                  label="First Name *"
+                  label={t("firstName*")}
                   className="mb-3"
                   style={{ width: "25rem" }}
                 >
                   <Form.Control
+                    name="firstName"
                     type="text"
                     placeholder="First Name"
                     onChange={handleChange}
-                    value={formData.firstName}
+                    value={user.firstName}
                     required
                   />
                 </FloatingLabel>
                 <FloatingLabel
                   controlId="floatingLastName"
-                  label="Last Name *"
+                  label={t("lastName*")}
                   className="mb-3"
                   style={{ width: "25rem" }}
                 >
                   <Form.Control
+                    name="lastName"
                     type="text"
                     placeholder="Last Name"
                     onChange={handleChange}
-                    value={formData.lastName}
+                    value={user.lastName}
                     required
                   />
                 </FloatingLabel>
@@ -312,20 +475,19 @@ const UserNew = () => {
                   controlId="floatingLab"
                   className="mb-3"
                   style={{ width: "25rem" }}
-                  value={formData.workplace}
+                  value={user.workplace}
                   onChange={(e) =>
-                    setFormData({ ...formData, workplace: e.target.value })
+                    setUser({ ...user, workplace: e.target.value })
                   }
                 >
-                  <option value="" disabled selected>
-                    Choose your Lab*
+                  <option value="" disabled>
+                    {t("chooseLab*")}
                   </option>
-                  <option value="COIMBRA">Coimbra</option>
-                  <option value="LISBOA">Lisboa</option>
-                  <option value="PORTO">Porto</option>
-                  <option value="TOMAR">Tomar</option>
-                  <option value="VILA_REAL">Vila Real</option>
-                  <option value="VISEU">Viseu</option>
+                  {labList.map((lab) => (
+                    <option key={lab.id} value={lab.name}>
+                      {formatCategoryName(lab.name)}
+                    </option>
+                  ))}
                 </Form.Select>
               </Card>
             </div>
@@ -338,7 +500,7 @@ const UserNew = () => {
                 fontWeight: "bold",
               }}
             >
-              * Required fields
+              {t("*mandatoryFields")}
             </span>
           </Card>
         );
@@ -353,6 +515,8 @@ const UserNew = () => {
                 style={{ width: "25rem" }}
               >
                 <Form.Control
+                  name="biography"
+                  type="textarea"
                   as="textarea"
                   onChange={handleChange}
                   style={{
@@ -361,7 +525,7 @@ const UserNew = () => {
                     width: "24rem",
                     overflow: "auto",
                   }}
-                  value={formData.biography}
+                  value={user.biography}
                 />
               </FloatingLabel>
             </Row>
@@ -373,10 +537,11 @@ const UserNew = () => {
                 style={{ width: "25rem" }}
               >
                 <Form.Control
+                  name="nickname"
                   type="text"
                   placeholder="Nickname"
                   onChange={handleChange}
-                  value={formData.nickname}
+                  value={user.nickname}
                 />
               </FloatingLabel>
             </Row>
@@ -398,10 +563,10 @@ const UserNew = () => {
                   <Form.Check
                     type="switch"
                     id="privacy"
-                    label={formData.visible ? "Public" : "Private"}
-                    checked={formData.visible}
+                    label={user.visible ? "Public" : "Private"}
+                    checked={user.visible}
                     onChange={(e) =>
-                      setFormData({ ...formData, visible: !formData.visible })
+                      setUser({ ...user, visible: e.target.checked })
                     }
                     className="check-slider-privacy"
                   />
@@ -423,13 +588,9 @@ const UserNew = () => {
                     id="skills-typeahead"
                     labelKey="name"
                     multiple
-                    options={skillsList
-                      .map((skill) => skill.name || skill)
-                      .concat(
-                        inputValue ? [`Add "${inputValue}" as a skill`] : []
-                      )}
+                    options={generateSkillOptions()}
                     selected={user.skills}
-                    onInputChange={handleInputChange}
+                    onInputChange={handleSkillsInputChange}
                     onChange={(selected) =>
                       handleTypeaheadChange("skills", selected)
                     }
@@ -450,13 +611,9 @@ const UserNew = () => {
                     id="interests-typeahead"
                     labelKey="name"
                     multiple
-                    options={interestsList
-                      .map((interest) => interest.name || interest)
-                      .concat(
-                        inputValue ? [`Add "${inputValue}" as an interest`] : []
-                      )}
+                    options={generateInterestOptions()}
                     selected={user.interests}
-                    onInputChange={handleInputChange}
+                    onInputChange={handleInterestsInputChange}
                     onChange={(selected) =>
                       handleTypeaheadChange("interests", selected)
                     }
@@ -542,15 +699,16 @@ const UserNew = () => {
             controlId="floatingSkill"
             style={{ width: "22.5rem" }}
             className="mb-3 mx-5"
-            onChange={(e) => setSkillType(parseInt(e.target.value))}
+            onChange={handleSkillCategoryChange}
           >
             <option value="" disabled selected>
               Choose skill category
             </option>
-            <option value={1}>Knowledge</option>
-            <option value={2}>Software</option>
-            <option value={3}>Hardware</option>
-            <option value={4}>Tools</option>
+            {skillCategoryList.map((category) => (
+              <option key={category.id} value={category.id}>
+                {formatCategoryName(category.name)}
+              </option>
+            ))}
           </Form.Select>
         </Modal.Body>
         <Modal.Footer>
@@ -593,14 +751,16 @@ const UserNew = () => {
             controlId="floatingInterest"
             style={{ width: "22.5rem" }}
             className="mb-3 mx-5"
-            onChange={(e) => setInterestType(parseInt(e.target.value))}
+            onChange={handleInterestCategoryChange}
           >
             <option value="" disabled selected>
               Choose interest category
             </option>
-            <option value={1}>Themes</option>
-            <option value={2}>Causes</option>
-            <option value={3}>Fields of expertise</option>
+            {interestCategoryList.map((category) => (
+              <option key={category.id} value={category.id}>
+                {formatCategoryName(category.name)}
+              </option>
+            ))}
           </Form.Select>
         </Modal.Body>
         <Modal.Footer>
@@ -644,7 +804,6 @@ const UserNew = () => {
         </div>
 
         <div style={{ paddingTop: "2.5rem" }}>
-          {" "}
           {/* Add paddingTop to push the content down */}
           <Card style={{ border: "none" }} className="my-3">
             {renderStep()}

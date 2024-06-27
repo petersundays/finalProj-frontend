@@ -5,38 +5,41 @@ export const userStore = create(
   persist(
     (set) => ({
       user: {
-        id: null,
-        sessionToken: '',
+        validationToken: '',
         firstName: '',
         lastName: '',
+        workplace: '',
         nickname: '',
-        photo: '',
         biography: '',
         visible: false,
-        workplace: '',
         interests: [],
         skills: [],
+        interestDtos: [{ name: '', type: 0 }],
+        skillDtos: [{ name: '', type: 0 }],
       },
-      setUser: (userData) => set({ user: userData }),
-      clearUser: () => set({
+      photo: '',
+      setUser: (newUser) => set((state) => ({ user: { ...state.user, ...newUser } })),
+      setPhoto: (newPhoto) => set(() => ({ photo: newPhoto })),
+      clearUser: () => set(() => ({
         user: {
-          id: null,
-          sessionToken: '',
+          validationToken: '',
           firstName: '',
           lastName: '',
+          workplace: '',
           nickname: '',
-          photo: '',
           biography: '',
           visible: false,
-          workplace: '',
           interests: [],
           skills: [],
-        }
-      })
+          interestDtos: [{ name: '', type: 0 }],
+          skillDtos: [{ name: '', type: 0 }],
+        },
+        photo: ''
+      })),
     }),
-        {
-        name: "userStore",
-        storage: createJSONStorage(() => sessionStorage),
-      }
+    {
+      name: "userStore",
+      storage: createJSONStorage(() => sessionStorage),
+    }
   )
 );
