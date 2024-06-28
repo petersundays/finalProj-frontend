@@ -14,22 +14,11 @@ function MainOffcanvasLogged({
   language,
 }) {
   const navigate = useNavigate();
-  const { setUser } = userStore();
+  const user = userStore((state) => state.user);
+  const clearUser = userStore((state) => state.clearUser);
 
   const handleLogout = () => {
-    setUser({
-      id: null,
-      sessionToken: "",
-      firstName: "",
-      lastName: "",
-      nickname: "",
-      photo: "",
-      biography: "",
-      visible: false,
-      workplace: "",
-      interests: [],
-      skills: [],
-    });
+    clearUser();
     navigate("/", { replace: true });
   };
 
@@ -39,7 +28,7 @@ function MainOffcanvasLogged({
       <Offcanvas.Header closeButton>
         <div className="offcanvas-header">
           <img src={defaultProfilePic} alt="Profile" className="profile-pic mr-2" />
-          <Offcanvas.Title className="offcanvas-main-title">first name</Offcanvas.Title>
+          <Offcanvas.Title className="offcanvas-main-title">{user.firstName} {user.lastName}</Offcanvas.Title>
         </div>
       </Offcanvas.Header>
       <hr />
@@ -47,7 +36,7 @@ function MainOffcanvasLogged({
         <div>
           <Nav className="flex-column profileNavbar">
             <Nav.Link href="#myProfile">My Profile</Nav.Link>
-            <Nav.Link href="#messages">Messages</Nav.Link>
+            <Nav.Link href="#messages">Message Hub</Nav.Link>
           </Nav>
           <hr />
           <Nav className="d-flex flex-column justify-content-between sidebarNavbar">
@@ -85,7 +74,7 @@ function MainOffcanvasLogged({
               PT
             </button>
           </div>
-          <Nav.Link href="#logout" className="mt-2">Logout</Nav.Link>
+          <Nav.Link href="#logout" className="mt-2" onClick={handleLogout}>Logout</Nav.Link>
         </Nav>
       </Offcanvas.Body>
     </Offcanvas>
