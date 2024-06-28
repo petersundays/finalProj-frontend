@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import { Modal, Form, Button, FloatingLabel, Toast } from "react-bootstrap";
+import { Modal, Form, Button, FloatingLabel, FormText } from "react-bootstrap";
 import ModalForgotPassword from "../ModalForgotPassword/ModalForgotPassword.jsx";
 import { useNavigate } from "react-router-dom";
 import { Base_url_users } from "../../functions/UsersFunctions.jsx";
 import { userStore } from "../../stores/UserStore.jsx";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-
 
 function ModalLogin({ show, handleClose }) {
   const navigate = useNavigate();
@@ -80,23 +79,20 @@ function ModalLogin({ show, handleClose }) {
         <Modal.Body style={{ textAlign: "center" }}>
           <h5 className="mb-4 modal-title">Let's move your projects forward</h5>
           <Form onSubmit={handleSubmit}>
-            <FloatingLabel
-              controlId="floatingInput"
-              label="Email address"
+            <FormText
               className="mb-3 mx-5"
+              style={{ display: "flex", justifyContent: "center" }}
             >
               <Form.Control
                 type="email"
-                placeholder="name@example.com"
+                placeholder="Email address"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                style={{ width: "23rem" }}
               />
-            </FloatingLabel>
-            <FloatingLabel
-              controlId="floatingPassword"
-              className="mb-3 mx-5"
-            >
+            </FormText>
+            <FloatingLabel controlId="floatingPassword" className="mb-3 mx-5">
               <div style={{ position: "relative" }}>
                 <Form.Control
                   type={showPassword ? "text" : "password"}

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Modal, Form, Button, FloatingLabel } from "react-bootstrap";
+import { Modal, Form, Button, FormText } from "react-bootstrap";
 import { Base_url_users } from "../../functions/UsersFunctions";
 
 function ModalForgotPassword({ show, handleClose }) {
@@ -53,19 +53,19 @@ function ModalForgotPassword({ show, handleClose }) {
           Enter your email and you'll get a link to redefine it
         </h5>
         <Form onSubmit={handleSubmit}>
-          <FloatingLabel
-            controlId="floatingInput"
-            label="Email address"
+          <FormText
             className="mb-3 mx-5"
+            style={{ display: "flex", justifyContent: "center" }}
           >
             <Form.Control
               type="email"
-              placeholder="name@example.com"
+              placeholder="Email address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              style={{ width: "23rem" }}
             />
-          </FloatingLabel>
+          </FormText>
           <Button
             type="submit"
             className="my-3 custom-btn"

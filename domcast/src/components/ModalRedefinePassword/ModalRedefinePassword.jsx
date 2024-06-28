@@ -1,26 +1,36 @@
 import React, { useState } from "react";
-import {
-  Container,
-  Row,
-  Col,
-  Form,
-  Button,
-  FloatingLabel,
-} from "react-bootstrap";
+import { Modal, Form, Button, FloatingLabel } from "react-bootstrap";
 import "./ModalRedefinePassword.css";
 import { Base_url_users } from "../../functions/UsersFunctions";
-import { useParams, useNavigate } from "react-router-dom";
+import { userStore } from "../../stores/UserStore.jsx";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
-const ModalRedefinePassword = () => {
-  const navigate = useNavigate();
-  const { token } = useParams();
+function ModalRedefinePassword({ show, handleClose }) {
+  const [oldPassword, setOldPassword] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [oldPassword, setOldPassword] = useState("");
+  const user = userStore();
+  const token = user.token;
+  const id = user.id;
+
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const passwordRegex =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/;
 
+  const toggleShowOldPassword = () => {
+    setShowOldPassword(!showOldPassword);
+  };
+
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleShowConfirmPassword = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -39,18 +49,20 @@ const ModalRedefinePassword = () => {
       console.log("Passwords match");
 
       try {
-        const response = await fetch(`${Base_url_users}reset-password`, {
-          method: "POST",
+        const response = await fetch(`${Base_url_users}password`, {
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
             token: token,
+            id: id,
+            oldPassword: oldPassword,
+            newPassword: password,
           },
-          body: JSON.stringify({ password: password }),
         });
 
         if (response.ok) {
           console.log("Password redefined");
-          navigate("/", { replace: true });
+          handleClose();
         } else {
           console.log("Password not redefined");
         }
@@ -60,61 +72,108 @@ const ModalRedefinePassword = () => {
     }
   };
 
-  const handleCancel = () => {
-    navigate("/", { replace: true });
-  }
-
   return (
-    <Container>
-      <Row className="justify-content-md-center">
-        <Col md={6}>
-          <h3>Choose your new password</h3>
-          <FloatingLabel
-            controlId="floatingPassword"
-            label="Old Password"
-            className="mb-3"
-          >
-            <Form.Control
-              type="password"
-              name="oldPassword"
-              value={oldPassword}
-              onChange={(e) => setOldPassword(e.target.value)}
-            />
+    <Modal show={show} onHide={handleClose} centered>
+      <Modal.Header closeButton className="mt-2 p-4">
+        <Modal.Title
+          style={{ width: "100%", textAlign: "center" }}
+        ></Modal.Title>
+      </Modal.Header>
+      <Modal.Body style={{ textAlign: "center" }}>
+        <h3>Choose your new password</h3>
+        <Form>
+          <FloatingLabel controlId="floatingOldPassword" className="mb-3 mx-5">
+            <div style={{ position: "relative" }}>
+              <Form.Control
+                type={showOldPassword ? "text" : "password"}
+                placeholder="Old Password"
+                value={oldPassword}
+                onChange={(e) => setOldPassword(e.target.value)}
+                required
+              />
+              <span
+                onClick={toggleShowOldPassword}
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  right: "10px",
+                  transform: "translateY(-50%)",
+                  cursor: "pointer",
+                }}
+              >
+                {showOldPassword ? <FaEyeSlash /> : <FaEye />}
+              </span>
+            </div>
           </FloatingLabel>
-          <FloatingLabel
-            controlId="floatingPassword"
-            label="Password"
-            className="mb-3"
-          >
-            <Form.Control
-              type="password"
-              name="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+          <FloatingLabel controlId="floatingPassword" className="mb-3 mx-5">
+            <div style={{ position: "relative" }}>
+              <Form.Control
+                type={showPassword ? "text" : "password"}
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <span
+                onClick={toggleShowPassword}
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  right: "10px",
+                  transform: "translateY(-50%)",
+                  cursor: "pointer",
+                }}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </span>
+            </div>
           </FloatingLabel>
           <FloatingLabel
             controlId="floatingConfirmPassword"
-            label="Confirm Password"
-            className="mb-3"
+            className="mb-3 mx-5"
           >
-            <Form.Control
-              type="password"
-              name="confirmPassword"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
+            <div style={{ position: "relative" }}>
+              <Form.Control
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="Confirm password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+              <span
+                onClick={toggleShowConfirmPassword}
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  right: "10px",
+                  transform: "translateY(-50%)",
+                  cursor: "pointer",
+                }}
+              >
+                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+              </span>
+            </div>
           </FloatingLabel>
-          <Button variant="primary" onClick={handleSubmit} className="me-2">
-            Confirm
-          </Button>
-          <Button variant="secondary" onClick={handleCancel}>
-            Cancel
-          </Button>
-        </Col>
-      </Row>
-    </Container>
+        </Form>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button
+          variant="secondary"
+          onClick={handleClose}
+          className="modal-redefine-pass-cancel-btn"
+        >
+          Cancel
+        </Button>
+        <Button
+          variant="primary"
+          onClick={handleSubmit}
+          className="modal-redefine-pass-save-btn"
+        >
+          Redefine
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
-};
+}
 
 export default ModalRedefinePassword;
