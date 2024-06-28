@@ -21,7 +21,7 @@ function ModalForgotPassword({ show, handleClose }) {
       console.log("Email is valid");
 
       try {
-        const response = await fetch(`${Base_url_users}forgot-password`, {
+        const response = await fetch(`${Base_url_users}recover-password`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

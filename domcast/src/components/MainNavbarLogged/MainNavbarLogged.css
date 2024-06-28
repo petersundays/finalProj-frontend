@@ -8,12 +8,22 @@
   }
   
   .dropdown-title {
-    color: var(--color-white);
+    color: var(--color-yellow-01) !important;
   }
   
   .btn-group .btn.active {
     background-color: var(--color-blue-01);
-    color: var(--color-coal);
+    color: var(--color-white);
+  }
+
+  .btn-group .btn.active:hover {
+    background-color: var(--color-blue-02);
+    color: var(--color-white);
+  }
+  
+  .btn-group .btn.active:focus {
+    background-color: var(--color-blue-01);
+    color: var(--color-white);
   }
   
   .btn-group .btn {
@@ -22,14 +32,9 @@
   }
   
   .btn-group .btn:hover {
-    background-color: transparent;
-    color: var(--color-blue-02);
-    border-color: var(--color-blue-02);
-  }
-  
-  .btn-group .btn.active:focus {
-    background-color: var(--color-blue-01);
-    color: var(--color-coal);
+    background-color: var(--color-blue-02);
+    color: var(--color-white);
+    border-color: var(--color-blue-01);
   }
   
   .navbar .dropdown-menu {
@@ -42,7 +47,7 @@
   
   .navbar .dropdown-item:hover,
   .navbar .dropdown-item:focus {
-    color: var(--color-blue-01) !important;
+    color: var(--color-yellow-01) !important;
     background-color: var(--color-coal) !important;
   }
   
@@ -53,12 +58,13 @@
   
   .dropdown-title:hover,
   .dropdown-title:focus {
-    color: var(--color-blue-01) !important;
+    color: var(--color-yellow-02) !important;
   }
   
+  .navbar .navbar-nav .nav-link.dropdown-toggle,
   .navbar .navbar-nav .nav-link.dropdown-toggle:hover,
   .navbar .navbar-nav .nav-link.dropdown-toggle:focus {
-    color: var(--color-blue-01) !important;
+    color: var(--color-yellow-02) !important;
   }
   
   

@@ -332,9 +332,11 @@ const UserNew = () => {
     const formData = new FormData();
     formData.append("user", JSON.stringify(user));
     console.log("User data:", user);
-    if (photo !== defaultProfilePic) {
+    if (photo !== null) {
       formData.append("photo", photo);
+      console.log("Photo:", photo);
     }
+    console.log("Formdata:", formData);
 
     try {
       const response = await fetch(`${Base_url_users}confirm`, {

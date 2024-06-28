@@ -4,6 +4,8 @@ import ModalForgotPassword from "../ModalForgotPassword/ModalForgotPassword.jsx"
 import { useNavigate } from "react-router-dom";
 import { Base_url_users } from "../../functions/UsersFunctions.jsx";
 import { userStore } from "../../stores/UserStore.jsx";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+
 
 function ModalLogin({ show, handleClose }) {
   const navigate = useNavigate();
@@ -11,6 +13,12 @@ function ModalLogin({ show, handleClose }) {
   const [showModalForgotPassword, setShowModalForgotPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
 
   const handleForgotPassword = () => {
     setShowModalForgotPassword(true);
@@ -49,7 +57,7 @@ function ModalLogin({ show, handleClose }) {
           console.log(data);
           await setUser(data);
           console.log(userStore.getState().user);
-          navigate("/home", { replace: true });
+          navigate("/domcast/", { replace: true });
         } else {
           console.log("Login failed");
         }
@@ -87,16 +95,29 @@ function ModalLogin({ show, handleClose }) {
             </FloatingLabel>
             <FloatingLabel
               controlId="floatingPassword"
-              label="Password"
               className="mb-3 mx-5"
             >
-              <Form.Control
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
+              <div style={{ position: "relative" }}>
+                <Form.Control
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <span
+                  onClick={toggleShowPassword}
+                  style={{
+                    position: "absolute",
+                    top: "50%",
+                    right: "10px",
+                    transform: "translateY(-50%)",
+                    cursor: "pointer",
+                  }}
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </span>
+              </div>
             </FloatingLabel>
             <Button
               type="submit"

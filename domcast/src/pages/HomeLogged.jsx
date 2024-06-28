@@ -41,7 +41,6 @@ function HomeLogged() {
   };
 
   return (
-    <Router>
       <div className="Layout">
         <MainNavbarLogged
           handleShow={handleShow}
@@ -99,7 +98,6 @@ function HomeLogged() {
         </Container>
         <MainFooter />
       </div>
-    </Router>
   );
 }
 

@@ -17,7 +17,7 @@ export const userStore = create(
         interestDtos: [],
         skillDtos: [],
       },
-      photo: '',
+      photo: null,
       setUser: (newUser) => set((state) => ({ user: { ...state.user, ...newUser } })),
       setPhoto: (newPhoto) => set(() => ({ photo: newPhoto })),
       clearUser: () => set(() => ({
@@ -34,7 +34,7 @@ export const userStore = create(
           interestDtos: [],
           skillDtos: [],
         },
-        photo: ''
+        photo: null,
       })),
     }),
     {
