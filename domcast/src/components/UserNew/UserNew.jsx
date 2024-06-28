@@ -289,11 +289,11 @@ const UserNew = () => {
     const newInterestDto = { name: customInterest, type: interestType };
     const updatedInterestsList = [...interestsList, newInterestDto];
 
-    setUser({
-      ...user,
-      interestDtos: [...user.interestDtos, newInterestDto],
-      interests: [...user.interests, customInterest],
-    });
+    setUser((prevUser) => ({
+      ...prevUser,
+      interestDtos: [...prevUser.interestDtos, newInterestDto], // Ensure you are adding the new interest DTO correctly
+      interests: [...prevUser.interests, customInterest],
+    }));
 
     setInterestsList(updatedInterestsList);
     handleTypeaheadChange("interests", [...user.interests, customInterest]);
