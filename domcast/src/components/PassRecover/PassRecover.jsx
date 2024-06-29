@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { Row, Col, Form, Button, FloatingLabel, Card } from "react-bootstrap";
 import "react-bootstrap-typeahead/css/Typeahead.css";
-import "./OtherPassRecover.css";
+import "./PassRecover.css";
 import { Base_url_users } from "../../functions/UsersFunctions";
 import { useNavigate, useParams } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 
-const OtherPassRecover = () => {
+const PassRecover = () => {
   const { token } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -163,4 +163,4 @@ const OtherPassRecover = () => {
   );
 };
 
-export default OtherPassRecover;
+export default PassRecover;

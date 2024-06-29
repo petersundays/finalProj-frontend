@@ -19,13 +19,13 @@ import defaultProfilePic from "../../multimedia/default-profile-pic.png";
 import { userStore } from "../../stores/UserStore.jsx";
 import { useStore } from "zustand";
 import { Typeahead } from "react-bootstrap-typeahead";
-import "./UserNew.css";
+import "./UserRegistration.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import { useParams, useNavigate } from "react-router-dom";
 
-const UserNew = () => {
+const UserRegistration = () => {
   const { token } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -822,4 +822,4 @@ const UserNew = () => {
   );
 };
 
-export default UserNew;
+export default UserRegistration;

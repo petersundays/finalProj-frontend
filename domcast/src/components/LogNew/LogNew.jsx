@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Form, Button, FloatingLabel } from 'react-bootstrap';
 import { Typeahead } from 'react-bootstrap-typeahead';
-import './NewLog.css';
+import './LogNew.css';
 
-const NewLog = ({ onAdd, onCancel }) => {
+const LogNew = ({ onAdd, onCancel }) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -84,4 +84,4 @@ const NewLog = ({ onAdd, onCancel }) => {
   );
 };
 
-export default NewLog;
+export default LogNew;

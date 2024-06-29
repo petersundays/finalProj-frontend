@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Card, Row, Col, Button } from "react-bootstrap";
 import OthersProjCardLogged from "../OthersProjCardLogged/OthersProjCardLogged";
-import "./ProjectsListLogged.css";
+import "./ProjectListLogged.css";
 
-// const ProjectsListLogged = ({ cards = [] }) => {
-  const ProjectsListLogged = () => {  // Hardcoded card data
+// const ProjectListLogged = ({ cards = [] }) => {
+  const ProjectListLogged = () => {  // Hardcoded card data
     const cards = [
       {
         title: 'Renewable Energy Grid',
@@ -278,4 +278,4 @@ import "./ProjectsListLogged.css";
   );
 };
 
-export default ProjectsListLogged;
+export default ProjectListLogged;

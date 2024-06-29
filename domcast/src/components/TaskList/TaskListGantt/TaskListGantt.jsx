@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Chart } from 'react-google-charts';
 import { Container, Row, Col } from 'react-bootstrap';
-import './TasksListGantt.css';
+import './TaskListGantt.css';
 
-const TasksListGantt = () => {
+const TaskListGantt = () => {
   const [chartData, setChartData] = useState([]);
   const [period, setPeriod] = useState('month');
 
@@ -63,4 +63,4 @@ const TasksListGantt = () => {
   );
 };
 
-export default TasksListGantt;
+export default TaskListGantt;

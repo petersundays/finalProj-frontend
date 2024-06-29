@@ -5,7 +5,7 @@ import "./HomeLogged.css";
 import MainNavbaNotLogged from "../components/MainNavbaNotLogged/MainNavbaNotLogged";
 import MainOffcanvasNotLogged from "../components/MainOffcanvasNotLogged/MainOffcanvasNotLogged";
 import MainFooter from "../components/MainFooter/MainFooter";
-import ProjectsListNotLogged from "../components/ProjectsListNotLogged/ProjectsListNotLogged";
+import ProjectListNotLogged from "../components/ProjectListNotLogged/ProjectListNotLogged";
 
 function Home() {
   const [show, setShow] = useState(false);
@@ -39,7 +39,7 @@ function Home() {
       <Container fluid className="main-container">
         <Row className="flex-grow-1">
           <Col className="content">
-            <ProjectsListNotLogged />
+            <ProjectListNotLogged />
           </Col>
         </Row>
       </Container>

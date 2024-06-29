@@ -10,11 +10,11 @@ import {
   Badge,
 } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./UserEditProfile.css";
+import "./UserEdit.css";
 import { Typeahead } from "react-bootstrap-typeahead";
 import defaultProfilePic from "../../multimedia/default-profile-pic.png";
 
-const UserEditProfile = ({ onSave, onCancel }) => {
+const UserEdit = ({ onSave, onCancel }) => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -266,4 +266,4 @@ const UserEditProfile = ({ onSave, onCancel }) => {
   );
 };
 
-export default UserEditProfile;
+export default UserEdit;

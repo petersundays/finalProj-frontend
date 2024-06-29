@@ -1,8 +1,8 @@
 import React from 'react';
 import { Card, Badge, Button } from 'react-bootstrap';
-import './ProjPublic.css';
+import './ProjectPublic.css';
 
-const ProjPublic = ({ title, lab, state, description, team, keywords, skills, onJoin }) => {
+const ProjectPublic = ({ title, lab, state, description, team, keywords, skills, onJoin }) => {
   return (
     <Card>
       <Card.Body>
@@ -42,4 +42,4 @@ const ProjPublic = ({ title, lab, state, description, team, keywords, skills, on
   );
 };
 
-export default ProjPublic;
+export default ProjectPublic;

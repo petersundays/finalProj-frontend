@@ -1,8 +1,8 @@
 import React from 'react';
 import { Card, Badge, Button } from 'react-bootstrap';
-import './ProjPrivate.css';
+import './ProjectPrivate.css';
 
-const ProjPrivate = ({ title, lab, state, description, startDate, duration, team, keywords, skills, assets, onEdit, onPlanner }) => {
+const ProjectPrivate = ({ title, lab, state, description, startDate, duration, team, keywords, skills, assets, onEdit, onPlanner }) => {
   return (
     <Card>
       <Card.Body>
@@ -55,4 +55,4 @@ const ProjPrivate = ({ title, lab, state, description, startDate, duration, team
   );
 };
 
-export default ProjPrivate;
+export default ProjectPrivate;

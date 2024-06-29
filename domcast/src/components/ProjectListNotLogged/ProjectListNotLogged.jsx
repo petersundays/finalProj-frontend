@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Card, Row, Col, Button } from "react-bootstrap";
 import OthersProjCardNotLogged from "../OthersProjCardNotLogged/OthersProjCardNotLogged";
-import "./ProjectsListNotLogged.css";
+import "./ProjectListNotLogged.css";
 
-// const ProjectsListNotLogged = ({ cards = [] }) => {
-const ProjectsListNotLogged = () => {
+// const ProjectListNotLogged = ({ cards = [] }) => {
+const ProjectListNotLogged = () => {
   // Hardcoded card data
   const cards = [
     {
@@ -287,4 +287,4 @@ const ProjectsListNotLogged = () => {
   );
 };
 
-export default ProjectsListNotLogged;
+export default ProjectListNotLogged;

@@ -5,7 +5,7 @@ import "./ConfirmRegistration.css";
 import MainNavbaNotLogged from "../components/MainNavbaNotLogged/MainNavbaNotLogged";
 import MainOffcanvasNotLogged from "../components/MainOffcanvasNotLogged/MainOffcanvasNotLogged";
 import MainFooter from "../components/MainFooter/MainFooter";
-import UserNew from "../components/UserNew/UserNew";
+import UserRegistration from "../components/UserRegistration/UserRegistration";
 
 function ConfirmRegistration() {
   const [show, setShow] = useState(false);
@@ -39,7 +39,7 @@ function ConfirmRegistration() {
       <Container fluid className="main-container">
         <Row className="flex-grow-1">
           <Col className="content">
-            <UserNew />
+            <UserRegistration />
           </Col>
         </Row>
       </Container>
