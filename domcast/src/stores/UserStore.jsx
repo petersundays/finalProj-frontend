@@ -1,10 +1,12 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
+import defaultProfilePic from "../../multimedia/default-profile-pic.png";
+
 
 export const userStore = create(
   persist(
     (set) => ({
-      user: {
+      unconfirmedUser: {
         validationToken: '',
         firstName: '',
         lastName: '',
@@ -17,11 +19,33 @@ export const userStore = create(
         interestDtos: [],
         skillDtos: [],
       },
-      photo: null,
-      setUser: (newUser) => set((state) => ({ user: { ...state.user, ...newUser } })),
-      setPhoto: (newPhoto) => set(() => ({ photo: newPhoto })),
-      clearUser: () => set(() => ({
-        user: {
+      unconfirmedPhoto: null,
+      loggedUser: {
+        id: null,
+        sessionToken: '',
+        firstName: '',
+        lastName: '',
+        nickname: '',
+        photo: '',
+        biography: '',
+        visible: false,
+        workplace: '',
+        interests: [],
+        skills: [],
+      },
+      loggedPhoto: null,
+      setUnconfirmedUser: (newUser) =>
+        set((state) => ({
+          unconfirmedUser: { ...state.unconfirmedUser, ...newUser },
+        })),
+      setLoggedUser: (newUser) =>
+        set((state) => ({
+          loggedUser: { ...state.loggedUser, ...newUser },
+        })),
+      setUnconfirmedPhoto: (photo) => set(() => ({ unconfirmedPhoto: photo })),
+      setLoggedPhoto: (photo) => set(() => ({ loggedPhoto: photo })),
+      clearUnconfirmedUser: () => set(() => ({
+        unconfirmedUser: {
           validationToken: '',
           firstName: '',
           lastName: '',
@@ -34,8 +58,9 @@ export const userStore = create(
           interestDtos: [],
           skillDtos: [],
         },
-        photo: null,
       })),
+      setDefaultUnconfirmedPhoto: () => set(() => ({ unconfirmedPhoto: defaultProfilePic })),
+      setDefaultLoggedPhoto: () => set(() => ({ loggedPhoto: defaultProfilePic })),
     }),
     {
       name: "userStore",

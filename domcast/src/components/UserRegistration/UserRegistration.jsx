@@ -24,6 +24,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import { useParams, useNavigate } from "react-router-dom";
+import { use } from "i18next";
 
 const UserRegistration = () => {
   const { token } = useParams();
@@ -39,11 +40,15 @@ const UserRegistration = () => {
   const [skillsInputValue, setSkillsInputValue] = useState("");
   const [interestsInputValue, setInterestsInputValue] = useState("");
 
-  const user = useStore(userStore, (state) => state.user);
-  const setUser = useStore(userStore, (state) => state.setUser);
-  const photo = useStore(userStore, (state) => state.photo);
-  const setPhoto = useStore(userStore, (state) => state.setPhoto);
-  const clearUser = useStore(userStore, (state) => state.clearUser);
+  const user = useStore(userStore, (state) => state.unconfirmedUser);
+  const setUser = useStore(userStore, (state) => state.setUnconfirmedUser);
+  const photo = useStore(userStore, (state) => state.unconfirmedPhoto);
+  const setPhoto = useStore(userStore, (state) => state.setUnconfirmedPhoto);
+  const setDefaultUnconfirmedPhoto = useStore(
+    userStore,
+    (state) => state.setDefaultUnconfirmedPhoto
+  );
+  const clearUser = useStore(userStore, (state) => state.clearUnconfirmedUser);
 
   const [labList, setLabList] = useState([]);
   const [skillCategoryList, setSkillCategoryList] = useState([]);
@@ -57,8 +62,7 @@ const UserRegistration = () => {
   const steps = ["Step 1", "Step 2", "Step 3"];
   const [photoPreview, setPhotoPreview] = useState(defaultProfilePic);
 
-
-  // falta testar a criação de um novo user, simples, sem photo e completo
+  // falta testar a criação de um novo user simples, sem photo e completo
 
   useEffect(() => {
     const fetchSkills = async () => {
@@ -326,8 +330,6 @@ const UserRegistration = () => {
     setInterestType(e.target.value);
   };
 
-
-
   const handleSubmit = async () => {
     const formData = new FormData();
     formData.append("user", JSON.stringify(user));
@@ -348,6 +350,7 @@ const UserRegistration = () => {
         console.log("User confirmed:", data);
         toast.success(t("registrationSuccess"));
         clearUser();
+        setDefaultUnconfirmedPhoto();
         setSkillsList([]);
         setInterestsList([]);
         setVisibility("private");
@@ -357,6 +360,13 @@ const UserRegistration = () => {
         const errorData = await response.json();
         console.error("Failed to confirm user:", errorData);
         toast.error(t("registrationFailure"));
+        clearUser();
+        setDefaultUnconfirmedPhoto();
+        setSkillsList([]);
+        setInterestsList([]);
+        setVisibility("private");
+        setStep(1);
+        navigate("/"); // Redirect to the home page for user to login
       }
     } catch (error) {
       console.error("Error:", error);
