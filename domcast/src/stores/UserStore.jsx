@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import defaultProfilePic from "../../multimedia/default-profile-pic.png";
+import defaultProfilePic from "../../src/multimedia/default-profile-pic.png";
 
 
 export const userStore = create(
@@ -61,6 +61,26 @@ export const userStore = create(
       })),
       setDefaultUnconfirmedPhoto: () => set(() => ({ unconfirmedPhoto: defaultProfilePic })),
       setDefaultLoggedPhoto: () => set(() => ({ loggedPhoto: defaultProfilePic })),
+      clearLoggedUser: () => {
+        set(() => ({
+          loggedUser: {
+            id: null,
+            sessionToken: '',
+            firstName: '',
+            lastName: '',
+            nickname: '',
+            photo: '',
+            biography: '',
+            visible: false,
+            workplace: '',
+            interests: [],
+            skills: [],
+          },
+          loggedPhoto: null,
+        }));
+
+        sessionStorage.removeItem('loggedUser');
+      }
     }),
     {
       name: "userStore",

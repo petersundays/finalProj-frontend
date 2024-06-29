@@ -39,10 +39,15 @@ const UserEdit = () => {
   const [skillsInputValue, setSkillsInputValue] = useState("");
   const [interestsInputValue, setInterestsInputValue] = useState("");
 
-  const user = useStore(userStore, (state) => state.user);
-  const setUser = useStore(userStore, (state) => state.setUser);
-  const photo = useStore(userStore, (state) => state.photo);
-  const setPhoto = useStore(userStore, (state) => state.setPhoto);
+  const user = useStore(userStore, (state) => state.loggedUser);
+  const setUser = useStore(userStore, (state) => state.setLoggedUser);
+  const photo = useStore(userStore, (state) => state.loggedPhoto);
+  const setPhoto = useStore(userStore, (state) => state.setLoggedPhoto);
+  const setDefaultLoggedPhoto = useStore(
+    userStore,
+    (state) => state.setDefaultLoggedPhoto
+  );
+  const clearUser = useStore(userStore, (state) => state.clearLoggedUser);
 
   const [labList, setLabList] = useState([]);
   const [skillCategoryList, setSkillCategoryList] = useState([]);
@@ -54,21 +59,19 @@ const UserEdit = () => {
   const [visibility, setVisibility] = useState(false);
   const [step, setStep] = useState(1);
   const steps = ["Step 1", "Step 2", "Step 3"];
-  const [photoPreview, setPhotoPreview] = useState(defaultProfilePic);
-
-
-  // falta testar a criação de um novo user, simples, sem photo e completo
+  const [photoPreview, setPhotoPreview] = useState(photo || defaultProfilePic);
 
   useEffect(() => {
     const fetchSkills = async () => {
       try {
         const skillsResponse = await fetch(
-          `${Base_url_skills}unconfirmed-user`,
+          `${Base_url_skills}`,
           {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              token: token,
+              token: user.sessionToken,
+              id: id,
             },
           }
         );
@@ -85,12 +88,13 @@ const UserEdit = () => {
     const fetchInterests = async () => {
       try {
         const interestsResponse = await fetch(
-          `${Base_url_interests}unconfirmed-user`,
+          `${Base_url_interests}`,
           {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              token: token,
+              token: user.sessionToken,
+              id: id,
             },
           }
         );
@@ -106,11 +110,12 @@ const UserEdit = () => {
 
     const fetchLabs = async () => {
       try {
-        const labsResponse = await fetch(`${Base_url_lab}enum-unconfirmed`, {
+        const labsResponse = await fetch(`${Base_url_lab}enum`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            token: token,
+            token: user.sessionToken,
+            id: id,
           },
         });
         if (labsResponse.ok) {
@@ -126,12 +131,13 @@ const UserEdit = () => {
     const fetchSkillCategories = async () => {
       try {
         const skillCategoriesResponse = await fetch(
-          `${Base_url_skills}enum-unconfirmed`,
+          `${Base_url_skills}enum`,
           {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              token: token,
+              token: user.sessionToken,
+              id: id,
             },
           }
         );
@@ -148,12 +154,13 @@ const UserEdit = () => {
     const fetchInterestCategories = async () => {
       try {
         const interestCategoriesResponse = await fetch(
-          `${Base_url_interests}enum-unconfirmed`,
+          `${Base_url_interests}enum`,
           {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              token: token,
+              token: user.sessionToken,
+              id: id,
             },
           }
         );
@@ -167,9 +174,10 @@ const UserEdit = () => {
         console.error("Error fetching interest categories:", error);
       }
     };
-
-    if (token) {
-      setUser({ ...user, validationToken: token });
+    
+    if (!user.sessionToken) {
+      clearUser();
+      navigate("/");
     }
 
     fetchSkills();
@@ -177,7 +185,7 @@ const UserEdit = () => {
     fetchLabs();
     fetchSkillCategories();
     fetchInterestCategories();
-  }, [token]);
+  }, []);
 
   const formatCategoryName = (name) => {
     return name
@@ -325,8 +333,6 @@ const UserEdit = () => {
     setInterestType(e.target.value);
   };
 
-
-
   const handleSubmit = async () => {
     const formData = new FormData();
     formData.append("user", JSON.stringify(user));
@@ -392,12 +398,9 @@ const UserEdit = () => {
   };
 
   const handleCancel = () => {
-    clearUser();
-    setSkillsList([]);
-    setInterestsList([]);
-    setVisibility("private");
-    setStep(1);
+    navigate(-1);
   };
+  
 
   const renderStep = () => {
     switch (step) {
