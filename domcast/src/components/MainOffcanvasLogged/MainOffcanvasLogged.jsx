@@ -2,6 +2,7 @@ import React from "react";
 import { Offcanvas, Nav } from "react-bootstrap";
 import defaultProfilePic from "../../multimedia/default-profile-pic.png";
 import { useNavigate } from "react-router-dom";
+import { useStore } from "zustand";
 import { userStore } from "../../stores/UserStore.jsx";
 import "./MainOffcanvasLogged.css";
 
@@ -14,11 +15,11 @@ function MainOffcanvasLogged({
   language,
 }) {
   const navigate = useNavigate();
-  const user = userStore((state) => state.user);
-  const clearUser = userStore((state) => state.clearUser);
+  const loggedUser = userStore((state) => state.loggedUser);
+  const clearLoggedUser = userStore((state) => state.clearLoggedUser);
 
   const handleLogout = () => {
-    clearUser();
+    clearLoggedUser();
     navigate("/", { replace: true });
   };
 
@@ -28,7 +29,7 @@ function MainOffcanvasLogged({
       <Offcanvas.Header closeButton>
         <div className="offcanvas-header">
           <img src={defaultProfilePic} alt="Profile" className="profile-pic mr-2" />
-          <Offcanvas.Title className="offcanvas-main-title">{user.firstName} {user.lastName}</Offcanvas.Title>
+          <Offcanvas.Title className="offcanvas-main-title">{loggedUser.firstName} {loggedUser.lastName}</Offcanvas.Title>
         </div>
       </Offcanvas.Header>
       <hr />

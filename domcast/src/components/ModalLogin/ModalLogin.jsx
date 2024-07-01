@@ -8,7 +8,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 function ModalLogin({ show, handleClose }) {
   const navigate = useNavigate();
-  const { setUser } = userStore();
+  const { setLoggedUser } = userStore();
   const [showModalForgotPassword, setShowModalForgotPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -54,7 +54,7 @@ function ModalLogin({ show, handleClose }) {
         if (response.ok) {
           const data = await response.json();
           console.log(data);
-          await setUser(data);
+          await setLoggedUser(data);
           console.log(userStore.getState().user);
           navigate("/domcast/", { replace: true });
         } else {

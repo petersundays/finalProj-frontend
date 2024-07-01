@@ -39,15 +39,9 @@ const UserEdit = () => {
   const [skillsInputValue, setSkillsInputValue] = useState("");
   const [interestsInputValue, setInterestsInputValue] = useState("");
 
-  const user = useStore(userStore, (state) => state.loggedUser);
-  const setUser = useStore(userStore, (state) => state.setLoggedUser);
-  const photo = useStore(userStore, (state) => state.loggedPhoto);
-  const setPhoto = useStore(userStore, (state) => state.setLoggedPhoto);
-  const setDefaultLoggedPhoto = useStore(
-    userStore,
-    (state) => state.setDefaultLoggedPhoto
-  );
-  const clearUser = useStore(userStore, (state) => state.clearLoggedUser);
+  const loggedUser = useStore(userStore, (state) => state.loggedUser);
+  const setloggedUser = useStore(userStore, (state) => state.setloggedUser);
+  const clearloggedUser = useStore(userStore, (state) => state.clearloggedUser);
 
   const [labList, setLabList] = useState([]);
   const [skillCategoryList, setSkillCategoryList] = useState([]);
@@ -59,7 +53,7 @@ const UserEdit = () => {
   const [visibility, setVisibility] = useState(false);
   const [step, setStep] = useState(1);
   const steps = ["Step 1", "Step 2", "Step 3"];
-  const [photoPreview, setPhotoPreview] = useState(photo || defaultProfilePic);
+  const [photoPreview, setPhotoPreview] = useState(loggedUser.photo || defaultProfilePic);
 
   useEffect(() => {
     const fetchSkills = async () => {
@@ -70,7 +64,7 @@ const UserEdit = () => {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              token: user.sessionToken,
+              token: loggedUser.sessionToken,
               id: id,
             },
           }
@@ -93,7 +87,7 @@ const UserEdit = () => {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              token: user.sessionToken,
+              token: loggedUser.sessionToken,
               id: id,
             },
           }
@@ -114,7 +108,7 @@ const UserEdit = () => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            token: user.sessionToken,
+            token: loggedUser.sessionToken,
             id: id,
           },
         });
@@ -136,7 +130,7 @@ const UserEdit = () => {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              token: user.sessionToken,
+              token: loggedUser.sessionToken,
               id: id,
             },
           }
@@ -159,7 +153,7 @@ const UserEdit = () => {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              token: user.sessionToken,
+              token: loggedUser.sessionToken,
               id: id,
             },
           }
@@ -175,8 +169,8 @@ const UserEdit = () => {
       }
     };
     
-    if (!user.sessionToken) {
-      clearUser();
+    if (!loggedUser.sessionToken) {
+      clearloggedUser();
       navigate("/");
     }
 
@@ -244,7 +238,7 @@ const UserEdit = () => {
         setCustomSkill(trimmedInputValue);
         setShowSkillModal(true);
       } else {
-        setUser({ ...user, skills: selected });
+        setloggedUser({ ...loggedUser, skills: selected });
       }
     } else if (labelKey === "interests") {
       const trimmedInputValue = interestsInputValue.trim();
@@ -256,7 +250,7 @@ const UserEdit = () => {
         setCustomInterest(trimmedInputValue);
         setShowInterestModal(true);
       } else {
-        setUser({ ...user, interests: selected });
+        setloggedUser({ ...loggedUser, interests: selected });
       }
     }
   };
@@ -271,14 +265,14 @@ const UserEdit = () => {
     const newSkillDto = { name: customSkill, type: skillType };
     const updatedSkillsList = [...skillsList, newSkillDto];
 
-    setUser({
-      ...user,
-      skillDtos: [...user.skillDtos, newSkillDto],
-      skills: [...user.skills, customSkill],
+    setloggedUser({
+      ...loggedUser,
+      skillDtos: [...loggedUser.skillDtos, newSkillDto],
+      skills: [...loggedUser.skills, customSkill],
     });
 
     setSkillsList(updatedSkillsList);
-    handleTypeaheadChange("skills", [...user.skills, customSkill]);
+    handleTypeaheadChange("skills", [...loggedUser.skills, customSkill]);
 
     setShowSkillModal(false);
     setCustomSkill("");
@@ -296,14 +290,14 @@ const UserEdit = () => {
     const newInterestDto = { name: customInterest, type: interestType };
     const updatedInterestsList = [...interestsList, newInterestDto];
 
-    setUser((prevUser) => ({
-      ...prevUser,
-      interestDtos: [...prevUser.interestDtos, newInterestDto], // Ensure you are adding the new interest DTO correctly
-      interests: [...prevUser.interests, customInterest],
+    setloggedUser((prevloggedUser) => ({
+      ...prevloggedUser,
+      interestDtos: [...prevloggedUser.interestDtos, newInterestDto], // Ensure you are adding the new interest DTO correctly
+      interests: [...prevloggedUser.interests, customInterest],
     }));
 
     setInterestsList(updatedInterestsList);
-    handleTypeaheadChange("interests", [...user.interests, customInterest]);
+    handleTypeaheadChange("interests", [...loggedUser.interests, customInterest]);
 
     setShowInterestModal(false);
     setCustomInterest("");
@@ -316,13 +310,13 @@ const UserEdit = () => {
     if (file) {
       const photoUrl = URL.createObjectURL(file);
       setPhotoPreview(photoUrl);
-      setPhoto(file);
+      setloggedUser({ ...loggedUser, photo: file });
     }
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setUser({ ...user, [name]: value });
+    setloggedUser({ ...loggedUser, [name]: value });
   };
 
   const handleSkillCategoryChange = (e) => {
@@ -333,13 +327,15 @@ const UserEdit = () => {
     setInterestType(e.target.value);
   };
 
+// falta fazer o handle submit, adaptar os values de cada parte do html para os dados obtidos da store e testar tudo
+
   const handleSubmit = async () => {
     const formData = new FormData();
-    formData.append("user", JSON.stringify(user));
-    console.log("User data:", user);
-    if (photo !== null) {
-      formData.append("photo", photo);
-      console.log("Photo:", photo);
+    formData.append("user", JSON.stringify(loggedUser));
+    console.log("User data:", loggedUser);
+    if (loggedUser.photo !== null) {
+      formData.append("photo", loggedUser.photo);
+      console.log("Photo:", loggedUser.photo);
     }
     console.log("Formdata:", formData);
 
@@ -352,12 +348,12 @@ const UserEdit = () => {
         const data = await response.json();
         console.log("User confirmed:", data);
         toast.success(t("registrationSuccess"));
-        clearUser();
+        clearloggedUser();
         setSkillsList([]);
         setInterestsList([]);
         setVisibility("private");
         setStep(1);
-        navigate("/"); // Redirect to the home page for user to login
+        navigate("/"); // Redirect to the home page for loggedUser to login
       } else {
         const errorData = await response.json();
         console.error("Failed to confirm user:", errorData);
@@ -371,9 +367,9 @@ const UserEdit = () => {
 
   const validateStep1 = () => {
     if (
-      user.firstName === "" ||
-      user.lastName === "" ||
-      user.workplace === ""
+      loggedUser.firstName === "" ||
+      loggedUser.lastName === "" ||
+      loggedUser.workplace === ""
     ) {
       console.log("Please fill in all required fields");
       toast.error(t("requiredFieldsMissing"));
@@ -460,7 +456,7 @@ const UserEdit = () => {
                     type="text"
                     placeholder="First Name"
                     onChange={handleChange}
-                    value={user.firstName}
+                    value={loggedUser.firstName}
                     required
                   />
                 </FloatingLabel>
@@ -475,7 +471,7 @@ const UserEdit = () => {
                     type="text"
                     placeholder="Last Name"
                     onChange={handleChange}
-                    value={user.lastName}
+                    value={loggedUser.lastName}
                     required
                   />
                 </FloatingLabel>
@@ -484,9 +480,9 @@ const UserEdit = () => {
                   controlId="floatingLab"
                   className="mb-3"
                   style={{ width: "25rem" }}
-                  value={user.workplace}
+                  value={loggedUser.workplace}
                   onChange={(e) =>
-                    setUser({ ...user, workplace: e.target.value })
+                    setloggedUser({ ...loggedUser, workplace: e.target.value })
                   }
                 >
                   <option value="" disabled>
@@ -534,7 +530,7 @@ const UserEdit = () => {
                     width: "24rem",
                     overflow: "auto",
                   }}
-                  value={user.biography}
+                  value={loggedUser.biography}
                 />
               </FloatingLabel>
             </Row>
@@ -550,7 +546,7 @@ const UserEdit = () => {
                   type="text"
                   placeholder="Nickname"
                   onChange={handleChange}
-                  value={user.nickname}
+                  value={loggedUser.nickname}
                 />
               </FloatingLabel>
             </Row>
@@ -572,10 +568,10 @@ const UserEdit = () => {
                   <Form.Check
                     type="switch"
                     id="privacy"
-                    label={user.visible ? "Public" : "Private"}
-                    checked={user.visible}
+                    label={loggedUser.visible ? "Public" : "Private"}
+                    checked={loggedUser.visible}
                     onChange={(e) =>
-                      setUser({ ...user, visible: e.target.checked })
+                      setloggedUser({ ...loggedUser, visible: e.target.checked })
                     }
                     className="check-slider-privacy"
                   />
@@ -598,7 +594,7 @@ const UserEdit = () => {
                     labelKey="name"
                     multiple
                     options={generateSkillOptions()}
-                    selected={user.skills}
+                    selected={loggedUser.skills}
                     onInputChange={handleSkillsInputChange}
                     onChange={(selected) =>
                       handleTypeaheadChange("skills", selected)
@@ -621,7 +617,7 @@ const UserEdit = () => {
                     labelKey="name"
                     multiple
                     options={generateInterestOptions()}
-                    selected={user.interests}
+                    selected={loggedUser.interests}
                     onInputChange={handleInterestsInputChange}
                     onChange={(selected) =>
                       handleTypeaheadChange("interests", selected)

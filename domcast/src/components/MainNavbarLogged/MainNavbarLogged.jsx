@@ -9,15 +9,20 @@ import { Base_url_users } from "../../functions/UsersFunctions.jsx";
 
 function MainNavbarLogged({ handleShow, handleLanguageChange, language }) {
   const navigate = useNavigate();
-  const user = userStore((state) => state.user);
-  const clearUser = userStore((state) => state.clearUser);
+  const loggedUser = userStore((state) => state.loggedUser);
+  const clearLoggedUser = userStore((state) => state.clearLoggedUser);
+
+  const editProfile = () => {
+    const id = userStore.getState().loggedUser.id;
+    navigate("/myprofile/" + id, { replace: true });
+  };
 
   const handleLogout = async (event) => {
     event.preventDefault();
 
-    const token = userStore.getState().user.sessionToken;
+    const token = userStore.getState().loggedUser.sessionToken;
     console.log(token);
-    const id = userStore.getState().user.id;
+    const id = userStore.getState().loggedUser.id;
     console.log(id);
 
     try {
@@ -32,7 +37,7 @@ function MainNavbarLogged({ handleShow, handleLanguageChange, language }) {
 
       if (response.ok) {
         console.log("Logout successful");
-        clearUser();
+        clearLoggedUser();
         navigate("/", { replace: true });
       } else {
         console.log("Logout failed");
@@ -62,20 +67,20 @@ function MainNavbarLogged({ handleShow, handleLanguageChange, language }) {
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ms-auto align-items-center">
             <img
-              src={defaultProfilePic}
+              src={loggedUser.photo ? loggedUser.photo : defaultProfilePic}
               alt="Profile"
               className="profile-pic me-2"
             />
             <NavDropdown
               title={
                 <span className="dropdown-title">
-                  {user.firstName} {user.lastName}
+                  {loggedUser.firstName} {loggedUser.lastName}
                 </span>
               }
               id="basic-nav-dropdown"
               className="ms-2 me-5 dropdown-profile"
             >
-              <NavDropdown.Item href="#profile">Profile</NavDropdown.Item>
+              <NavDropdown.Item onClick={editProfile}>Profile</NavDropdown.Item>
               <NavDropdown.Item href="#messages">Message Hub</NavDropdown.Item>
               <NavDropdown.Divider />
               <NavDropdown.Item onClick={handleLogout}>Logout</NavDropdown.Item>
@@ -103,8 +108,8 @@ function MainNavbarLogged({ handleShow, handleLanguageChange, language }) {
                 }`}
                 onClick={() => handleLanguageChange("PT")}
                 style={{
-                  width: "50px",
-                  height: "32px",
+                  width: "3.25rem",
+                  height: "2rem",
                   fontSize: "12px",
                   fontWeight: "bold",
                 }}

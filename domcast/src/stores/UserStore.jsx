@@ -2,7 +2,6 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import defaultProfilePic from "../../src/multimedia/default-profile-pic.png";
 
-
 export const userStore = create(
   persist(
     (set) => ({
@@ -19,7 +18,7 @@ export const userStore = create(
         interestDtos: [],
         skillDtos: [],
       },
-      unconfirmedPhoto: null,
+      unconfirmedPhoto: defaultProfilePic,
       loggedUser: {
         id: null,
         sessionToken: '',
@@ -33,7 +32,6 @@ export const userStore = create(
         interests: [],
         skills: [],
       },
-      loggedPhoto: null,
       setUnconfirmedUser: (newUser) =>
         set((state) => ({
           unconfirmedUser: { ...state.unconfirmedUser, ...newUser },
@@ -43,7 +41,6 @@ export const userStore = create(
           loggedUser: { ...state.loggedUser, ...newUser },
         })),
       setUnconfirmedPhoto: (photo) => set(() => ({ unconfirmedPhoto: photo })),
-      setLoggedPhoto: (photo) => set(() => ({ loggedPhoto: photo })),
       clearUnconfirmedUser: () => set(() => ({
         unconfirmedUser: {
           validationToken: '',
@@ -58,9 +55,9 @@ export const userStore = create(
           interestDtos: [],
           skillDtos: [],
         },
+        unconfirmedPhoto: defaultProfilePic,
       })),
       setDefaultUnconfirmedPhoto: () => set(() => ({ unconfirmedPhoto: defaultProfilePic })),
-      setDefaultLoggedPhoto: () => set(() => ({ loggedPhoto: defaultProfilePic })),
       clearLoggedUser: () => {
         set(() => ({
           loggedUser: {
@@ -76,10 +73,8 @@ export const userStore = create(
             interests: [],
             skills: [],
           },
-          loggedPhoto: null,
         }));
-
-        sessionStorage.removeItem('loggedUser');
+        sessionStorage.removeItem('userStore');
       }
     }),
     {
