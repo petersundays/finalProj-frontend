@@ -38,10 +38,13 @@ const UserEdit = () => {
   const [interestType, setInterestType] = useState(1);
   const [skillsInputValue, setSkillsInputValue] = useState("");
   const [interestsInputValue, setInterestsInputValue] = useState("");
+  const [customSkillList, setCustomSkillList] = useState([]);
+  const [customInterestList, setCustomInterestList] = useState([]);
 
   const loggedUser = useStore(userStore, (state) => state.loggedUser);
-  const setloggedUser = useStore(userStore, (state) => state.setloggedUser);
-  const clearloggedUser = useStore(userStore, (state) => state.clearloggedUser);
+  const setLoggedUser = useStore(userStore, (state) => state.setLoggedUser);
+  const clearLoggedUser = useStore(userStore, (state) => state.clearLoggedUser);
+  const visibility = useStore(userStore, (state) => state.visibility);
 
   const [labList, setLabList] = useState([]);
   const [skillCategoryList, setSkillCategoryList] = useState([]);
@@ -50,25 +53,29 @@ const UserEdit = () => {
   const [showSkillModal, setShowSkillModal] = useState(false);
   const [showInterestModal, setShowInterestModal] = useState(false);
 
-  const [visibility, setVisibility] = useState(false);
   const [step, setStep] = useState(1);
   const steps = ["Step 1", "Step 2", "Step 3"];
-  const [photoPreview, setPhotoPreview] = useState(loggedUser.photo || defaultProfilePic);
+  const [photoPreview, setPhotoPreview] = useState(
+    loggedUser.photo || defaultProfilePic
+  );
+
 
   useEffect(() => {
+    if (!loggedUser.sessionToken) {
+      clearLoggedUser();
+      navigate("/");
+    }
+
     const fetchSkills = async () => {
       try {
-        const skillsResponse = await fetch(
-          `${Base_url_skills}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              token: loggedUser.sessionToken,
-              id: id,
-            },
-          }
-        );
+        const skillsResponse = await fetch(`${Base_url_skills}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            token: loggedUser.sessionToken,
+            id: id,
+          },
+        });
         if (skillsResponse.ok) {
           const skillsData = await skillsResponse.json();
           setSkillsList(skillsData);
@@ -81,17 +88,14 @@ const UserEdit = () => {
 
     const fetchInterests = async () => {
       try {
-        const interestsResponse = await fetch(
-          `${Base_url_interests}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              token: loggedUser.sessionToken,
-              id: id,
-            },
-          }
-        );
+        const interestsResponse = await fetch(`${Base_url_interests}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            token: loggedUser.sessionToken,
+            id: id,
+          },
+        });
         if (interestsResponse.ok) {
           const interestsData = await interestsResponse.json();
           setInterestsList(interestsData);
@@ -124,17 +128,14 @@ const UserEdit = () => {
 
     const fetchSkillCategories = async () => {
       try {
-        const skillCategoriesResponse = await fetch(
-          `${Base_url_skills}enum`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              token: loggedUser.sessionToken,
-              id: id,
-            },
-          }
-        );
+        const skillCategoriesResponse = await fetch(`${Base_url_skills}enum`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            token: loggedUser.sessionToken,
+            id: id,
+          },
+        });
         if (skillCategoriesResponse.ok) {
           const skillCategoriesData = await skillCategoriesResponse.json();
           setSkillCategoryList(skillCategoriesData);
@@ -168,11 +169,6 @@ const UserEdit = () => {
         console.error("Error fetching interest categories:", error);
       }
     };
-    
-    if (!loggedUser.sessionToken) {
-      clearloggedUser();
-      navigate("/");
-    }
 
     fetchSkills();
     fetchInterests();
@@ -238,7 +234,7 @@ const UserEdit = () => {
         setCustomSkill(trimmedInputValue);
         setShowSkillModal(true);
       } else {
-        setloggedUser({ ...loggedUser, skills: selected });
+        setLoggedUser({ ...loggedUser, skills: selected });
       }
     } else if (labelKey === "interests") {
       const trimmedInputValue = interestsInputValue.trim();
@@ -250,7 +246,7 @@ const UserEdit = () => {
         setCustomInterest(trimmedInputValue);
         setShowInterestModal(true);
       } else {
-        setloggedUser({ ...loggedUser, interests: selected });
+        setLoggedUser({ ...loggedUser, interests: selected });
       }
     }
   };
@@ -265,12 +261,13 @@ const UserEdit = () => {
     const newSkillDto = { name: customSkill, type: skillType };
     const updatedSkillsList = [...skillsList, newSkillDto];
 
-    setloggedUser({
+    setLoggedUser({
       ...loggedUser,
       skillDtos: [...loggedUser.skillDtos, newSkillDto],
       skills: [...loggedUser.skills, customSkill],
     });
 
+    setCustomSkillList([...customSkillList, newSkillDto]);
     setSkillsList(updatedSkillsList);
     handleTypeaheadChange("skills", [...loggedUser.skills, customSkill]);
 
@@ -290,14 +287,18 @@ const UserEdit = () => {
     const newInterestDto = { name: customInterest, type: interestType };
     const updatedInterestsList = [...interestsList, newInterestDto];
 
-    setloggedUser((prevloggedUser) => ({
+    setLoggedUser((prevloggedUser) => ({
       ...prevloggedUser,
       interestDtos: [...prevloggedUser.interestDtos, newInterestDto], // Ensure you are adding the new interest DTO correctly
       interests: [...prevloggedUser.interests, customInterest],
     }));
 
+    setCustomInterestList([...customInterestList, newInterestDto]);
     setInterestsList(updatedInterestsList);
-    handleTypeaheadChange("interests", [...loggedUser.interests, customInterest]);
+    handleTypeaheadChange("interests", [
+      ...loggedUser.interests,
+      customInterest,
+    ]);
 
     setShowInterestModal(false);
     setCustomInterest("");
@@ -310,13 +311,13 @@ const UserEdit = () => {
     if (file) {
       const photoUrl = URL.createObjectURL(file);
       setPhotoPreview(photoUrl);
-      setloggedUser({ ...loggedUser, photo: file });
+      setLoggedUser({ ...loggedUser, photo: file });
     }
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setloggedUser({ ...loggedUser, [name]: value });
+    setLoggedUser({ ...loggedUser, [name]: value });
   };
 
   const handleSkillCategoryChange = (e) => {
@@ -327,7 +328,13 @@ const UserEdit = () => {
     setInterestType(e.target.value);
   };
 
-// falta fazer o handle submit, adaptar os values de cada parte do html para os dados obtidos da store e testar tudo
+  const toggleVisibility = () => {
+    const newVisibility = !loggedUser.visible;
+    setLoggedUser({ visible: newVisibility });
+  };
+
+  // falta testar se os valores obtidos estão corretos (em especial visibility e skills e interests)
+  // falta testar handleSubmit e handleChangePassword
 
   const handleSubmit = async () => {
     const formData = new FormData();
@@ -337,31 +344,35 @@ const UserEdit = () => {
       formData.append("photo", loggedUser.photo);
       console.log("Photo:", loggedUser.photo);
     }
-    console.log("Formdata:", formData);
+    formData.append("skillDtos", JSON.stringify(customSkillList));
+    console.log("skillDtos:", customSkillList);
+
+    formData.append("interestDtos", JSON.stringify(customInterestList));
+    console.log("interestDtos:", customInterestList);
 
     try {
-      const response = await fetch(`${Base_url_users}confirm`, {
-        method: "POST",
+      const response = await fetch(`${Base_url_users}`, {
+        method: "PUT",
+        headers: {
+          token: loggedUser.sessionToken,
+          id: id,
+        },
         body: formData,
       });
       if (response.ok) {
         const data = await response.json();
-        console.log("User confirmed:", data);
-        toast.success(t("registrationSuccess"));
-        clearloggedUser();
-        setSkillsList([]);
-        setInterestsList([]);
-        setVisibility("private");
+        console.log("User updated:", data);
+        toast.success(t("updateSuccess"));
         setStep(1);
-        navigate("/"); // Redirect to the home page for loggedUser to login
+        navigate(-1);
       } else {
         const errorData = await response.json();
-        console.error("Failed to confirm user:", errorData);
-        toast.error(t("registrationFailure"));
+        console.error("Failed to update user:", errorData);
+        toast.error(t("updateFailure"));
       }
     } catch (error) {
       console.error("Error:", error);
-      toast.error(t("registrationFailure"));
+      toast.error(t("updateFailure"));
     }
   };
 
@@ -396,7 +407,6 @@ const UserEdit = () => {
   const handleCancel = () => {
     navigate(-1);
   };
-  
 
   const renderStep = () => {
     switch (step) {
@@ -446,7 +456,7 @@ const UserEdit = () => {
                 style={{ border: "none" }}
               >
                 <FloatingLabel
-                  controlId="floatingFirstName"
+                  controlid="floatingFirstName"
                   label={t("firstName*")}
                   className="mb-3"
                   style={{ width: "25rem" }}
@@ -461,7 +471,7 @@ const UserEdit = () => {
                   />
                 </FloatingLabel>
                 <FloatingLabel
-                  controlId="floatingLastName"
+                  controlid="floatingLastName"
                   label={t("lastName*")}
                   className="mb-3"
                   style={{ width: "25rem" }}
@@ -477,12 +487,12 @@ const UserEdit = () => {
                 </FloatingLabel>
                 <Form.Select
                   required
-                  controlId="floatingLab"
+                  controlid="floatingLab"
                   className="mb-3"
                   style={{ width: "25rem" }}
                   value={loggedUser.workplace}
                   onChange={(e) =>
-                    setloggedUser({ ...loggedUser, workplace: e.target.value })
+                    setLoggedUser({ ...loggedUser, workplace: e.target.value })
                   }
                 >
                   <option value="" disabled>
@@ -514,7 +524,7 @@ const UserEdit = () => {
           <Card className="mt-3" style={{ border: "none" }}>
             <Row style={{ justifyContent: "center" }}>
               <FloatingLabel
-                controlId="floatingBio"
+                controlid="floatingBio"
                 label="Bio"
                 className="mb-3 ps-1"
                 style={{ width: "25rem" }}
@@ -536,7 +546,7 @@ const UserEdit = () => {
             </Row>
             <Row style={{ justifyContent: "center" }}>
               <FloatingLabel
-                controlId="floatingNickname"
+                controlid="floatingNickname"
                 label="Nickname"
                 className="mb-3 ps-1"
                 style={{ width: "25rem" }}
@@ -568,11 +578,9 @@ const UserEdit = () => {
                   <Form.Check
                     type="switch"
                     id="privacy"
-                    label={loggedUser.visible ? "Public" : "Private"}
-                    checked={loggedUser.visible}
-                    onChange={(e) =>
-                      setloggedUser({ ...loggedUser, visible: e.target.checked })
-                    }
+                    label={visibility ? "Public" : "Private"}
+                    checked={visibility}
+                    onChange={toggleVisibility}
                     className="check-slider-privacy"
                   />
                 </Col>
@@ -701,7 +709,7 @@ const UserEdit = () => {
             style={{ width: "22.5rem" }}
           />
           <Form.Select
-            controlId="floatingSkill"
+            controlid="floatingSkill"
             style={{ width: "22.5rem" }}
             className="mb-3 mx-5"
             onChange={handleSkillCategoryChange}
@@ -753,7 +761,7 @@ const UserEdit = () => {
             style={{ width: "22.5rem" }}
           />
           <Form.Select
-            controlId="floatingInterest"
+            controlid="floatingInterest"
             style={{ width: "22.5rem" }}
             className="mb-3 mx-5"
             onChange={handleInterestCategoryChange}

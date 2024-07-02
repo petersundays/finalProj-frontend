@@ -75,12 +75,11 @@ function ModalRedefinePassword({ show, handleClose }) {
   return (
     <Modal show={show} onHide={handleClose} centered>
       <Modal.Header closeButton className="mt-2 p-4">
-        <Modal.Title
-          style={{ width: "100%", textAlign: "center" }}
-        ></Modal.Title>
+        <Modal.Title style={{ width: "100%", textAlign: "center" }}>
+          <h3 className="my-2" style={{ color: "var(--color-blue-03"}}>Choose your new password</h3>
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body style={{ textAlign: "center" }}>
-        <h3>Choose your new password</h3>
         <Form>
           <FloatingLabel controlId="floatingOldPassword" className="mb-3 mx-5">
             <div style={{ position: "relative" }}>
@@ -156,18 +155,18 @@ function ModalRedefinePassword({ show, handleClose }) {
           </FloatingLabel>
         </Form>
       </Modal.Body>
-      <Modal.Footer>
-        <Button
+      <Modal.Footer className="justify-content-center">
+              <Button
           variant="secondary"
           onClick={handleClose}
-          className="modal-redefine-pass-cancel-btn"
+          className="modal-redefine-pass-cancel-btn mx-2"
         >
           Cancel
         </Button>
         <Button
           variant="primary"
           onClick={handleSubmit}
-          className="modal-redefine-pass-save-btn"
+          className="modal-redefine-pass-save-btn mx-2"
         >
           Redefine
         </Button>

@@ -1,0 +1,11 @@
+.banner {
+    width: 40rem;
+    margin: auto; /* Center the div */
+    justify-content: center !important;
+}
+
+@media (max-width: 992px) {
+    .banner {
+        width: 80%; 
+    }
+}

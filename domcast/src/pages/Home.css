@@ -5,11 +5,13 @@ body,
   background-color: var(--color-white);
 }
 
-.main-container {
+.main-container-not-logged {
   min-height: calc(100vh - 56px); /* Altura total menos a navbar */
   display: flex;
   flex-direction: column;
   padding-top: 56px; /* Altura da navbar */
+  align-items: center;
+  margin-bottom: 3rem;
 }
 
 .row.flex-grow-1 {
@@ -22,8 +24,9 @@ body,
   overflow-y: auto; /* Barra lateral rolável */
 }
 
-.content {
+.content-not-logged {
   padding: 20px;
+  justify-content: center !important;
 }
 
 @media (max-width: 992px) {
@@ -176,3 +179,12 @@ body,
   border-top: 1px solid var(--color-water-green-01);
 }
 
+.row-banner {
+  margin-top: 3rem;
+}
+
+.no-border-card {
+  border: none !important;
+  background-color: rgba(31, 156, 240, 0.9);
+  margin-inline: 3rem;
+}

@@ -115,7 +115,6 @@ const UserRegistration = () => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            token: token,
           },
         });
         if (labsResponse.ok) {

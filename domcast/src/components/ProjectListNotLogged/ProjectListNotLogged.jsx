@@ -1,267 +1,215 @@
-import React, { useState } from "react";
-import { Card, Row, Col, Button } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import { Card, Row, Col, Button, Form } from "react-bootstrap";
 import OthersProjCardNotLogged from "../OthersProjCardNotLogged/OthersProjCardNotLogged";
 import "./ProjectListNotLogged.css";
+import {
+  Base_url_projects,
+  Base_url_lab,
+  Base_url_skills,
+  Base_url_keywords,
+} from "../../functions/UsersFunctions.jsx";
+import { Typeahead } from "react-bootstrap-typeahead";
 
-// const ProjectListNotLogged = ({ cards = [] }) => {
 const ProjectListNotLogged = () => {
-  // Hardcoded card data
-  const cards = [
-    {
-      title: "Renewable Energy Grid",
-      lab: "Porto",
-      description: "Creating a smart grid for renewable energy.",
-      members: "4/6",
-      state: "Finished",
-      link: "#",
-    },
-    {
-      title: "Digital Twins",
-      lab: "Tomar",
-      description: "Developing digital twin technology for manufacturing.",
-      members: "2/7",
-      state: "Finished",
-      link: "#",
-    },
-    {
-      title: "Smart Home Devices",
-      lab: "Lisboa",
-      description: "Developing IoT devices for smart homes.",
-      members: "3/4",
-      state: "Planning",
-      link: "#",
-    },
-    {
-      title: "Autonomous Vehicle Project",
-      lab: "Porto",
-      description: "Designing autonomous vehicle systems.",
-      members: "1/6",
-      state: "In Progress",
-      link: "#",
-    },
-    {
-      title: "IoT for Smart Agriculture",
-      lab: "Vila Real",
-      description: "Using IoT devices to enhance agriculture.",
-      members: "4/4",
-      state: "In Progress",
-      link: "#",
-    },
-    {
-      title: "Data Analysis Platform",
-      lab: "Tomar",
-      description: "Building a platform for big data analysis.",
-      members: "2/3",
-      state: "Finished",
-      link: "#",
-    },
-    {
-      title: "Bioinformatics",
-      lab: "Viseu",
-      description: "Researching bioinformatics for medical research.",
-      members: "2/2",
-      state: "Finished",
-      link: "#",
-    },
-    {
-      title: "Environmental Monitoring",
-      lab: "Vila Real",
-      description: "Monitoring environmental changes using sensors.",
-      members: "5/7",
-      state: "Approved",
-      link: "#",
-    },
-    {
-      title: "Quantum Computing Research",
-      lab: "Viseu",
-      description: "Investigating applications of quantum computing.",
-      members: "4/5",
-      state: "Approved",
-      link: "#",
-    },
-    {
-      title: "Telemedicine Solutions",
-      lab: "Coimbra",
-      description: "Developing platforms for remote healthcare.",
-      members: "4/4",
-      state: "Approved",
-      link: "#",
-    },
-    {
-      title: "Machine Learning Algorithms",
-      lab: "Lisboa",
-      description: "Creating new machine learning algorithms.",
-      members: "3/3",
-      state: "Ready",
-      link: "#",
-    },
-    {
-      title: "AI for Healthcare",
-      lab: "Coimbra",
-      description: "Developing AI solutions for early diagnosis.",
-      members: "3/5",
-      state: "In Progress",
-      link: "#",
-    },
-    {
-      title: "Genetic Engineering",
-      lab: "Tomar",
-      description: "Exploring genetic engineering techniques.",
-      members: "2/2",
-      state: "Approved",
-      link: "#",
-    },
-    {
-      title: "Green Building Materials",
-      lab: "Porto",
-      description: "Researching eco-friendly building materials.",
-      members: "1/2",
-      state: "Approved",
-      link: "#",
-    },
-    {
-      title: "Renewable Energy Initiative",
-      lab: "Lisboa",
-      description: "Researching sustainable energy sources.",
-      members: "2/4",
-      state: "Approved",
-      link: "#",
-    },
-    {
-      title: "Digital Education Tools",
-      lab: "Tomar",
-      description: "Developing digital tools for education.",
-      members: "1/6",
-      state: "Cancelled",
-      link: "#",
-    },
-    {
-      title: "Smart City Infrastructure",
-      lab: "Porto",
-      description: "Implementing smart technologies in urban areas.",
-      members: "5/6",
-      state: "In Progress",
-      link: "#",
-    },
-    {
-      title: "Virtual Reality for Training",
-      lab: "Vila Real",
-      description: "Developing VR training programs.",
-      members: "7/7",
-      state: "In Progress",
-      link: "#",
-    },
-    {
-      title: "AI for Environmental Science",
-      lab: "Viseu",
-      description: "Using AI to study environmental science.",
-      members: "1/4",
-      state: "Finished",
-      link: "#",
-    },
-    {
-      title: "Wearable Health Devices",
-      lab: "Vila Real",
-      description: "Creating wearable devices for health monitoring.",
-      members: "4/7",
-      state: "Approved",
-      link: "#",
-    },
-    {
-      title: "Cybersecurity Enhancement",
-      lab: "Tomar",
-      description: "Improving security protocols for local businesses.",
-      members: "1/3",
-      state: "Cancelled",
-      link: "#",
-    },
-    {
-      title: "Cloud Computing Solutions",
-      lab: "Viseu",
-      description: "Enhancing cloud computing infrastructures.",
-      members: "1/1",
-      state: "In Progress",
-      link: "#",
-    },
-    {
-      title: "Robotics for Agriculture",
-      lab: "Vila Real",
-      description: "Automating agricultural processes with robotics.",
-      members: "5/7",
-      state: "In Progress",
-      link: "#",
-    },
-    {
-      title: "Blockchain for Finance",
-      lab: "Coimbra",
-      description: "Implementing blockchain technology in finance.",
-      members: "2/5",
-      state: "Planning",
-      link: "#",
-    },
-    {
-      title: "Health Informatics",
-      lab: "Lisboa",
-      description: "Improving health informatics systems.",
-      members: "1/3",
-      state: "Cancelled",
-      link: "#",
-    },
-    {
-      title: "Renewable Energy Storage",
-      lab: "Coimbra",
-      description: "Developing storage solutions for renewable energy.",
-      members: "4/5",
-      state: "Ready",
-      link: "#",
-    },
-    {
-      title: "Language Processing Tool",
-      lab: "Viseu",
-      description: "Creating a tool for natural language processing.",
-      members: "2/2",
-      state: "Ready",
-      link: "#",
-    },
-    {
-      title: "Advanced Robotics",
-      lab: "Lisboa",
-      description: "Researching advanced robotics applications.",
-      members: "3/4",
-      state: "Ready",
-      link: "#",
-    },
-    {
-      title: "Smart Transportation Systems",
-      lab: "Porto",
-      description: "Implementing smart transportation solutions.",
-      members: "1/3",
-      state: "Planning",
-      link: "#",
-    },
-    {
-      title: "Advanced Biotech Research",
-      lab: "Coimbra",
-      description: "Exploring new biotechnological advancements.",
-      members: "3/5",
-      state: "Planning",
-      link: "#",
-    },
-  ];
-
+  const [cards, setCards] = useState([]);
+  const [filteredCards, setFilteredCards] = useState([]);
   const [visibleRows, setVisibleRows] = useState(2);
+  const [orderBy, setOrderBy] = useState("");
+  const [orderAsc, setOrderAsc] = useState(true);
+  const [keyword, setKeyword] = useState("");
+  const [skill, setSkill] = useState("");
+  const [name, setName] = useState("");
+  const [state, setState] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const [labList, setLabList] = useState([]);
+  const [skillList, setSkillList] = useState([]);
+  const [keywordList, setKeywordList] = useState([]);
+
+  useEffect(() => {
+    fetchEnums();
+  }, []);
+
+  useEffect(() => {
+    fetchProjects();
+  }, [searchQuery, cards]);
+
+  const fetchEnums = async () => {
+    try {
+      const labsResponse = await fetch(`${Base_url_lab}enum-unconfirmed`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (labsResponse.ok) {
+        const labsData = await labsResponse.json();
+        setLabList(labsData);
+        console.log("Labs fetched:", labsData);
+      }
+    } catch (error) {
+      console.error("Error fetching labs:", error);
+    }
+
+    try {
+      const skillsResponse = await fetch(`${Base_url_skills}enum-unconfirmed`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (skillsResponse.ok) {
+        const skillsData = await skillsResponse.json();
+        setSkillList(skillsData);
+        console.log("Skills fetched:", skillsData);
+      }
+    } catch (error) {
+      console.error("Error fetching skills:", error);
+    }
+
+    try {
+      const keywordsResponse = await fetch(
+        `${Base_url_keywords}enum-unconfirmed`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (keywordsResponse.ok) {
+        const keywordsData = await keywordsResponse.json();
+        setKeywordList(keywordsData);
+        console.log("Keywords fetched:", keywordsData);
+      }
+    } catch (error) {
+      console.error("Error fetching keywords:", error);
+    }
+
+    fetchProjects();
+  };
+
+  const fetchProjects = async () => {
+    if (!searchQuery && !orderBy && !orderAsc) {
+      setOrderBy("name");
+      setOrderAsc(true);
+    } else {
+      try {
+        const url = new URL(`${Base_url_projects}`);
+        if (orderBy) url.searchParams.append("orderBy", orderBy);
+        if (orderAsc) url.searchParams.append("orderAsc", orderAsc);
+        if (searchQuery) url.searchParams.append("searchQuery", searchQuery);
+
+        const projectsResponse = await fetch(url.toString(), {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (projectsResponse.ok) {
+          const data = await projectsResponse.json();
+          setCards(data);
+        } else {
+          console.log("Error fetching projects");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    }
+  };
 
   const handleShowMore = () => {
     setVisibleRows(visibleRows + 2);
   };
 
+  const handleChangeSortBy = (event) => {
+    setOrderBy(event.target.value);
+  };
+
+  const handleChangeSearchBy = (event) => {
+    if (event.target.value === "name") {
+      setName(searchQuery);
+    } else if (event.target.value === "keyword") {
+      setKeyword(searchQuery);
+    } else if (event.target.value === "skill") {
+      setSkill(searchQuery);
+    } else if (event.target.value === "state") {
+
   const visibleCards = cards.slice(0, visibleRows * 3);
 
   return (
-    <Card className="mt-5" style={{ border: "none" }}>
-      <Row className="mb-3">
+    <Card
+      className="mt-2 card-proj-not-logged"
+      style={{ border: "none", maxWidth: "100rem" }}
+    >
+      <Row className="my-3 justify-content-center">
+        <Col className="col-12 col-md-6 col-lg-4">
+          <Col className="my-2 mx-2" style={{ width: "7rem" }}>
+            <Form.Select
+              className="me-2"
+              onChange={handleChangeSearchBy}
+            >
+              <option value="name">Name</option>
+              <option value="state">State</option>
+              <option value="keyword">Keyword</option>
+              <option value="skill">Skill</option>
+            </Form.Select>
+          </Col>
+          <Col className="my-2 mx-2" style={{ width: "10rem" }}>
+
+            <Form.Select className="me-2" onChange={handleChangeState}>
+              <option value="1">Planning</option>
+              <option value="2">Ready</option>
+              <option value="3">Approved</option>
+              <option value="4">In progress</option>
+              <option value="5">Finished</option>
+              <option value="6">Cancelled</option>
+            </Form.Select>
+            <Form.Text className="col-12 col-md-6 col-lg-4">
+              <Form.Control
+                type="text"
+                placeholder="Search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </Form.Text>
+            
+          </Col>
+          <Col className="my-2 mx-2" style={{ width: "5rem" }}>
+            <Button className="custom-show-more-btn mb-4" variant="secondary" onClick={fetchProjects()}>
+              Search
+            </Button>
+          </Col>
+        </Col>
+        <Col className="col-12 col-md-6 col-lg-4">
+          <Col className="my-2 mx-2" style={{ width: "7rem" }}>
+            <Form.Select
+              className="me-2"
+              onChange={handleChangeSortBy}
+            >
+              <option value="readyDate">Start date</option>
+              <option value="state">State</option>
+              <option value="availablePlaces">Vacancies</option>
+            </Form.Select>
+            <Form.Switch 
+              type="checkbox" 
+              id="custom-switch" 
+              label="Ascending" 
+              checked={orderAsc}
+              onChange={() => setOrderAsc(!orderAsc)}
+            />
+          </Col>
+          <Col className="my-2 mx-2" style={{ width: "5rem" }}>
+            <Button className="custom-show-more-btn mb-4" variant="secondary" onClick={fetchProjects()}>
+              Sort by
+            </Button>
+          </Col>
+        </Col>
+      </Row>
+      <Row className="mb-3 mt-5 justify-content-center">
         {visibleCards.map((card, index) => (
-          <Col key={index} className="my-5">
+          <Col key={index} className="my-3 mx-3">
             <OthersProjCardNotLogged {...card} />
           </Col>
         ))}
@@ -269,7 +217,7 @@ const ProjectListNotLogged = () => {
       {visibleCards.length < cards.length && (
         <div className="text-center">
           <Button
-          className="custom-show-more-btn"
+            className="custom-show-more-btn mb-4"
             onClick={handleShowMore}
             variant="secondary"
             style={{

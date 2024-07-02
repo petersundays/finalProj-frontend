@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Navbar, Container, Nav, NavDropdown } from "react-bootstrap";
 import defaultProfilePic from "../../multimedia/default-profile-pic.png";
 import logo from "../../multimedia/logo/domcast-05-navbar-logo.png";
@@ -6,24 +6,26 @@ import "./MainNavbarLogged.css";
 import { useNavigate } from "react-router-dom";
 import { userStore } from "../../stores/UserStore.jsx";
 import { Base_url_users } from "../../functions/UsersFunctions.jsx";
+import ModalRedefinePassword from "../ModalRedefinePassword/ModalRedefinePassword.jsx";
 
 function MainNavbarLogged({ handleShow, handleLanguageChange, language }) {
   const navigate = useNavigate();
   const loggedUser = userStore((state) => state.loggedUser);
   const clearLoggedUser = userStore((state) => state.clearLoggedUser);
 
+  const [showModalRedefinePassword, setShowModalRedefinePassword] =
+    useState(false);
+
   const editProfile = () => {
     const id = userStore.getState().loggedUser.id;
-    navigate("/myprofile/" + id, { replace: true });
+    navigate(`myprofile/${id}`, { replace: true });
   };
 
   const handleLogout = async (event) => {
     event.preventDefault();
 
     const token = userStore.getState().loggedUser.sessionToken;
-    console.log(token);
     const id = userStore.getState().loggedUser.id;
-    console.log(id);
 
     try {
       const response = await fetch(`${Base_url_users}logout`, {
@@ -47,6 +49,14 @@ function MainNavbarLogged({ handleShow, handleLanguageChange, language }) {
     }
   };
 
+  const handleOpenModalRedefinePassword = () => {
+    setShowModalRedefinePassword(true);
+  };
+
+  const handleCloseModalRedefinePassword = () => {
+    setShowModalRedefinePassword(false);
+  };
+
   return (
     <Navbar
       bg="dark"
@@ -57,7 +67,7 @@ function MainNavbarLogged({ handleShow, handleLanguageChange, language }) {
     >
       <Container>
         <Navbar.Brand
-          href="#home"
+          onClick={() => navigate("/domcast/", { replace: true })}
           className="logo me-auto"
           alt="DomCast: empowering innovation"
         >
@@ -81,6 +91,9 @@ function MainNavbarLogged({ handleShow, handleLanguageChange, language }) {
               className="ms-2 me-5 dropdown-profile"
             >
               <NavDropdown.Item onClick={editProfile}>Profile</NavDropdown.Item>
+              <NavDropdown.Item onClick={handleOpenModalRedefinePassword}>
+                Change Password
+              </NavDropdown.Item>
               <NavDropdown.Item href="#messages">Message Hub</NavDropdown.Item>
               <NavDropdown.Divider />
               <NavDropdown.Item onClick={handleLogout}>Logout</NavDropdown.Item>
@@ -120,6 +133,10 @@ function MainNavbarLogged({ handleShow, handleLanguageChange, language }) {
           </Nav>
         </Navbar.Collapse>
       </Container>
+      <ModalRedefinePassword
+        show={showModalRedefinePassword}
+        handleClose={handleCloseModalRedefinePassword}
+      />
     </Navbar>
   );
 }

@@ -12,3 +12,6 @@
     border-color: var(--color-blue-01) !important;
   }
   
+  .card-proj-not-logged {
+    justify-content: center !important;
+  }

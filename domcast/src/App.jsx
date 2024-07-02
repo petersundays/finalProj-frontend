@@ -16,7 +16,7 @@ function App() {
     <ToastContainer />
     <Routes>
       <Route path='/' element={<Home />} />
-      <Route path='/domcast' element={<HomeLogged />} />
+      <Route path='/domcast/*' element={<HomeLogged />} />
       <Route path='/confirm-email/:token' element={<ConfirmRegistration />} />
       <Route path='/reset-password/:token' element={<RecoverPassword />} />
 
