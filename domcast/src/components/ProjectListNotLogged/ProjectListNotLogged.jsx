@@ -14,13 +14,16 @@ const ProjectListNotLogged = () => {
   const [cards, setCards] = useState([]);
   const [filteredCards, setFilteredCards] = useState([]);
   const [visibleRows, setVisibleRows] = useState(2);
-  const [orderBy, setOrderBy] = useState("");
+  const [orderBy, setOrderBy] = useState("name");
   const [orderAsc, setOrderAsc] = useState(true);
-  const [keyword, setKeyword] = useState("");
-  const [skill, setSkill] = useState("");
-  const [name, setName] = useState("");
-  const [state, setState] = useState("");
+  const [searchType, setSearchType] = useState("name");
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedState, setSelectedState] = useState("");
+
+  // const [keyword, setKeyword] = useState("");
+  // const [skill, setSkill] = useState("");
+  // const [name, setName] = useState("");
+  // const [state, setState] = useState("");
 
   const [labList, setLabList] = useState([]);
   const [skillList, setSkillList] = useState([]);
@@ -98,7 +101,18 @@ const ProjectListNotLogged = () => {
         const url = new URL(`${Base_url_projects}`);
         if (orderBy) url.searchParams.append("orderBy", orderBy);
         if (orderAsc) url.searchParams.append("orderAsc", orderAsc);
-        if (searchQuery) url.searchParams.append("searchQuery", searchQuery);
+        if (searchQuery) {
+          if (searchType === "state") {
+            url.searchParams.append("state", selectedState);
+          } else if (searchType === "keyword") {
+            url.searchParams.append("keyword", searchQuery);
+          } else if (searchType === "skill") {
+            url.searchParams.append("skill", searchQuery);
+          } else {
+            url.searchParams.append("name", searchQuery);
+          }
+        }
+        url.searchParams.append("pageSize", 6);
 
         const projectsResponse = await fetch(url.toString(), {
           method: "GET",
@@ -123,18 +137,23 @@ const ProjectListNotLogged = () => {
     setVisibleRows(visibleRows + 2);
   };
 
+  const handleChangeSearchBy = (e) => {
+    setSearchType(e.target.value);
+    setSearchQuery("");
+    setSelectedState("");
+  };
+
+  const handleChangeState = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
   const handleChangeSortBy = (event) => {
     setOrderBy(event.target.value);
   };
 
-  const handleChangeSearchBy = (event) => {
-    if (event.target.value === "name") {
-      setName(searchQuery);
-    } else if (event.target.value === "keyword") {
-      setKeyword(searchQuery);
-    } else if (event.target.value === "skill") {
-      setSkill(searchQuery);
-    } else if (event.target.value === "state") {
+  const handleSearch = () => {
+    fetchProjects();
+  };
 
   const visibleCards = cards.slice(0, visibleRows * 3);
 
@@ -146,10 +165,7 @@ const ProjectListNotLogged = () => {
       <Row className="my-3 justify-content-center">
         <Col className="col-12 col-md-6 col-lg-4">
           <Col className="my-2 mx-2" style={{ width: "7rem" }}>
-            <Form.Select
-              className="me-2"
-              onChange={handleChangeSearchBy}
-            >
+            <Form.Select className="me-2" onChange={handleChangeSearchBy}>
               <option value="name">Name</option>
               <option value="state">State</option>
               <option value="keyword">Keyword</option>
@@ -157,51 +173,65 @@ const ProjectListNotLogged = () => {
             </Form.Select>
           </Col>
           <Col className="my-2 mx-2" style={{ width: "10rem" }}>
-
-            <Form.Select className="me-2" onChange={handleChangeState}>
-              <option value="1">Planning</option>
-              <option value="2">Ready</option>
-              <option value="3">Approved</option>
-              <option value="4">In progress</option>
-              <option value="5">Finished</option>
-              <option value="6">Cancelled</option>
-            </Form.Select>
-            <Form.Text className="col-12 col-md-6 col-lg-4">
+            {searchType === "state" ? (
+              <Form.Select className="me-2" onChange={handleChangeState}>
+                <option value="1">Planning</option>
+                <option value="2">Ready</option>
+                <option value="3">Approved</option>
+                <option value="4">In progress</option>
+                <option value="5">Finished</option>
+                <option value="6">Cancelled</option>
+              </Form.Select>
+            ) : (
               <Form.Control
                 type="text"
                 placeholder="Search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-            </Form.Text>
-            
+            )}
           </Col>
           <Col className="my-2 mx-2" style={{ width: "5rem" }}>
-            <Button className="custom-show-more-btn mb-4" variant="secondary" onClick={fetchProjects()}>
+            <Button
+              className="custom-show-more-btn mb-4"
+              variant="secondary"
+              onClick={handleSearch}
+            >
               Search
             </Button>
           </Col>
         </Col>
         <Col className="col-12 col-md-6 col-lg-4">
           <Col className="my-2 mx-2" style={{ width: "7rem" }}>
-            <Form.Select
-              className="me-2"
-              onChange={handleChangeSortBy}
-            >
+            <Form.Select className="me-2" onChange={handleChangeSortBy}>
               <option value="readyDate">Start date</option>
               <option value="state">State</option>
               <option value="availablePlaces">Vacancies</option>
             </Form.Select>
-            <Form.Switch 
-              type="checkbox" 
-              id="custom-switch" 
-              label="Ascending" 
-              checked={orderAsc}
-              onChange={() => setOrderAsc(!orderAsc)}
+            <Form.Check
+              type="radio"
+              label="Ascending"
+              name="orderDirection"
+              id="orderAsc"
+              checked={orderAsc === true}
+              onChange={() => setOrderAsc(true)}
+              className="me-2"
+            />
+            <Form.Check
+              type="radio"
+              label="Descending"
+              name="orderDirection"
+              id="orderDesc"
+              checked={orderAsc === false}
+              onChange={() => setOrderAsc(false)}
             />
           </Col>
           <Col className="my-2 mx-2" style={{ width: "5rem" }}>
-            <Button className="custom-show-more-btn mb-4" variant="secondary" onClick={fetchProjects()}>
+            <Button
+              className="custom-show-more-btn mb-4"
+              variant="secondary"
+              onClick={handleSearch}
+            >
               Sort by
             </Button>
           </Col>
