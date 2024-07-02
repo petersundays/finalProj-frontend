@@ -1,0 +1,13 @@
+.offcanvas-main-changed {
+  background-color: var(--color-white);
+}
+
+.offcanvas-header {
+  display: flex;
+  align-items: center;
+}
+
+.offcanvas-main-title {
+  color: var(--color-blue-01);
+}
+

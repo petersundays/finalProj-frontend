@@ -1,0 +1,9 @@
+.custom-button {
+    background-color: var(--color-yellow-01) !important;
+    border-color: var(--color-yellow-01) !important;
+  }
+  
+  .custom-button:hover {
+    background-color: var(--color-yellow-02) !important;
+    border-color: var(--color-yellow-02) !important;
+  }

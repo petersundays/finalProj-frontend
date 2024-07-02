@@ -84,7 +84,6 @@ body,
 .offcanvas-main-changed .nav-link {
   color: var(--color-coal);
   font-size: 18px;
-  text-transform: uppercase;
   font-weight: 500;
 }
 

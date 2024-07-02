@@ -1,0 +1,17 @@
+.card-card-grid .row {
+    justify-content: center;
+  }
+  
+  .card-card-grid .col {
+    display: flex;
+    justify-content: center;
+  }
+
+  .custom-show-more-btn:hover {
+    background-color: var(--color-blue-01) !important;
+    border-color: var(--color-blue-01) !important;
+  }
+  
+  .card-proj-not-logged {
+    justify-content: center !important;
+  }

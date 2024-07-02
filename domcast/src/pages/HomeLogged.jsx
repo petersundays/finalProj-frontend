@@ -3,28 +3,31 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { Container, Row, Col, Card } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./HomeLogged.css";
-import NavbarLogged from "../components/NavbarLogged/NavbarLogged";
-import OffcanvasLogged from "../components/OffcanvasLogged/OffcanvasLogged";
-import Sidebar from "../components/Sidebar/Sidebar";
-import Footer from "../components/Footer/Footer";
-import EmailTable from "../components/EmailTable/EmailTable";
-import AddAsset from "../components/AddAsset/AddAsset";
-import CardGrid from "../components/CardGrid/CardGrid";
-import NewProj from "../components/NewProj/NewProj";
-import NewTask from "../components/NewTask/NewTask";
 import AdminSettings from "../components/AdminSettings/AdminSettings";
-import EditAsset from "../components/EditAsset/EditAsset";
-import EditProj from "../components/EditProj/EditProj";
-import EditTask from "../components/EditTask/EditTask";
-import EditProfile from "../components/EditProfile/EditProfile";
-import GanttChart from "../components/GanttChart/GanttChart";
-import ProjPublic from "../components/ProjPublic/ProjPublic";
-import ProjPrivate from "../components/ProjPrivate/ProjPrivate";
 import AdminStats from "../components/AdminStats/AdminStats";
-//import UsersList from "../components/UsersList/UsersList";
-import ViewProfile from "../components/ViewProfile/ViewProfile";
-import ViewAsset from "../components/ViewAsset/ViewAsset";
-import ViewTask from "../components/ViewTask/ViewTask";
+import AssetEdit from "../components/AssetEdit/AssetEdit";
+import AssetList from "../components/AssetList/AssetList";
+import AssetNew from "../components/AssetNew/AssetNew";
+import AssetView from "../components/AssetView/AssetView";
+import LogList from "../components/LogList/LogList";
+import LogNew from "../components/LogNew/LogNew";
+import LogView from "../components/LogView/LogView";
+import MainFooter from "../components/MainFooter/MainFooter";
+import MainNavbarLogged from "../components/MainNavbarLogged/MainNavbarLogged";
+import MainOffcanvasLogged from "../components/MainOffcanvasLogged/MainOffcanvasLogged";
+import MainSidebar from "../components/MainSidebar/MainSidebar";
+import MessageHub from "../components/MessageHub/MessageHub";
+import ProjectEdit from "../components/ProjectEdit/ProjectEdit";
+import ProjectListLogged from "../components/ProjectListLogged/ProjectListLogged";
+import ProjectNew from "../components/ProjectNew/ProjectNew";
+import ProjectView from "../components/ProjectView/ProjectView";
+import TaskEdit from "../components/TaskEdit/TaskEdit";
+import TaskList from "../components/TaskList/TaskList";
+import TaskNew from "../components/TaskNew/TaskNew";
+import TaskView from "../components/TaskView/TaskView";
+import UserEdit from "../components/UserEdit/UserEdit";
+import UserList from "../components/UserList/UserList";
+import UserView from "../components/UserView/UserView";
 
 function HomeLogged() {
   const [show, setShow] = useState(false);
@@ -41,65 +44,64 @@ function HomeLogged() {
   };
 
   return (
-    <Router>
-      <div className="Layout">
-        <NavbarLogged
-          handleShow={handleShow}
-          handleLanguageChange={handleLanguageChange}
-          language={language}
-        />
-        <OffcanvasLogged
-          show={show}
-          handleClose={handleClose}
-          expandedProjects={expandedProjects}
-          toggleExpandProjects={toggleExpandProjects}
-          handleLanguageChange={handleLanguageChange}
-          language={language}
-        />
-        <Container fluid className="main-container">
-          <Row className="flex-grow-1">
-            <Sidebar
-              expandedProjects={expandedProjects}
-              toggleExpandProjects={toggleExpandProjects}
-            />
-            <Col
-              xs={12}
-              md={10}
-              className="content d-flex justify-content-center align-items-center"
-            >
-              <Card className="custom-card">
-                <Card.Body className="card-body-custom">
-                  <Routes>
-                    <Route path="/" element={<CardGrid />} />
-                    <Route path="/message-hub" element={<EmailTable />} />
-                    <Route path="/add-asset" element={<AddAsset />} />
-                    <Route path="/new-project" element={<NewProj />} />
-                    <Route path="/new-task" element={<NewTask />} />
-                    <Route path="/settings" element={<AdminSettings />} />
-                    <Route path="/edit-asset/:id" element={<EditAsset />} />
-                    <Route path="/edit-project/:id" element={<EditProj />} />
-                    <Route path="/edit-task/:id" element={<EditTask />} />
-                    <Route path="/edit-profile/:id" element={<EditProfile />} />
-                    <Route path="/project-plan/:id" element={<GanttChart />} />
-                    <Route path="/project/:id" element={<ProjPublic />} />
-                    <Route
-                      path="/project-details/:id"
-                      element={<ProjPrivate />}
-                    />
-                    <Route path="/statistics" element={<AdminStats />} />
-                    {/* <Route path="/users" element={<UsersList />} /> */}
-                    <Route path="/user-profile/:id" element={<ViewProfile />} />
-                    <Route path="/asset/:id" element={<ViewAsset />} />
-                    <Route path="/task/:id" element={<ViewTask />} />
-                  </Routes>
-                </Card.Body>
-              </Card>
-            </Col>
-          </Row>
-        </Container>
-        <Footer />
-      </div>
-    </Router>
+    <div className="Layout">
+      <MainNavbarLogged
+        handleShow={handleShow}
+        handleLanguageChange={handleLanguageChange}
+        language={language}
+      />
+      <MainOffcanvasLogged
+        show={show}
+        handleClose={handleClose}
+        expandedProjects={expandedProjects}
+        toggleExpandProjects={toggleExpandProjects}
+        handleLanguageChange={handleLanguageChange}
+        language={language}
+      />
+      <Container fluid className="main-container">
+        <Row className="flex-grow-1">
+          <MainSidebar
+            expandedProjects={expandedProjects}
+            toggleExpandProjects={toggleExpandProjects}
+          />
+          <Col
+            xs={12}
+            md={10}
+            className="content d-flex justify-content-center align-items-center"
+          >
+            <Card className="custom-card">
+              <Card.Body className="card-body-custom">
+                <Routes>
+                  <Route path="/" element={<ProjectListLogged />} />
+                  <Route path="/settings" element={<AdminSettings />} />
+                  <Route path="/stats" element={<AdminStats />} />
+                  <Route path="/asset/edit/:id" element={<AssetEdit />} />
+                  <Route path="/asset/list" element={<AssetList />} />
+                  <Route path="/asset/new" element={<AssetNew />} />
+                  <Route path="/asset/view/:id" element={<AssetView />} />
+                  <Route path="/log/list" element={<LogList />} />
+                  <Route path="/log/new" element={<LogNew />} />
+                  <Route path="/log/view/:id" element={<LogView />} />
+                  <Route path="/messagehub" element={<MessageHub />} />
+                  <Route path="/project/edit/:id" element={<ProjectEdit />} />
+                  <Route path="/project/list" element={<ProjectListLogged />} />
+                  <Route path="/project/new" element={<ProjectNew />} />
+                  <Route path="/project/view/:id" element={<ProjectView />} />
+                  <Route path="/task/edit/:id" element={<TaskEdit />} />
+                  <Route path="/task/list" element={<TaskList />} />
+                  <Route path="/task/new" element={<TaskNew />} />
+                  <Route path="/task/view/:id" element={<TaskView />} />
+                  <Route path="/myprofile/:id" element={<UserEdit />} />
+                  <Route path="/user/list" element={<UserList />} />
+                  <Route path="/user/view/:id" element={<UserView />} />
+                </Routes>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+      </Container>
+      <MainFooter />
+    </div>
   );
 }
 
