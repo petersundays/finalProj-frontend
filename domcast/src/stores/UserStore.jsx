@@ -21,6 +21,7 @@ export const userStore = create(
       unconfirmedPhoto: defaultProfilePic,
       loggedUser: {
         id: null,
+        type: null,
         sessionToken: '',
         firstName: '',
         lastName: '',

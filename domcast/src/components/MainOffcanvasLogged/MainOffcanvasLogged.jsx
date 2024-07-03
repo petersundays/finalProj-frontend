@@ -4,11 +4,9 @@ import defaultProfilePic from "../../multimedia/default-profile-pic.png";
 import { useNavigate } from "react-router-dom";
 import { userStore } from "../../stores/UserStore.jsx";
 import "./MainOffcanvasLogged.css";
+import ModalRedefinePassword from "../ModalRedefinePassword/ModalRedefinePassword.jsx";
 
-function MainOffcanvasLogged({
-  show,
-  handleClose,
-}) {
+function MainOffcanvasLogged({ show, handleClose }) {
   const navigate = useNavigate();
   const loggedUser = userStore((state) => state.loggedUser);
   const clearLoggedUser = userStore((state) => state.clearLoggedUser);
@@ -16,13 +14,27 @@ function MainOffcanvasLogged({
   const [expandedProjects, setExpandedProjects] = useState(false);
   const [expandedMessageHub, setExpandedMessageHub] = useState(false);
   const [expandedAssets, setExpandedAssets] = useState(false);
-  const [expandedLogs, setExpandedLogs] = useState(false);
+  const [showModalRedefinePassword, setShowModalRedefinePassword] = useState(
+    false
+  );
   const [language, setLanguage] = useState("EN");
+
+  const editProfile = () => {
+    const id = userStore.getState().loggedUser.id;
+    navigate(`myprofile/${id}`, { replace: true });
+  };
+
+  const handleOpenModalRedefinePassword = () => {
+    setShowModalRedefinePassword(true);
+  };
+
+  const handleCloseModalRedefinePassword = () => {
+    setShowModalRedefinePassword(false);
+  };
 
   const toggleExpandProjects = () => {
     setExpandedProjects(!expandedProjects);
     setExpandedAssets(false);
-    setExpandedLogs(false);
     setExpandedMessageHub(false);
   };
 
@@ -30,20 +42,11 @@ function MainOffcanvasLogged({
     setExpandedMessageHub(!expandedMessageHub);
     setExpandedProjects(false);
     setExpandedAssets(false);
-    setExpandedLogs(false);
   };
 
   const toggleExpandAssets = () => {
     setExpandedAssets(!expandedAssets);
     setExpandedProjects(false);
-    setExpandedLogs(false);
-    setExpandedMessageHub(false);
-  };
-
-  const toggleExpandLogs = () => {
-    setExpandedLogs(!expandedLogs);
-    setExpandedProjects(false);
-    setExpandedAssets(false);
     setExpandedMessageHub(false);
   };
 
@@ -78,58 +81,67 @@ function MainOffcanvasLogged({
       <Offcanvas.Body className="d-flex flex-column justify-content-between">
         <div>
           <Nav className="flex-column profileNavbar">
-            <Nav.Link href="#myProfile">My Profile</Nav.Link>
-            <Nav.Link href="changePassword">Change Password</Nav.Link>
+            <Nav.Link onClick={editProfile}>My Profile</Nav.Link>
+            <Nav.Link onClick={handleOpenModalRedefinePassword}>Change Password</Nav.Link>
           </Nav>
           <hr />
           <Nav className="d-flex flex-column justify-content-between sidebarNavbar">
             <Nav.Link onClick={toggleExpandProjects}>
-              Projects {expandedProjects ? "▲" : "▼"}
+              Projects
+              <span className="arrow">{expandedProjects ? "▲" : "▼"}</span>
             </Nav.Link>
             {expandedProjects && (
               <div className="ml-3">
-                <Nav.Link href="#all-projects">All Projects</Nav.Link>
-                <Nav.Link href="#my-projects">My Projects</Nav.Link>
-                <Nav.Link href="#new-project">New Project</Nav.Link>
-                <Nav.Link href="#approvals">Approvals</Nav.Link>
+            <Nav.Link onClick={() => navigate("/domcast/projects/list")}>
+              All Projects
+            </Nav.Link>
+            <Nav.Link onClick={() => navigate("/domcast/myprojects")}>
+              My Projects
+            </Nav.Link>
+            <Nav.Link onClick={() => navigate("/domcast/project/new")}>
+              New Project
+            </Nav.Link>
+            {loggedUser.type === 300 && (
+              <Nav.Link onClick={() => navigate("/domcast/projects/approval-list")}>
+                Approval List
+              </Nav.Link>
+            )}
               </div>
             )}
-            <Nav.Link href="#users">Users</Nav.Link>
-            <Nav className="d-flex flex-column justify-content-between sidebarNavbar">
+        <Nav.Link onClick={() => navigate("/domcast/users/list")}>Users</Nav.Link>
+        <Nav className="d-flex flex-column justify-content-between sidebarNavbar">
               <Nav.Link onClick={toggleExpandMessageHub}>
-                Message Hub {expandedMessageHub ? "▲" : "▼"}
+                Message Hub
+                <span className="arrow">{expandedMessageHub ? "▲" : "▼"}</span>
               </Nav.Link>
               {expandedMessageHub && (
                 <div className="ml-3">
-                  <Nav.Link href="#inbox">Inbox</Nav.Link>
-                  <Nav.Link href="#sent">Sent</Nav.Link>
+            <Nav.Link onClick={() => navigate("/domcast/inbox")}>Inbox</Nav.Link>
+            <Nav.Link onClick={() => navigate("/domcast/sent")}>Sent</Nav.Link>
                 </div>
               )}
             </Nav>
             <Nav className="d-flex flex-column justify-content-between sidebarNavbar">
               <Nav.Link onClick={toggleExpandAssets}>
-                Assets {expandedAssets ? "▲" : "▼"}
+                Assets
+                <span className="arrow">{expandedAssets ? "▲" : "▼"}</span>
               </Nav.Link>
               {expandedAssets && (
                 <div className="ml-3">
-                  <Nav.Link href="#allAssets">All Assets</Nav.Link>
-                  <Nav.Link href="#newAsset">New Asset</Nav.Link>
+            <Nav.Link onClick={() => navigate("/domcast/assets/list")}>
+              All Assets
+            </Nav.Link>
+            <Nav.Link onClick={() => navigate("/domcast/asset/new")}>
+              New Asset
+            </Nav.Link>
                 </div>
               )}
             </Nav>
-            <Nav className="d-flex flex-column justify-content-between sidebarNavbar">
-              <Nav.Link onClick={toggleExpandLogs}>
-                Logs {expandedLogs ? "▲" : "▼"}
-              </Nav.Link>
-              {expandedLogs && (
-                <div className="ml-3">
-                  <Nav.Link href="#allLogs">All Logs</Nav.Link>
-                  <Nav.Link href="#newLog">New Log</Nav.Link>
-                </div>
-              )}
-            </Nav>
-            <Nav.Link href="#dashboard">Dashboard</Nav.Link>
-          </Nav>
+            {loggedUser.type === 300 && (
+          <Nav.Link onClick={() => navigate("/domcast/admin-dashboard")}>
+            Dashboard
+          </Nav.Link>
+        )}          </Nav>
         </div>
         <Nav className="flex-column bottomNavbar mt-4 mb-3 align-items-center">
           <div className="btn-group btn-offcanvas-main" role="group">
@@ -154,11 +166,15 @@ function MainOffcanvasLogged({
               PT
             </button>
           </div>
-          <Nav.Link href="#logout" className="mt-2" onClick={handleLogout}>
+          <Nav.Link className="mt-2" onClick={handleLogout}>
             Logout
           </Nav.Link>
         </Nav>
       </Offcanvas.Body>
+      <ModalRedefinePassword
+        show={showModalRedefinePassword}
+        handleClose={handleCloseModalRedefinePassword}
+      />
     </Offcanvas>
   );
 }

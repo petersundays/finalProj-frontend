@@ -3,9 +3,9 @@ import { Container, Row, Col, Form, Button, Table } from "react-bootstrap";
 import { Typeahead } from "react-bootstrap-typeahead";
 import { useTable, useSortBy, useGlobalFilter } from "react-table";
 import "react-bootstrap-typeahead/css/Typeahead.css";
-import "./MessageHub.css";
+import "./MessageHubInbox.css";
 
-const MessageHub = ({ data = [] }) => {
+const MessageHubInbox = ({ data = [] }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState("");
   const [filteredData, setFilteredData] = useState(data || []);
@@ -122,4 +122,4 @@ const MessageHub = ({ data = [] }) => {
   );
 };
 
-export default MessageHub;
+export default MessageHubInbox;
