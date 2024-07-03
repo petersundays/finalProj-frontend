@@ -1,6 +1,6 @@
 .sidebar-changed {
-  background-color: var(--color-yellow-01) !important;
-}
+    background-color: var(--color-yellow-01) !important;
+  }
 
 .sidebar .nav-link {
   color: var(--color-coal);

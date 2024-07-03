@@ -94,7 +94,6 @@ function MainNavbarLogged({ handleShow, handleLanguageChange, language }) {
               <NavDropdown.Item onClick={handleOpenModalRedefinePassword}>
                 Change Password
               </NavDropdown.Item>
-              <NavDropdown.Item href="#messages">Message Hub</NavDropdown.Item>
               <NavDropdown.Divider />
               <NavDropdown.Item onClick={handleLogout}>Logout</NavDropdown.Item>
             </NavDropdown>
