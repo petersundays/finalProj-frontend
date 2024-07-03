@@ -12,8 +12,8 @@ function OthersBannerLogin() {
         },
     }}
 >
-    <h2 style={{ color: "var(--color-yellow-01)"}}>Welcome to your creative playground!</h2>
-    <h4 style={{ color: "var(--color-white)"}}>Your ideas... Endless possibilities!</h4>
+    <h2 style={{ color: "var(--color-yellow-02)"}}>Welcome to your creative playground!</h2>
+    <h4 style={{ color: "var(--color-blue-03)"}}>Your ideas... Endless possibilities!</h4>
 </div>
   );
 }

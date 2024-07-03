@@ -1,0 +1,15 @@
+.sidebar-changed {
+  background-color: var(--color-yellow-01) !important;
+}
+
+.sidebar .nav-link {
+  color: var(--color-coal);
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.sidebar .nav-link:hover {
+  color: var(--color-white);
+  background-color: var(--color-blue-01);
+  border-radius: 8px;
+}

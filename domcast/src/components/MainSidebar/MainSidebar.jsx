@@ -1,5 +1,6 @@
 import React from "react";
 import { Nav, Col } from "react-bootstrap";
+import "./MainSidebar.css";
 
 function MainSidebar({ expandedProjects, toggleExpandProjects }) {
   return (
@@ -12,6 +13,7 @@ function MainSidebar({ expandedProjects, toggleExpandProjects }) {
           <div className="ml-3">
             <Nav.Link href="#all-projects">All Projects</Nav.Link>
             <Nav.Link href="#my-projects">My Projects</Nav.Link>
+            <Nav.Link href="#new-project">New Project</Nav.Link>
             <Nav.Link href="#approvals">Approvals</Nav.Link>
           </div>
         )}

@@ -185,6 +185,6 @@ body,
 
 .no-border-card {
   border: none !important;
-  background-color: rgba(31, 156, 240, 0.9);
+  background-color: rgba(255, 255, 255, 0.9);
   margin-inline: 3rem;
 }

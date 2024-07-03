@@ -8,7 +8,6 @@ import {
   Base_url_skills,
   Base_url_keywords,
 } from "../../functions/UsersFunctions.jsx";
-import { Typeahead } from "react-bootstrap-typeahead";
 
 const ProjectListNotLogged = () => {
   const [cards, setCards] = useState([]);
@@ -35,7 +34,7 @@ const ProjectListNotLogged = () => {
 
   useEffect(() => {
     fetchProjects();
-  }, [searchQuery, cards]);
+  }, [searchQuery]);
 
   const fetchEnums = async () => {
     try {
@@ -113,6 +112,7 @@ const ProjectListNotLogged = () => {
           }
         }
         url.searchParams.append("pageSize", 6);
+        url.searchParams.append("pageNumber", 1);
 
         const projectsResponse = await fetch(url.toString(), {
           method: "GET",
@@ -162,79 +162,86 @@ const ProjectListNotLogged = () => {
       className="mt-2 card-proj-not-logged"
       style={{ border: "none", maxWidth: "100rem" }}
     >
-      <Row className="my-3 justify-content-center">
-        <Col className="col-12 col-md-6 col-lg-4">
-          <Col className="my-2 mx-2" style={{ width: "7rem" }}>
-            <Form.Select className="me-2" onChange={handleChangeSearchBy}>
-              <option value="name">Name</option>
-              <option value="state">State</option>
-              <option value="keyword">Keyword</option>
-              <option value="skill">Skill</option>
-            </Form.Select>
-          </Col>
-          <Col className="my-2 mx-2" style={{ width: "10rem" }}>
-            {searchType === "state" ? (
-              <Form.Select className="me-2" onChange={handleChangeState}>
-                <option value="1">Planning</option>
-                <option value="2">Ready</option>
-                <option value="3">Approved</option>
-                <option value="4">In progress</option>
-                <option value="5">Finished</option>
-                <option value="6">Cancelled</option>
-              </Form.Select>
-            ) : (
-              <Form.Control
-                type="text"
-                placeholder="Search"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            )}
-          </Col>
-          <Col className="my-2 mx-2" style={{ width: "5rem" }}>
-            <Button
-              className="custom-show-more-btn mb-4"
-              variant="secondary"
-              onClick={handleSearch}
-            >
-              Search
-            </Button>
-          </Col>
+      <Row className="my-3 justify-content-center align-content-center">
+        <Col className="my-2 mx-2">
+          <Form.Select
+            className="me-2"
+            onChange={handleChangeSearchBy}
+            style={{ width: "15rem" }}
+          >
+            <option value="name">Name</option>
+            <option value="state">State</option>
+            <option value="keyword">Keyword</option>
+            <option value="skill">Skill</option>
+          </Form.Select>
         </Col>
-        <Col className="col-12 col-md-6 col-lg-4">
-          <Col className="my-2 mx-2" style={{ width: "7rem" }}>
-            <Form.Select className="me-2" onChange={handleChangeSortBy}>
-              <option value="readyDate">Start date</option>
-              <option value="state">State</option>
-              <option value="availablePlaces">Vacancies</option>
-            </Form.Select>
-            <Form.Check
-              type="radio"
-              label="Ascending"
-              name="orderDirection"
-              id="orderAsc"
-              checked={orderAsc === true}
-              onChange={() => setOrderAsc(true)}
+        <Col className="my-2 mx-2">
+          {searchType === "state" ? (
+            <Form.Select
               className="me-2"
-            />
-            <Form.Check
-              type="radio"
-              label="Descending"
-              name="orderDirection"
-              id="orderDesc"
-              checked={orderAsc === false}
-              onChange={() => setOrderAsc(false)}
-            />
-          </Col>
-          <Col className="my-2 mx-2" style={{ width: "5rem" }}>
-            <Button
-              className="custom-show-more-btn mb-4"
-              variant="secondary"
-              onClick={handleSearch}
+              onChange={handleChangeState}
+              style={{ width: "15rem" }}
             >
-              Sort by
-            </Button>
-          </Col>
+              <option value="1">Planning</option>
+              <option value="2">Ready</option>
+              <option value="3">Approved</option>
+              <option value="4">In progress</option>
+              <option value="5">Finished</option>
+              <option value="6">Cancelled</option>
+            </Form.Select>
+          ) : (
+            <Form.Control
+              type="text"
+              placeholder="Search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{ width: "15rem" }}
+            />
+          )}
+        </Col>
+        <Col className="my-2 mx-2">
+          <Form.Select
+            className="me-2"
+            onChange={handleChangeSortBy}
+            style={{ width: "15rem" }}
+          >
+            <option value="readyDate">Start date</option>
+            <option value="state">State</option>
+            <option value="availablePlaces">Vacancies</option>
+          </Form.Select>
+        </Col>
+        <Col className="my-2 ms-2">
+          <Form.Check
+            type="radio"
+            label="Ascending"
+            name="orderDirection"
+            id="orderAsc"
+            checked={orderAsc === true}
+            onChange={() => setOrderAsc(true)}
+            className="me-2 radio-btn-custom"
+            style={{ width: "12rem" }}
+          />
+        </Col>
+        <Col className="my-2 me-2">
+          <Form.Check
+            type="radio"
+            label="Descending"
+            name="orderDirection"
+            id="orderDesc"
+            checked={orderAsc === false}
+            onChange={() => setOrderAsc(false)}
+            className="radio-btn-custom"
+          />
+        </Col>
+        <Col className="my-2 mx-2">
+          <Button
+            className="custom-show-more-btn mb-4"
+            variant="secondary"
+            onClick={handleSearch}
+            style={{ width: "5rem" }}
+          >
+            Go
+          </Button>
         </Col>
       </Row>
       <Row className="mb-3 mt-5 justify-content-center">

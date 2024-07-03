@@ -37,6 +37,7 @@ function MainOffcanvasLogged({
         <div>
           <Nav className="flex-column profileNavbar">
             <Nav.Link href="#myProfile">My Profile</Nav.Link>
+            <Nav.Link href="changePassword">Change Password</Nav.Link>
             <Nav.Link href="#messages">Message Hub</Nav.Link>
           </Nav>
           <hr />
