@@ -18,8 +18,9 @@ function MainSidebar({ expandedProjects, toggleExpandProjects }) {
           </div>
         )}
         <Nav.Link href="#users">Users</Nav.Link>
-        <Nav.Link href="messageHub">Message Hub</Nav.Link>
+        <Nav.Link href="#messageHub">Message Hub</Nav.Link>
         <Nav.Link href="#assets">Assets</Nav.Link>
+        <Nav.Link href="#logs">Logs</Nav.Link>
         <Nav.Link href="#dashboard">Dashboard</Nav.Link>
       </Nav>
     </Col>
