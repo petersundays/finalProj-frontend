@@ -73,7 +73,6 @@ const UserRegistration = () => {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              token: token,
             },
           }
         );

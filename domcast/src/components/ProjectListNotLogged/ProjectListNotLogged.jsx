@@ -8,10 +8,10 @@ import {
   Base_url_skills,
   Base_url_keywords,
 } from "../../functions/UsersFunctions.jsx";
+import { Typeahead } from "react-bootstrap-typeahead";
 
 const ProjectListNotLogged = () => {
   const [cards, setCards] = useState([]);
-  const [filteredCards, setFilteredCards] = useState([]);
   const [visibleRows, setVisibleRows] = useState(2);
   const [orderBy, setOrderBy] = useState("name");
   const [orderAsc, setOrderAsc] = useState(true);
@@ -19,99 +19,150 @@ const ProjectListNotLogged = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedState, setSelectedState] = useState("");
 
-  // const [keyword, setKeyword] = useState("");
-  // const [skill, setSkill] = useState("");
-  // const [name, setName] = useState("");
-  // const [state, setState] = useState("");
-
-  const [labList, setLabList] = useState([]);
   const [skillList, setSkillList] = useState([]);
   const [keywordList, setKeywordList] = useState([]);
+  const [projectNameList, setProjectNameList] = useState([]);
+
+  const [selectedSkill, setSelectedSkill] = useState(0);
+  const selectedKeyword = useState("");
+
+  const [labList, setLabList] = useState([]);
+  const [projectStateList, setProjectStateList] = useState([]);
+  const [enumsFetched, setEnumsFetched] = useState(false);
+  const [showMoreProjects, setShowMoreProjects] = useState(6);
+  const [numberOfProjects, setNumberOfProjects] = useState(0);
 
   useEffect(() => {
     fetchEnums();
   }, []);
 
-  useEffect(() => {
-    fetchProjects();
-  }, [searchQuery]);
+    useEffect(() => {
+    if (enumsFetched) {
+      fetchProjects(showMoreProjects);
+    }
+  }, [enumsFetched, showMoreProjects]);
+
+
+  const formatProjectStateName = (name) => {
+    return name
+      .toLowerCase()
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
 
   const fetchEnums = async () => {
     try {
-      const labsResponse = await fetch(`${Base_url_lab}enum-unconfirmed`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (labsResponse.ok) {
-        const labsData = await labsResponse.json();
-        setLabList(labsData);
-        console.log("Labs fetched:", labsData);
-      }
-    } catch (error) {
-      console.error("Error fetching labs:", error);
-    }
-
-    try {
-      const skillsResponse = await fetch(`${Base_url_skills}enum-unconfirmed`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (skillsResponse.ok) {
-        const skillsData = await skillsResponse.json();
-        setSkillList(skillsData);
-        console.log("Skills fetched:", skillsData);
-      }
-    } catch (error) {
-      console.error("Error fetching skills:", error);
-    }
-
-    try {
-      const keywordsResponse = await fetch(
-        `${Base_url_keywords}enum-unconfirmed`,
-        {
+      try {
+        const labsResponse = await fetch(`${Base_url_lab}enum-unconfirmed`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
+        });
+        if (labsResponse.ok) {
+          const labsData = await labsResponse.json();
+          setLabList(labsData);
+          console.log("Labs fetched:", labsData);
         }
-      );
-      if (keywordsResponse.ok) {
-        const keywordsData = await keywordsResponse.json();
-        setKeywordList(keywordsData);
-        console.log("Keywords fetched:", keywordsData);
+      } catch (error) {
+        console.error("Error fetching labs:", error);
       }
-    } catch (error) {
-      console.error("Error fetching keywords:", error);
-    }
 
-    fetchProjects();
+      try {
+        const projectsResponse = await fetch(`${Base_url_projects}state-enum`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (projectsResponse.ok) {
+          const projectsData = await projectsResponse.json();
+          setProjectStateList(projectsData);
+          console.log("Project states fetched:", projectsData);
+        }
+      } catch (error) {
+        console.error("Error fetching project states:", error);
+      }
+
+      try {
+        const skillsResponse = await fetch(`${Base_url_skills}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (skillsResponse.ok) {
+          const skillsData = await skillsResponse.json();
+          setSkillList(skillsData);
+          console.log("Skills fetched:", skillsData);
+        }
+      } catch (error) {
+        console.error("Error fetching skills:", error);
+      }
+
+      try {
+        const keywordsResponse = await fetch(`${Base_url_keywords}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (keywordsResponse.ok) {
+          const keywordsData = await keywordsResponse.json();
+          setKeywordList(keywordsData);
+          console.log("Keywords fetched:", keywordsData);
+        }
+      } catch (error) {
+        console.error("Error fetching keywords:", error);
+      }
+
+      try {
+        const projectNameResponse = await fetch(`${Base_url_projects}names`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (projectNameResponse.ok) {
+          const projectNameData = await projectNameResponse.json();
+          setProjectNameList(projectNameData);
+          console.log("Project names fetched:", projectNameData);
+        }
+      } catch (error) {
+        console.error("Error fetching project names:", error);
+      }
+      setEnumsFetched(true);
+    } catch (error) {
+      console.error("Error fetching enums:", error);
+    }
   };
 
-  const fetchProjects = async () => {
+  const fetchProjects = async (showMoreProjects) => {
     if (!searchQuery && !orderBy && !orderAsc) {
       setOrderBy("name");
       setOrderAsc(true);
+      console.log("searchQuery no fetchProjects 1: ", searchQuery);
     } else {
       try {
         const url = new URL(`${Base_url_projects}`);
-        if (orderBy) url.searchParams.append("orderBy", orderBy);
-        if (orderAsc) url.searchParams.append("orderAsc", orderAsc);
+
+        url.searchParams.append("orderBy", orderBy);
+        url.searchParams.append("orderAsc", orderAsc);
         if (searchQuery) {
           if (searchType === "state") {
-            url.searchParams.append("state", selectedState);
+            url.searchParams.append("state", searchQuery);
           } else if (searchType === "keyword") {
             url.searchParams.append("keyword", searchQuery);
           } else if (searchType === "skill") {
             url.searchParams.append("skill", searchQuery);
           } else {
             url.searchParams.append("name", searchQuery);
+            console.log("searchQuery no fetchProjects 2: ", searchQuery);
           }
         }
-        url.searchParams.append("pageSize", 6);
+        console.log("showMoreProjects no fetchProjects", showMoreProjects);
+        url.searchParams.append("pageSize", showMoreProjects);
         url.searchParams.append("pageNumber", 1);
 
         const projectsResponse = await fetch(url.toString(), {
@@ -122,8 +173,47 @@ const ProjectListNotLogged = () => {
         });
 
         if (projectsResponse.ok) {
-          const data = await projectsResponse.json();
-          setCards(data);
+          const projectsData = await projectsResponse.json();
+          console.log("projectsData", projectsData);
+          const projectsList = projectsData.projects;
+          const totalProjects = projectsData.totalProjects;
+          const cardsData = projectsList.map((project) => {
+            return {
+              ...project,
+              title: project.name,
+              lab: labList.find((lab) => lab.id === project.labId)?.name,
+              description: project.description,
+              state: formatProjectStateName(
+                projectStateList.find(
+                  (stateObj) => stateObj.intValue === project.state
+                )?.name
+              ),
+              link: `/project/view/${project.id}`,
+            };
+          });
+          setCards(cardsData);
+          setNumberOfProjects(totalProjects);
+          console.log("Projects fetched:", cardsData);
+/*           try {
+            const numberProjectsResponse = await fetch(
+              `${Base_url_projects}number-projects`,
+              {
+                method: "GET",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+            if (numberProjectsResponse.ok) {
+              const numberProjectsData = await numberProjectsResponse.json();
+              console.log("numberProjectsData", numberProjectsData);
+              setNumberOfProjects(numberProjectsData);
+            } else {
+              console.log("Error fetching number of projects");
+            }
+          } catch (error) {
+            console.error("Error:", error);
+          } */
         } else {
           console.log("Error fetching projects");
         }
@@ -133,26 +223,30 @@ const ProjectListNotLogged = () => {
     }
   };
 
-  const handleShowMore = () => {
-    setVisibleRows(visibleRows + 2);
-  };
-
   const handleChangeSearchBy = (e) => {
     setSearchType(e.target.value);
-    setSearchQuery("");
-    setSelectedState("");
   };
 
   const handleChangeState = (e) => {
-    setSearchQuery(e.target.value);
+    const selectedStateName = e.target.value;
+    const selectedStateId = projectStateList.find(
+      (state) => state.name === selectedStateName
+    )?.id;
+    setSearchQuery(selectedStateId);
   };
 
   const handleChangeSortBy = (event) => {
     setOrderBy(event.target.value);
   };
 
+  const handleShowMore = () => {
+    setShowMoreProjects((prev) => prev + 6);
+    setVisibleRows(visibleRows + 2);
+  };
+
   const handleSearch = () => {
-    fetchProjects();
+    setShowMoreProjects(6);
+    fetchProjects(6);
   };
 
   const visibleCards = cards.slice(0, visibleRows * 3);
@@ -182,19 +276,57 @@ const ProjectListNotLogged = () => {
               onChange={handleChangeState}
               style={{ width: "15rem" }}
             >
-              <option value="1">Planning</option>
-              <option value="2">Ready</option>
-              <option value="3">Approved</option>
-              <option value="4">In progress</option>
-              <option value="5">Finished</option>
-              <option value="6">Cancelled</option>
+              {projectStateList.map((state) => (
+                <option key={state.id} value={state.id}>
+                  {formatProjectStateName(state.name)}
+                </option>
+              ))}
             </Form.Select>
-          ) : (
-            <Form.Control
+          ) : searchType === "keyword" ? (
+            <Typeahead
               type="text"
+              options={keywordList.map((keyword) => keyword)}
+              id="searchQueryIdKeyword"
               placeholder="Search"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(selected) => {
+                if (selected.length > 0) {
+                  const foundKeyword = keywordList.find(
+                    (keyword) => keyword === selected[0]
+                  );
+                  if (foundKeyword) {
+                    setSearchQuery(foundKeyword);
+                    console.log("searchQuery no typeahead keyword", searchQuery);
+                  }
+                }
+              }}
+              style={{ width: "15rem" }}
+            />
+          ) : searchType === "skill" ? (
+            <Typeahead
+              type="text"
+              options={skillList.map((skill) => skill.name)}
+              id="searchQueryIdSkill"
+              placeholder="Search"
+              onChange={(selected) => {
+                if (selected.length > 0) {
+                  const foundSkill = skillList.find(
+                    (skill) => skill.name === selected[0]
+                  );
+                  if (foundSkill) {
+                    setSearchQuery(foundSkill.id);
+                    console.log("searchQuery no typeahead skill", searchQuery);
+                  }
+                }
+              }}
+              style={{ width: "15rem" }}
+            />
+          ) : (
+            <Typeahead
+              type="text"
+              options={projectNameList}
+              id="searchQueryIdProjectName"
+              placeholder="Search"
+              onInputChange={(value) => setSearchQuery(value)}
               style={{ width: "15rem" }}
             />
           )}
@@ -251,7 +383,7 @@ const ProjectListNotLogged = () => {
           </Col>
         ))}
       </Row>
-      {visibleCards.length < cards.length && (
+      {cards.length < numberOfProjects && (
         <div className="text-center">
           <Button
             className="custom-show-more-btn mb-4"
