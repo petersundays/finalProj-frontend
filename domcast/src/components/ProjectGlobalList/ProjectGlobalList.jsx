@@ -17,20 +17,20 @@ const ProjectGlobalList = () => {
   const [orderAsc, setOrderAsc] = useState(true);
   const [searchType, setSearchType] = useState("name");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedState, setSelectedState] = useState("");
 
   const [skillList, setSkillList] = useState([]);
   const [keywordList, setKeywordList] = useState([]);
   const [projectNameList, setProjectNameList] = useState([]);
-
-  const [selectedSkill, setSelectedSkill] = useState(0);
-  const selectedKeyword = useState("");
 
   const [labList, setLabList] = useState([]);
   const [projectStateList, setProjectStateList] = useState([]);
   const [enumsFetched, setEnumsFetched] = useState(false);
   const [showMoreProjects, setShowMoreProjects] = useState(6);
   const [numberOfProjects, setNumberOfProjects] = useState(0);
+
+  const [selectedKeyword, setSelectedKeyword] = useState(null);
+  const [selectedSkill, setSelectedSkill] = useState(null);
+  const [selectedProjectName, setSelectedProjectName] = useState(null);
 
   useEffect(() => {
     fetchEnums();
@@ -192,26 +192,6 @@ const ProjectGlobalList = () => {
           setCards(cardsData);
           setNumberOfProjects(totalProjects);
           console.log("Projects fetched:", cardsData);
-          /*           try {
-            const numberProjectsResponse = await fetch(
-              `${Base_url_projects}number-projects`,
-              {
-                method: "GET",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-              }
-            );
-            if (numberProjectsResponse.ok) {
-              const numberProjectsData = await numberProjectsResponse.json();
-              console.log("numberProjectsData", numberProjectsData);
-              setNumberOfProjects(numberProjectsData);
-            } else {
-              console.log("Error fetching number of projects");
-            }
-          } catch (error) {
-            console.error("Error:", error);
-          } */
         } else {
           console.log("Error fetching projects");
         }
@@ -222,7 +202,11 @@ const ProjectGlobalList = () => {
   };
 
   const handleChangeSearchBy = (e) => {
+    setSearchQuery("");
     setSearchType(e.target.value);
+    setSelectedKeyword(null);
+    setSelectedSkill(null);
+    setSelectedProjectName(null);
   };
 
   const handleChangeState = (e) => {
@@ -288,6 +272,7 @@ const ProjectGlobalList = () => {
               options={keywordList.map((keyword) => keyword)}
               id="searchQueryIdKeyword"
               placeholder="Search"
+              selected={selectedKeyword ? [selectedKeyword] : []}
               onChange={(selected) => {
                 if (selected.length > 0) {
                   const foundKeyword = keywordList.find(
@@ -295,6 +280,7 @@ const ProjectGlobalList = () => {
                   );
                   if (foundKeyword) {
                     setSearchQuery(foundKeyword);
+                    setSelectedKeyword(foundKeyword);
                     console.log(
                       "searchQuery no typeahead keyword",
                       searchQuery
@@ -310,6 +296,7 @@ const ProjectGlobalList = () => {
               options={skillList.map((skill) => skill.name)}
               id="searchQueryIdSkill"
               placeholder="Search"
+              selected={selectedSkill ? [selectedSkill.name] : []}
               onChange={(selected) => {
                 if (selected.length > 0) {
                   const foundSkill = skillList.find(
@@ -317,6 +304,7 @@ const ProjectGlobalList = () => {
                   );
                   if (foundSkill) {
                     setSearchQuery(foundSkill.id);
+                    setSelectedSkill(foundSkill.name);
                     console.log("searchQuery no typeahead skill", searchQuery);
                   }
                 }
@@ -329,6 +317,7 @@ const ProjectGlobalList = () => {
               options={projectNameList.map((projectName) => projectName)}
               id="searchQueryIdProjectName"
               placeholder="Search"
+              selected={selectedProjectName ? [selectedProjectName] : []}
               onChange={(selected) => {
                 if (selected.length > 0) {
                   const foundProjectName = projectNameList.find(
@@ -336,6 +325,7 @@ const ProjectGlobalList = () => {
                   );
                   if (foundProjectName) {
                     setSearchQuery(foundProjectName);
+                    setSelectedProjectName(foundProjectName);
                     console.log(
                       "searchQuery no typeahead project name",
                       searchQuery
@@ -395,7 +385,7 @@ const ProjectGlobalList = () => {
       </Row>
       <Row className="mb-3 mt-5 justify-content-center">
         {visibleCards.map((card, index) => (
-          <Col key={index} className="my-3 mx-3">
+          <Col key={index} className="my-3 mx-0">
             <OthersProjCardNotLogged {...card} />
           </Col>
         ))}
