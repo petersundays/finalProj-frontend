@@ -19,8 +19,8 @@ import MainSidebar from "../components/MainSidebar/MainSidebar";
 import MessageHubInbox from "../components/MessageHubInbox/MessageHubInbox";
 import MessageHubSent from "../components/MessageHubSent/MessageHubSent";
 import ProjectEdit from "../components/ProjectEdit/ProjectEdit";
-import ProjectListLogged from "../components/ProjectListLogged/ProjectListLogged";
-import ProjectListNotLogged from "../components/ProjectListNotLogged/ProjectListNotLogged";
+import ProjectUserList from "../components/ProjectUserList/ProjectUserList";
+import ProjectGlobalList from "../components/ProjectGlobalList/ProjectGlobalList";
 import ProjectNew from "../components/ProjectNew/ProjectNew";
 import ProjectView from "../components/ProjectView/ProjectView";
 import TaskEdit from "../components/TaskEdit/TaskEdit";
@@ -85,9 +85,9 @@ function HomeLogged() {
                   <Route path="/log/view/:id" element={<LogView />} />
                   <Route path="/inbox" element={<MessageHubInbox />} />
                   <Route path="/sent" element={<MessageHubSent />} />
-                  <Route path="/myprojects" element={<ProjectListLogged />} />
+                  <Route path="/myprojects" element={<ProjectUserList />} />
                   <Route path="/project/edit/:id" element={<ProjectEdit />} />
-                  <Route path="/projects/list" element={<ProjectListNotLogged />} />
+                  <Route path="/projects/list" element={<ProjectGlobalList />} />
                   <Route path="/project/new" element={<ProjectNew />} />
                   <Route path="/project/view/:id" element={<ProjectView />} />
                   <Route path="/task/edit/:id" element={<TaskEdit />} />

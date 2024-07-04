@@ -5,7 +5,7 @@ import "./Home.css";
 import MainNavbaNotLogged from "../components/MainNavbaNotLogged/MainNavbaNotLogged";
 import MainOffcanvasNotLogged from "../components/MainOffcanvasNotLogged/MainOffcanvasNotLogged";
 import MainFooter from "../components/MainFooter/MainFooter";
-import ProjectListNotLogged from "../components/ProjectListNotLogged/ProjectListNotLogged";
+import ProjectGlobalList from "../components/ProjectGlobalList/ProjectGlobalList";
 import OthersBannerLogin from "../components/OthersBannerLogin/OthersBannerLogin";
 import backgroundPic from "../multimedia/background-pic.png";
 
@@ -56,7 +56,7 @@ function Home() {
         </Row>
         <Row className="flex-grow-1">
           <Col className="content-not-logged">
-            <ProjectListNotLogged />
+            <ProjectGlobalList />
           </Col>
         </Row>
       </Container>

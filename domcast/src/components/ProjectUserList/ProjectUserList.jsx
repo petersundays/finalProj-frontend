@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Card, Row, Col, Button } from "react-bootstrap";
 import OthersProjCardLogged from "../OthersProjCardLogged/OthersProjCardLogged";
-import "./ProjectListLogged.css";
+import "./ProjectUserList.css";
 import { use } from "i18next";
 import { Base_url_projects } from "../../functions/UsersFunctions";
 import { userStore } from "../../stores/UserStore";
 
-const ProjectListLogged = () => {
+const ProjectUserList = () => {
   const [cards, setCards] = useState([]);
   const [visibleRows, setVisibleRows] = useState(2);
   const loggedUser = userStore((state) => state.loggedUser);
@@ -64,4 +64,4 @@ const ProjectListLogged = () => {
   );
 };
 
-export default ProjectListLogged;
+export default ProjectUserList;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Card, Row, Col, Button, Form } from "react-bootstrap";
-import OthersProjCardNotLogged from "../OthersProjCardNotLogged/OthersProjCardNotLogged";
-import "./ProjectListNotLogged.css";
+import OthersProjCardNotLogged from "../OthersProjCardNotLogged/OthersProjCardNotLogged.jsx";
+import "./ProjectGlobalList.css";
 import {
   Base_url_projects,
   Base_url_lab,
@@ -10,7 +10,7 @@ import {
 } from "../../functions/UsersFunctions.jsx";
 import { Typeahead } from "react-bootstrap-typeahead";
 
-const ProjectListNotLogged = () => {
+const ProjectGlobalList = () => {
   const [cards, setCards] = useState([]);
   const [visibleRows, setVisibleRows] = useState(2);
   const [orderBy, setOrderBy] = useState("name");
@@ -36,12 +36,11 @@ const ProjectListNotLogged = () => {
     fetchEnums();
   }, []);
 
-    useEffect(() => {
+  useEffect(() => {
     if (enumsFetched) {
       fetchProjects(showMoreProjects);
     }
   }, [enumsFetched, showMoreProjects]);
-
 
   const formatProjectStateName = (name) => {
     return name
@@ -161,7 +160,6 @@ const ProjectListNotLogged = () => {
             console.log("searchQuery no fetchProjects 2: ", searchQuery);
           }
         }
-        console.log("showMoreProjects no fetchProjects", showMoreProjects);
         url.searchParams.append("pageSize", showMoreProjects);
         url.searchParams.append("pageNumber", 1);
 
@@ -194,7 +192,7 @@ const ProjectListNotLogged = () => {
           setCards(cardsData);
           setNumberOfProjects(totalProjects);
           console.log("Projects fetched:", cardsData);
-/*           try {
+          /*           try {
             const numberProjectsResponse = await fetch(
               `${Base_url_projects}number-projects`,
               {
@@ -228,10 +226,8 @@ const ProjectListNotLogged = () => {
   };
 
   const handleChangeState = (e) => {
-    const selectedStateName = e.target.value;
-    const selectedStateId = projectStateList.find(
-      (state) => state.name === selectedStateName
-    )?.id;
+    const selectedStateId = e.target.value;
+    console.log("selectedStateId", selectedStateId);
     setSearchQuery(selectedStateId);
   };
 
@@ -256,8 +252,8 @@ const ProjectListNotLogged = () => {
       className="mt-2 card-proj-not-logged"
       style={{ border: "none", maxWidth: "100rem" }}
     >
-      <Row className="my-3 justify-content-center align-content-center">
-        <Col className="my-2 mx-2">
+      <Row className="my-3 mx-5 justify-content-center align-content-center">
+        <Col className="my-2 me-2" style={{ width: "15rem" }}>
           <Form.Select
             className="me-2"
             onChange={handleChangeSearchBy}
@@ -269,13 +265,17 @@ const ProjectListNotLogged = () => {
             <option value="skill">Skill</option>
           </Form.Select>
         </Col>
-        <Col className="my-2 mx-2">
+        <Col className="my-2 me-2" style={{ width: "15rem" }}>
           {searchType === "state" ? (
             <Form.Select
               className="me-2"
               onChange={handleChangeState}
               style={{ width: "15rem" }}
             >
+              <option value="" disabled selected>
+                {" "}
+                Select state{" "}
+              </option>
               {projectStateList.map((state) => (
                 <option key={state.id} value={state.id}>
                   {formatProjectStateName(state.name)}
@@ -295,7 +295,10 @@ const ProjectListNotLogged = () => {
                   );
                   if (foundKeyword) {
                     setSearchQuery(foundKeyword);
-                    console.log("searchQuery no typeahead keyword", searchQuery);
+                    console.log(
+                      "searchQuery no typeahead keyword",
+                      searchQuery
+                    );
                   }
                 }
               }}
@@ -323,15 +326,28 @@ const ProjectListNotLogged = () => {
           ) : (
             <Typeahead
               type="text"
-              options={projectNameList}
+              options={projectNameList.map((projectName) => projectName)}
               id="searchQueryIdProjectName"
               placeholder="Search"
-              onInputChange={(value) => setSearchQuery(value)}
+              onChange={(selected) => {
+                if (selected.length > 0) {
+                  const foundProjectName = projectNameList.find(
+                    (projectName) => projectName === selected[0]
+                  );
+                  if (foundProjectName) {
+                    setSearchQuery(foundProjectName);
+                    console.log(
+                      "searchQuery no typeahead project name",
+                      searchQuery
+                    );
+                  }
+                }
+              }}
               style={{ width: "15rem" }}
             />
           )}
         </Col>
-        <Col className="my-2 mx-2">
+        <Col className="my-2 me-2" style={{ width: "15rem" }}>
           <Form.Select
             className="me-2"
             onChange={handleChangeSortBy}
@@ -342,7 +358,7 @@ const ProjectListNotLogged = () => {
             <option value="availablePlaces">Vacancies</option>
           </Form.Select>
         </Col>
-        <Col className="my-2 ms-2">
+        <Col className="my-2 me-2" style={{ width: "12rem" }}>
           <Form.Check
             type="radio"
             label="Ascending"
@@ -354,7 +370,7 @@ const ProjectListNotLogged = () => {
             style={{ width: "12rem" }}
           />
         </Col>
-        <Col className="my-2 me-2">
+        <Col className="my-2 me-2" style={{ width: "12rem" }}>
           <Form.Check
             type="radio"
             label="Descending"
@@ -363,9 +379,10 @@ const ProjectListNotLogged = () => {
             checked={orderAsc === false}
             onChange={() => setOrderAsc(false)}
             className="radio-btn-custom"
+            style={{ width: "12rem" }}
           />
         </Col>
-        <Col className="my-2 mx-2">
+        <Col className="my-2 mx-2" style={{ width: "5rem" }}>
           <Button
             className="custom-show-more-btn mb-4"
             variant="secondary"
@@ -404,4 +421,4 @@ const ProjectListNotLogged = () => {
   );
 };
 
-export default ProjectListNotLogged;
+export default ProjectGlobalList;
