@@ -94,7 +94,7 @@ function HomeLogged() {
                   <Route path="/tasks/list" element={<TaskList />} />
                   <Route path="/task/new" element={<TaskNew />} />
                   <Route path="/task/view/:id" element={<TaskView />} />
-                  <Route path="/myprofile/:id" element={<UserEdit />} />
+                  <Route path="/user/edit/:id" element={<UserEdit />} />
                   <Route path="/users/list" element={<UserList />} />
                   <Route path="/user/view/:id" element={<UserView />} />
                 </Routes>

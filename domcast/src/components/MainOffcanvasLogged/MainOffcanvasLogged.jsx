@@ -14,14 +14,18 @@ function MainOffcanvasLogged({ show, handleClose }) {
   const [expandedProjects, setExpandedProjects] = useState(false);
   const [expandedMessageHub, setExpandedMessageHub] = useState(false);
   const [expandedAssets, setExpandedAssets] = useState(false);
-  const [showModalRedefinePassword, setShowModalRedefinePassword] = useState(
-    false
-  );
+  const [showModalRedefinePassword, setShowModalRedefinePassword] =
+    useState(false);
   const [language, setLanguage] = useState("EN");
 
+  const userId = userStore((state) => state.loggedUser.id);
+
+  const viewProfile = () => {
+    navigate(`user/view/${userId}`, { replace: true });
+  };
+
   const editProfile = () => {
-    const id = userStore.getState().loggedUser.id;
-    navigate(`myprofile/${id}`, { replace: true });
+    navigate(`user/edit/${userId}`, { replace: true });
   };
 
   const handleOpenModalRedefinePassword = () => {
@@ -81,8 +85,11 @@ function MainOffcanvasLogged({ show, handleClose }) {
       <Offcanvas.Body className="d-flex flex-column justify-content-between">
         <div>
           <Nav className="flex-column profileNavbar">
-            <Nav.Link onClick={editProfile}>My Profile</Nav.Link>
-            <Nav.Link onClick={handleOpenModalRedefinePassword}>Change Password</Nav.Link>
+            <Nav.Link onClick={viewProfile}>View Profile</Nav.Link>
+            <Nav.Link onClick={editProfile}>Edit Profile</Nav.Link>
+            <Nav.Link onClick={handleOpenModalRedefinePassword}>
+              Change Password
+            </Nav.Link>
           </Nav>
           <hr />
           <Nav className="d-flex flex-column justify-content-between sidebarNavbar">
@@ -92,32 +99,40 @@ function MainOffcanvasLogged({ show, handleClose }) {
             </Nav.Link>
             {expandedProjects && (
               <div className="ml-3">
-            <Nav.Link onClick={() => navigate("/domcast/projects/list")}>
-              All Projects
-            </Nav.Link>
-            <Nav.Link onClick={() => navigate("/domcast/myprojects")}>
-              My Projects
-            </Nav.Link>
-            <Nav.Link onClick={() => navigate("/domcast/project/new")}>
-              New Project
-            </Nav.Link>
-            {loggedUser.type === 300 && (
-              <Nav.Link onClick={() => navigate("/domcast/projects/approval-list")}>
-                Approval List
-              </Nav.Link>
-            )}
+                <Nav.Link onClick={() => navigate("/domcast/projects/list")}>
+                  All Projects
+                </Nav.Link>
+                <Nav.Link onClick={() => navigate("/domcast/myprojects")}>
+                  My Projects
+                </Nav.Link>
+                <Nav.Link onClick={() => navigate("/domcast/project/new")}>
+                  New Project
+                </Nav.Link>
+                {loggedUser.type === 300 && (
+                  <Nav.Link
+                    onClick={() => navigate("/domcast/projects/approval-list")}
+                  >
+                    Approval List
+                  </Nav.Link>
+                )}
               </div>
             )}
-        <Nav.Link onClick={() => navigate("/domcast/users/list")}>Users</Nav.Link>
-        <Nav className="d-flex flex-column justify-content-between sidebarNavbar">
+            <Nav.Link onClick={() => navigate("/domcast/users/list")}>
+              Users
+            </Nav.Link>
+            <Nav className="d-flex flex-column justify-content-between sidebarNavbar">
               <Nav.Link onClick={toggleExpandMessageHub}>
                 Message Hub
                 <span className="arrow">{expandedMessageHub ? "▲" : "▼"}</span>
               </Nav.Link>
               {expandedMessageHub && (
                 <div className="ml-3">
-            <Nav.Link onClick={() => navigate("/domcast/inbox")}>Inbox</Nav.Link>
-            <Nav.Link onClick={() => navigate("/domcast/sent")}>Sent</Nav.Link>
+                  <Nav.Link onClick={() => navigate("/domcast/inbox")}>
+                    Inbox
+                  </Nav.Link>
+                  <Nav.Link onClick={() => navigate("/domcast/sent")}>
+                    Sent
+                  </Nav.Link>
                 </div>
               )}
             </Nav>
@@ -128,20 +143,21 @@ function MainOffcanvasLogged({ show, handleClose }) {
               </Nav.Link>
               {expandedAssets && (
                 <div className="ml-3">
-            <Nav.Link onClick={() => navigate("/domcast/assets/list")}>
-              All Assets
-            </Nav.Link>
-            <Nav.Link onClick={() => navigate("/domcast/asset/new")}>
-              New Asset
-            </Nav.Link>
+                  <Nav.Link onClick={() => navigate("/domcast/assets/list")}>
+                    All Assets
+                  </Nav.Link>
+                  <Nav.Link onClick={() => navigate("/domcast/asset/new")}>
+                    New Asset
+                  </Nav.Link>
                 </div>
               )}
             </Nav>
             {loggedUser.type === 300 && (
-          <Nav.Link onClick={() => navigate("/domcast/admin-dashboard")}>
-            Dashboard
-          </Nav.Link>
-        )}          </Nav>
+              <Nav.Link onClick={() => navigate("/domcast/admin-dashboard")}>
+                Dashboard
+              </Nav.Link>
+            )}{" "}
+          </Nav>
         </div>
         <Nav className="flex-column bottomNavbar mt-4 mb-3 align-items-center">
           <div className="btn-group btn-offcanvas-main" role="group">

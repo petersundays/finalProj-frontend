@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Card, Row, Col, Button, Form } from "react-bootstrap";
 import OthersProjCardNotLogged from "../OthersProjCardNotLogged/OthersProjCardNotLogged.jsx";
+import OthersProjCardLogged from "../OthersProjCardLogged/OthersProjCardLogged.jsx";
 import "./ProjectGlobalList.css";
 import {
   Base_url_projects,
@@ -9,9 +10,13 @@ import {
   Base_url_keywords,
 } from "../../functions/UsersFunctions.jsx";
 import { Typeahead } from "react-bootstrap-typeahead";
+import { userStore } from "../../stores/UserStore.jsx";
 
 const ProjectGlobalList = () => {
+  const loggedUser = userStore((state) => state.loggedUser);
+
   const [cards, setCards] = useState([]);
+  const [loggedCards, setLoggedCards] = useState([]);
   const [visibleRows, setVisibleRows] = useState(2);
   const [orderBy, setOrderBy] = useState("name");
   const [orderAsc, setOrderAsc] = useState(true);
@@ -186,10 +191,15 @@ const ProjectGlobalList = () => {
                   (stateObj) => stateObj.intValue === project.state
                 )?.name
               ),
+              members: project.projectUsers.length,
               link: `/project/view/${project.id}`,
             };
           });
-          setCards(cardsData);
+          if (!loggedUser.sessionToken) {
+            setCards(cardsData);
+          } else {
+            setLoggedCards(cardsData);
+          }
           setNumberOfProjects(totalProjects);
           console.log("Projects fetched:", cardsData);
         } else {
@@ -229,7 +239,9 @@ const ProjectGlobalList = () => {
     fetchProjects(6);
   };
 
-  const visibleCards = cards.slice(0, visibleRows * 3);
+  const visibleCards = !loggedUser.sessionToken
+    ? cards.slice(0, visibleRows * 3)
+    : loggedCards.slice(0, visibleRows * 3);
 
   return (
     <Card
@@ -257,8 +269,7 @@ const ProjectGlobalList = () => {
               style={{ width: "15rem" }}
             >
               <option value="" disabled selected>
-                {" "}
-                Select state{" "}
+                Select state
               </option>
               {projectStateList.map((state) => (
                 <option key={state.id} value={state.id}>
@@ -383,14 +394,18 @@ const ProjectGlobalList = () => {
           </Button>
         </Col>
       </Row>
-      <Row className="mb-3 mt-5 justify-content-center">
+      <Row className="mb-3 justify-content-center">
         {visibleCards.map((card, index) => (
           <Col key={index} className="my-3 mx-0">
-            <OthersProjCardNotLogged {...card} />
+            {!loggedUser.sessionToken ? (
+              <OthersProjCardNotLogged {...card} />
+            ) : (
+              <OthersProjCardLogged {...card} />
+            )}
           </Col>
         ))}
       </Row>
-      {cards.length < numberOfProjects && (
+      {(cards.length || loggedCards.length) < numberOfProjects && (
         <div className="text-center">
           <Button
             className="custom-show-more-btn mb-4"
