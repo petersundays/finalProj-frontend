@@ -2,30 +2,71 @@ import React, { useEffect, useState } from "react";
 import { userStore } from "../../stores/UserStore";
 import { Card, Button } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
-import { Base_url_projects } from "../../functions/UsersFunctions";
+import {
+  Base_url_projects,
+  Base_url_users,
+} from "../../functions/UsersFunctions";
 import { Badge, Form, Row, Col } from "react-bootstrap";
 
 const UserView = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  // experimentar fetchar users e fazer set na store
-  const user = userStore((state) => state.users.find((user) => user.id === id));
+  console.log("urlId:", id);
+  const urlId = parseInt(id);
   const loggedUser = userStore((state) => state.loggedUser);
+  const usersList = userStore((state) => state.userList);
 
-  const [orderBy, setOrderBy] = useState("state");
-  const [orderAsc, setOrderAsc] = useState(true);
-  const searchQuery = useState("");
+  const [projectsOrderBy, setProjectsOrderBy] = useState("state");
+  const [projectsOrderAsc, setProjectsOrderAsc] = useState(true);
+  const projectsSearchQuery = useState("");
   const [projects, setProjects] = useState([]);
-  const showMoreProjects = useState(100);
+  const showMoreProjects = 100;
 
-  const skills = user.skills;
-  const interests = user.interests;
+  const fetchProjects = async () => {
+    if (!projectsSearchQuery && !projectsOrderBy && !projectsOrderAsc) {
+      setProjectsOrderBy("name");
+      setProjectsOrderAsc(true);
+    } else {
+      try {
+        const user = usersList.find((user) => user.id === urlId);
+        if (!user) {
+          console.error("User not found");
+          return;
+        }
+        const userId = user.id === loggedUser.id ? loggedUser.id : user.id;
 
-  const userId = user.id === loggedUser.id ? loggedUser.id : user.id;
+        const urlProjects = new URL(`${Base_url_projects}`);
+        urlProjects.searchParams.append("userId", userId);
+        urlProjects.searchParams.append("orderBy", projectsOrderBy);
+        urlProjects.searchParams.append("orderAsc", projectsOrderAsc);
+        urlProjects.searchParams.append("pageSize", showMoreProjects);
+        urlProjects.searchParams.append("pageNumber", 1);
+
+        const projectsResponse = await fetch(urlProjects.toString(), {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (projectsResponse.ok) {
+          const projectsData = await projectsResponse.json();
+          setProjects(projectsData.projects);
+          console.log("Projects fetched:", projectsData);
+        } else {
+          console.error("Error fetching projects:", projectsResponse);
+        }
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      }
+    }
+  };
 
   useEffect(() => {
-    fetchProjects();
-  }, []);
+    if (usersList.length > 0) {
+      fetchProjects();
+    }
+  }, [usersList]);
 
   const handleSendMessage = () => {
     // show modal message
@@ -36,46 +77,24 @@ const UserView = () => {
   };
 
   const handleChangeSortBy = (e) => {
-    setOrderBy(e.target.value);
+    setProjectsOrderBy(e.target.value);
   };
 
   const handleSearch = () => {
     fetchProjects();
   };
 
-  const fetchProjects = async () => {
-    if (!searchQuery && !orderBy && !orderAsc) {
-      setOrderBy("name");
-      setOrderAsc(true);
-      console.log("searchQuery no fetchProjects 1: ", searchQuery);
-    } else {
-      try {
-        const url = new URL(`${Base_url_projects}`);
-        url.searchParams.append("userId", userId);
-        url.searchParams.append("orderBy", orderBy);
-        url.searchParams.append("orderAsc", orderAsc);
-        url.searchParams.append("pageSize", showMoreProjects);
-        url.searchParams.append("pageNumber", 1);
 
-        const projectsResponse = await fetch(url.toString(), {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+  const user = usersList.find((user) => user.id === urlId);
+  if (!user) {
+    return <div>Loading...</div>;
+  }
+  const userId = user.id === loggedUser.id ? loggedUser.id : user.id;
+  const skills = user.id === loggedUser.id ? loggedUser.skills : user.skills;
+  const interests =
+    user.id === loggedUser.id ? loggedUser.interests : user.interests;
 
-        if (projectsResponse.ok) {
-          const projectsData = await projectsResponse.json();
-          setProjects(projectsData);
-          console.log("Projects fetched:", projectsData);
-        } else {
-          console.error("Error fetching projects:", projectsResponse);
-        }
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-      }
-    }
-  };
+    
 
   return (
     <Card>
@@ -123,8 +142,8 @@ const UserView = () => {
                 label="Ascending"
                 name="orderDirection"
                 id="orderAsc"
-                checked={orderAsc === true}
-                onChange={() => setOrderAsc(true)}
+                checked={projectsOrderAsc === true}
+                onChange={() => setProjectsOrderAsc(true)}
                 className="me-2 radio-btn-custom"
                 style={{ width: "12rem" }}
               />
@@ -135,8 +154,8 @@ const UserView = () => {
                 label="Descending"
                 name="orderDirection"
                 id="orderDesc"
-                checked={orderAsc === false}
-                onChange={() => setOrderAsc(false)}
+                checked={projectsOrderAsc === false}
+                onChange={() => setProjectsOrderAsc(false)}
                 className="radio-btn-custom"
                 style={{ width: "12rem" }}
               />

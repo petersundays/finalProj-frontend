@@ -5,6 +5,7 @@ import "./ProjectUserList.css";
 import {
   Base_url_projects,
   Base_url_lab,
+  Base_url_users,
 } from "../../functions/UsersFunctions.jsx";
 import { userStore } from "../../stores/UserStore.jsx";
 import { useNavigate } from "react-router-dom";
@@ -29,6 +30,8 @@ const ProjectUserList = () => {
   const [showMoreProjects, setShowMoreProjects] = useState(6);
   const [numberOfProjects, setNumberOfProjects] = useState(0);
 
+  const { userList, setUserList } = userStore();
+
   useEffect(() => {
     fetchEnums();
   }, []);
@@ -38,6 +41,10 @@ const ProjectUserList = () => {
       fetchProjects(showMoreProjects);
     }
   }, [enumsFetched, showMoreProjects]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
   const formatName = (name) => {
     return name
@@ -161,6 +168,38 @@ const ProjectUserList = () => {
   };
 
   const visibleCards = cards.slice(0, visibleRows * 3);
+
+  const fetchUsers = async () => {
+    try {
+      const urlUsers = new URL(`${Base_url_users}`);
+      urlUsers.searchParams.append("workplace", 0);
+      urlUsers.searchParams.append("orderBy", "lab");
+      urlUsers.searchParams.append("orderAsc", "true");
+      urlUsers.searchParams.append("pageSize", 100);
+      urlUsers.searchParams.append("pageNumber", 1);
+
+      console.log("URL users:", urlUsers.toString());
+
+      const usersResponse = await fetch(urlUsers.toString(), {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          token: loggedUser.sessionToken,
+          id: loggedUser.id,
+        },
+      });
+
+      if (usersResponse.ok) {
+        const usersData = await usersResponse.json();
+        setUserList(usersData);
+        console.log("Users fetched:", usersData);
+      } else {
+        console.error("Error fetching users:", usersResponse);
+      }
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    }
+  };
 
   return (
     <Card
