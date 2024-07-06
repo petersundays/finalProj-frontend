@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./ConfirmRegistration.css";
-import NavbarNotLogged from "../components/NavbaNotLogged/NavbarNotLogged";
-import OffcanvasNotLogged from "../components/OffcanvasNotLogged/OffcanvasNotLogged";
-import FooterComponent from "../components/Footer/Footer";
-import NewUser from "../components/NewUser/NewUser";
+import MainNavbaNotLogged from "../components/MainNavbaNotLogged/MainNavbaNotLogged";
+import MainOffcanvasNotLogged from "../components/MainOffcanvasNotLogged/MainOffcanvasNotLogged";
+import MainFooter from "../components/MainFooter/MainFooter";
+import UserRegistration from "../components/UserRegistration/UserRegistration";
 
 function ConfirmRegistration() {
   const [show, setShow] = useState(false);
@@ -23,12 +23,12 @@ function ConfirmRegistration() {
 
   return (
     <div className="div-not-logged">
-      <NavbarNotLogged
+      <MainNavbaNotLogged
         handleShow={handleShow}
         handleLanguageChange={handleLanguageChange}
         language={language}
       />
-      <OffcanvasNotLogged
+      <MainOffcanvasNotLogged
         show={show}
         handleClose={handleClose}
         expandedProjects={expandedProjects}
@@ -39,11 +39,11 @@ function ConfirmRegistration() {
       <Container fluid className="main-container">
         <Row className="flex-grow-1">
           <Col className="content">
-            <NewUser />
+            <UserRegistration />
           </Col>
         </Row>
       </Container>
-      <FooterComponent />
+      <MainFooter />
     </div>
   );
 }

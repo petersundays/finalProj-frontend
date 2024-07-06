@@ -1,0 +1,27 @@
+.card-card-grid .row {
+  justify-content: center;
+}
+
+.card-card-grid .col {
+  display: flex;
+  justify-content: center;
+}
+
+.custom-show-more-btn:hover {
+  background-color: var(--color-blue-01) !important;
+  border-color: var(--color-blue-01) !important;
+}
+
+.card-proj-not-logged {
+  justify-content: center !important;
+}
+
+.radio-btn-custom .form-check-input{
+  width: 1.5rem !important;
+  height: 1.5rem !important;
+  align-content: center;
+}
+
+.radio-btn-custom .form-check-label{
+  margin-top: 0.1rem;
+}

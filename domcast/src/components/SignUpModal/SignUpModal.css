@@ -1,8 +1,0 @@
-.modal-submit {
-  background-color: var(--color-blue-01);
-  color: var(--color-white);
-}
-
-.modal-submit:hover {
-  background-color: var(--color-blue-03);
-}

@@ -1,0 +1,72 @@
+.navbar-top-changes {
+    background-color: var(--color-coal);
+    color: var(--color-white);
+  }
+  
+  .username-dropdown {
+    color: var(--color-white) !important;
+  }
+  
+  .dropdown-title {
+    color: var(--color-yellow-01) !important;
+  }
+  
+  .btn-group .btn.active {
+    background-color: var(--color-blue-01);
+    color: var(--color-white);
+  }
+
+  .btn-group .btn.active:hover {
+    background-color: var(--color-blue-02);
+    color: var(--color-white) !important;
+  }
+  
+  .btn-group .btn.active:focus {
+    background-color: var(--color-blue-01);
+    color: var(--color-white);
+  }
+  
+  .btn-group .btn {
+    border-color: var(--color-blue-01);
+    color: var(--color-white);
+  }
+  
+  .btn-group .btn:hover {
+    background-color: var(--color-blue-02);
+    color: var(--color-white) !important;
+    border-color: var(--color-blue-01);
+  }
+  
+  .navbar .dropdown-menu {
+    background-color: var(--color-coal) !important;
+  }
+  
+  .navbar .dropdown-item {
+    color: var(--color-white) !important;
+  }
+  
+  .navbar .dropdown-item:hover,
+  .navbar .dropdown-item:focus {
+    color: var(--color-yellow-01) !important;
+    background-color: var(--color-coal) !important;
+  }
+  
+  .dropdown-profile:hover,
+  .dropdown-profile:focus {
+    background-color: transparent !important;
+  }
+  
+  .dropdown-title:hover,
+  .dropdown-title:focus {
+    color: var(--color-yellow-02) !important;
+  }
+  
+  .navbar .navbar-nav .nav-link.dropdown-toggle,
+  .navbar .navbar-nav .nav-link.dropdown-toggle:hover,
+  .navbar .navbar-nav .nav-link.dropdown-toggle:focus {
+    color: var(--color-yellow-02) !important;
+  }
+  
+  .navbar-logo {
+    cursor:pointer;
+  }

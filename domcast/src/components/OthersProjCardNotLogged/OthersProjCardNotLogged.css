@@ -1,0 +1,39 @@
+.projcard-logged {
+  width: 22rem;
+  height: 14rem;
+  margin-inline: 3rem;
+  margin-bottom: 1.5rem;
+}
+
+.card-title-custom {
+  font-size: 16px !important;
+}
+
+.custom-button {
+  color: var(--color-blue-02) !important;
+  background: none !important;
+  border: none !important;
+}
+
+.custom-button:hover {
+  background: none !important;
+  color: var(--color-blue-03) !important;
+  text-decoration: underline !important;
+  border: none !important;
+}
+
+@media (max-width: 992px) {
+  .projcard-logged {
+    width: 100%; /* Torna o card responsivo */
+    max-width: 22rem; /* Largura máxima em telas menores */
+    margin-inline: 1rem !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  .projcard-logged {
+    width: 100%; /* Torna o card responsivo */
+    max-width: 22rem;
+    margin-inline: 0 !important;
+  }
+}
