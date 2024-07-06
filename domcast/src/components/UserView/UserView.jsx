@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { userStore } from "../../stores/UserStore";
-import { Card, Button } from "react-bootstrap";
+import { Card, Button, Badge, Form, Row, Col } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  Base_url_projects,
-  Base_url_users,
-} from "../../functions/UsersFunctions";
-import { Badge, Form, Row, Col } from "react-bootstrap";
+import { Base_url_projects } from "../../functions/UsersFunctions";
 
 const UserView = () => {
   const navigate = useNavigate();
@@ -84,7 +80,6 @@ const UserView = () => {
     fetchProjects();
   };
 
-
   const user = usersList.find((user) => user.id === urlId);
   if (!user) {
     return <div>Loading...</div>;
@@ -93,8 +88,6 @@ const UserView = () => {
   const skills = user.id === loggedUser.id ? loggedUser.skills : user.skills;
   const interests =
     user.id === loggedUser.id ? loggedUser.interests : user.interests;
-
-    
 
   return (
     <Card>

@@ -1,11 +1,24 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Card, Button } from "react-bootstrap";
 import "./UserCard.css";
-import { userStore } from "../../stores/UserStore";
 import { useNavigate } from "react-router-dom";
+import defaultProfilePic from "../../multimedia/default-profile-pic.png";
 
-const UserCard = (id, profilePic, firstName, lastName, lab, visible) => {
+
+const UserCard = (props) => {
+  const {
+    id,
+    photo,
+    firstName,
+    lastName,
+    workplace,
+    visible
+  } = props;
+  console.log("UserCard props:", { id, photo, firstName, lastName, workplace, visible });
+
   const navigate = useNavigate();
+
+const photoCard = photo ? photo : defaultProfilePic;
 
   const viewProfile = () => {
     navigate(`/user/view/${id}`);
@@ -18,9 +31,9 @@ const UserCard = (id, profilePic, firstName, lastName, lab, visible) => {
   return (
     <Card>
       <Card.Body>
-        <Card.Img variant="top" src={profilePic} />
+        <Card.Img variant="top" src={photoCard} />
         <Card.Title>{`${firstName} ${lastName}`}</Card.Title>
-        <Card.Text>{lab}</Card.Text>
+        <Card.Text>{workplace}</Card.Text>
         {!visible === false ? (
           <Card.Text>This profile is private</Card.Text>
         ) : (
