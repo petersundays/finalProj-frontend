@@ -1,32 +1,28 @@
-import React, { useEffect } from "react";
+import React, { useState } from "react";
 import { Card, Button } from "react-bootstrap";
 import "./UserCard.css";
 import { useNavigate } from "react-router-dom";
 import defaultProfilePic from "../../multimedia/default-profile-pic.png";
-
+import ModalMessage from "../ModalMessage/ModalMessage";
 
 const UserCard = (props) => {
-  const {
-    id,
-    photo,
-    firstName,
-    lastName,
-    workplace,
-    visible
-  } = props;
-  console.log("UserCard props:", { id, photo, firstName, lastName, workplace, visible });
-
+  const { id, photo, firstName, lastName, workplace, visible } = props;
   const navigate = useNavigate();
-
-const photoCard = photo ? photo : defaultProfilePic;
+  
+  const photoCard = photo ? photo : defaultProfilePic;
+  const [showMessageModal, setShowMessageModal] = useState(false);
 
   const viewProfile = () => {
-    navigate(`/user/view/${id}`);
+    navigate(`/domcast/user/view/${id}`);
   };
 
-  const handleSendMessage = () => {
-    // show modal message
-};
+  const openMessageModal = () => {
+    setShowMessageModal(true);
+  };
+
+  const closeMessageModal = () => {
+    setShowMessageModal(false);
+  };
 
   return (
     <Card>
@@ -41,10 +37,15 @@ const photoCard = photo ? photo : defaultProfilePic;
             View Profile
           </Button>
         )}
-        <Button variant="primary" onClick={handleSendMessage} className="mt-3">
+        <Button variant="primary" onClick={openMessageModal} className="mt-3">
           Send Message
         </Button>
       </Card.Body>
+      <ModalMessage
+        id={id}
+        show={showMessageModal}
+        handleClose={closeMessageModal}
+      />
     </Card>
   );
 };

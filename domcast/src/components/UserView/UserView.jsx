@@ -3,6 +3,7 @@ import { userStore } from "../../stores/UserStore";
 import { Card, Button, Badge, Form, Row, Col } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import { Base_url_projects } from "../../functions/UsersFunctions";
+import ModalMessage from "../ModalMessage/ModalMessage";
 
 const UserView = () => {
   const navigate = useNavigate();
@@ -17,6 +18,14 @@ const UserView = () => {
   const projectsSearchQuery = useState("");
   const [projects, setProjects] = useState([]);
   const showMoreProjects = 100;
+
+  const [showMessageModal, setShowMessageModal] = useState(false);
+
+  useEffect(() => {
+    if (usersList.length > 0) {
+      fetchProjects();
+    }
+  }, [usersList]);
 
   const fetchProjects = async () => {
     if (!projectsSearchQuery && !projectsOrderBy && !projectsOrderAsc) {
@@ -58,16 +67,6 @@ const UserView = () => {
     }
   };
 
-  useEffect(() => {
-    if (usersList.length > 0) {
-      fetchProjects();
-    }
-  }, [usersList]);
-
-  const handleSendMessage = () => {
-    // show modal message
-  };
-
   const editProfile = () => {
     navigate(`/user/edit/${userId}`);
   };
@@ -81,13 +80,19 @@ const UserView = () => {
   };
 
   const user = usersList.find((user) => user.id === urlId);
-  if (!user) {
-    return <div>Loading...</div>;
-  }
   const userId = user.id === loggedUser.id ? loggedUser.id : user.id;
-  const skills = user.id === loggedUser.id ? loggedUser.skills : user.skills;
+  const skills =
+    (loggedUser.id === user.id ? loggedUser.skills : user.skills) || [];
   const interests =
-    user.id === loggedUser.id ? loggedUser.interests : user.interests;
+    (loggedUser.id === user.id ? loggedUser.interests : user.interests) || [];
+
+  const openMessageModal = () => {
+    setShowMessageModal(true);
+  };
+
+  const closeMessageModal = () => {
+    setShowMessageModal(false);
+  };
 
   return (
     <Card>
@@ -97,9 +102,11 @@ const UserView = () => {
         <Card.Text>{user.nickname}</Card.Text>
         <Card.Text>{user.lab}</Card.Text>
         <Card.Text>{user.bio}</Card.Text>
-        <Card.Text>
-          Privacy: {user.visible === true ? "Public" : "Private"}
-        </Card.Text>
+        {urlId === loggedUser.id && (
+          <Card.Text>
+            Privacy: {user.visible === true ? "Private" : "Public"}
+          </Card.Text>
+        )}
         <div>
           <h6>Skills:</h6>
           {skills.map((skill, index) => (
@@ -176,11 +183,7 @@ const UserView = () => {
           ))}
         </div>
         {user.id !== loggedUser.id ? (
-          <Button
-            variant="primary"
-            onClick={handleSendMessage}
-            className="mt-3"
-          >
+          <Button variant="primary" onClick={openMessageModal} className="mt-3">
             Send Message
           </Button>
         ) : (
@@ -189,6 +192,11 @@ const UserView = () => {
           </Button>
         )}
       </Card.Body>
+      <ModalMessage
+        id={user.id}
+        show={showMessageModal}
+        handleClose={closeMessageModal}
+      />
     </Card>
   );
 };
