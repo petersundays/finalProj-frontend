@@ -69,6 +69,8 @@ const ProjectUserList = () => {
           const labsData = await labsResponse.json();
           setLabList(labsData);
           console.log("Labs fetched:", labsData);
+        } else {
+          console.error("Error fetching labs:", labsResponse);
         }
       } catch (error) {
         console.error("Error fetching labs:", error);
@@ -85,6 +87,8 @@ const ProjectUserList = () => {
           const projectsData = await projectsResponse.json();
           setProjectStateList(projectsData);
           console.log("Project states fetched:", projectsData);
+        } else {
+          console.error("Error fetching project states:", projectsResponse);
         }
       } catch (error) {
         console.error("Error fetching project states:", error);

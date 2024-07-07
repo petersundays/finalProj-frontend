@@ -80,6 +80,8 @@ const UserRegistration = () => {
           const skillsData = await skillsResponse.json();
           setSkillsList(skillsData);
           console.log("Skills fetched:", skillsData);
+        } else {
+          console.error("Error fetching skills:", skillsResponse);
         }
       } catch (error) {
         console.error("Error fetching skills:", error);
@@ -102,6 +104,8 @@ const UserRegistration = () => {
           const interestsData = await interestsResponse.json();
           setInterestsList(interestsData);
           console.log("Interests fetched:", interestsData);
+        } else {
+          console.error("Error fetching interests:", interestsResponse);
         }
       } catch (error) {
         console.error("Error fetching interests:", error);
@@ -120,7 +124,9 @@ const UserRegistration = () => {
           const labsData = await labsResponse.json();
           setLabList(labsData);
           console.log("Labs fetched:", labsData);
-        }
+        } else {
+          console.error("Error fetching labs:", labsResponse);
+        } 
       } catch (error) {
         console.error("Error fetching labs:", error);
       }
@@ -142,6 +148,11 @@ const UserRegistration = () => {
           const skillCategoriesData = await skillCategoriesResponse.json();
           setSkillCategoryList(skillCategoriesData);
           console.log("Skill categories fetched:", skillCategoriesData);
+        } else {
+          console.error(
+            "Error fetching skill categories:",
+            skillCategoriesResponse
+          );
         }
       } catch (error) {
         console.error("Error fetching skill categories:", error);
@@ -165,6 +176,11 @@ const UserRegistration = () => {
             await interestCategoriesResponse.json();
           setInterestCategoryList(interestCategoriesData);
           console.log("Interest categories fetched:", interestCategoriesData);
+        } else {
+          console.error(
+            "Error fetching interest categories:",
+            interestCategoriesResponse
+          );
         }
       } catch (error) {
         console.error("Error fetching interest categories:", error);

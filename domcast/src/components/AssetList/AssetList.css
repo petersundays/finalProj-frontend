@@ -36,36 +36,38 @@ td > a > span {
 .asset-list-table td {
   height: 2rem;
   text-align: left;
+  padding-inline: 1rem;
 }
 
 .asset-list-table td:first-child {
   width: 25% !important;
-  min-width: 25% !important;
+  /* min-width: 25% !important; */
   color: var(--color-blue-01);
 }
 
 .asset-list-table td:nth-child(2) {
   width: 15% !important;
-  min-width: 15% !important;
+  /* min-width: 15% !important; */
   color: var(--color-blue-03);
 }
 
 .asset-list-table td:nth-child(3) {
   width: 20% !important;
-  min-width: 20% !important;
+  /* min-width: 20% !important; */
   color: var(--color-blue-03);
 }
 
 .asset-list-table td:nth-child(4) {
   width: 30% !important;
-  min-width: 30% !important;
+  /* min-width: 30% !important; */
   color: var(--color-blue-03);
 }
 
 .asset-list-table td:nth-child(5) {
   width: 10% !important;
-  min-width: 10% !important;
+  /* min-width: 10% !important; */
   color: var(--color-blue-03);
+  text-align: center;
 }
 
 .asset-list-table tbody tr:hover {

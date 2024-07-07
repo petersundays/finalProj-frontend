@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Row,
   Col,
@@ -12,8 +12,19 @@ import { Input, Typeahead } from "react-bootstrap-typeahead";
 import "react-bootstrap-typeahead/css/Typeahead.css";
 import "./ProjectNew.css";
 import OthersProgressBar from "../OthersProgressBar/OthersProgressBar";
+import { userStore } from "../../stores/userStore";
+import { useNavigate } from "react-router-dom";
+import {
+  Base_url_components_resources,
+  Base_url_keywords,
+  Base_url_projects,
+  Base_url_skills,
+  Base_url_users,
+  Base_url_lab,
+} from "../../functions/UsersFunctions";
 
 const ProjectNew = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     title: "",
     lab: "",
@@ -25,12 +36,248 @@ const ProjectNew = () => {
     skills: [],
     assets: [],
   });
-  const [skills, setSkills] = useState([]);
-  const [keywords, setKeywords] = useState([]);
-  const [members, setMembers] = useState([]);
-  const [assets, setAssets] = useState([]);
+  const loggedUser = userStore.loggedUser;
+  const membersList = userStore.users.map((user) => user.name);
+  const [enumsFetched, setEnumsFetched] = useState(false);
+
+  const [skillsList, setSkillsList] = useState([]);
+  const [keywordsList, setKeywordsList] = useState([]);
+  const [assetsList, setAssetsList] = useState([]);
+  const [teamList, setTeamList] = useState([]);
+  const [skillsEnumList, setSkillsEnumList] = useState([]);
+  const [labEnumList, setLabEnumList] = useState([]);
+  const [projectUserEnumList, setProjectUserEnumList] = useState([]);
+
   const [step, setStep] = useState(1);
   const steps = ["Step 1", "Step 2", "Step 3"];
+
+  useEffect(() => {
+    fetchEnums();
+    setEnumsFetched(true);
+  }, []);
+
+  useEffect(() => {
+    if (enumsFetched) {
+      fetchBasicData();
+    }
+  }, [enumsFetched]);
+
+  const fetchEnums = async () => {
+    try {
+      const skillsEnumResponse = await fetch(
+        `${Base_url_skills}unconfirmed-user`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (skillsEnumResponse.ok) {
+        const skillsData = await skillsEnumResponse.json();
+        setSkillsEnumList(skillsData);
+        console.log("Skills fetched:", skillsData);
+      } else {
+        console.error("Error fetching skills:");
+      }
+    } catch (error) {
+      console.error("Error fetching skills:", error);
+    }
+
+    try {
+      const labsEnumResponse = await fetch(`${Base_url_lab}enum-unconfirmed`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (labsEnumResponse.ok) {
+        const labsData = await labsEnumResponse.json();
+        setLabEnumList(labsData);
+        console.log("Labs fetched:", labsData);
+      } else {
+        console.error("Error fetching labs:");
+      }
+    } catch (error) {
+      console.error("Error fetching labs:", error);
+    }
+
+    try {
+      const projectUserEnumResponse = await fetch(
+        `${Base_url_users}user-enum`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            token: loggedUser.sessionToken,
+            id: loggedUser.id,
+          },
+        }
+      );
+      if (projectUserEnumResponse.ok) {
+        const projectUserData = await projectUserEnumResponse.json();
+        setProjectUserEnumList(projectUserData);
+        console.log("Project users fetched:", projectUserData);
+      } else {
+        console.error("Error fetching project users:");
+      }
+    } catch (error) {
+      console.error("Error fetching project users:", error);
+    }
+  };
+
+  const fetchBasicData = async () => {
+    try {
+      const urlUsers = new URL(Base_url_users);
+      urlUsers.searchParams.append("workplace", 0);
+      urlUsers.searchParams.append("orderBy", "lab");
+      urlUsers.searchParams.append("orderAsc", "true");
+      urlUsers.searchParams.append("pageSize", 100);
+      urlUsers.searchParams.append("pageNumber", 1);
+
+      const usersResponse = await fetch(urlUsers, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          token: loggedUser.sessionToken,
+          id: loggedUser.id,
+        },
+      });
+      if (usersResponse.ok) {
+        const usersData = await usersResponse.json();
+        userStore.setUsers(usersData);
+      } else {
+        console.error("Error fetching users");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+
+    try {
+      const urlAssets = Base_url_components_resources;
+      urlAssets.searchParams.append("orderBy", "name");
+      urlAssets.searchParams.append("orderAsc", "true");
+      urlAssets.searchParams.append("pageSize", 500);
+      urlAssets.searchParams.append("pageNumber", 1);
+
+      const assetsResponse = await fetch(urlAssets, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          token: loggedUser.sessionToken,
+          id: loggedUser.id,
+        },
+      });
+      if (assetsResponse.ok) {
+        const assetsData = await assetsResponse.json();
+        setAssetsList(assetsData);
+      } else {
+        console.error("Error fetching assets");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+
+    try {
+      const skillsResponse = await fetch(`${Base_url_skills}unconfirmed-user`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (skillsResponse.ok) {
+        const skillsData = await skillsResponse.json();
+        setSkillsList(skillsData);
+        console.log("Skills fetched:", skillsData);
+      } else {
+        console.error("Error fetching skills");
+      }
+    } catch (error) {
+      console.error("Error fetching skills:", error);
+    }
+
+    try {
+      const keywordsResponse = await fetch(Base_url_keywords, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (keywordsResponse.ok) {
+        const keywordsData = await keywordsResponse.json();
+        setKeywordsList(keywordsData);
+        console.log("Keywords fetched:", keywordsData);
+      } else {
+        console.error("Error fetching keywords");
+      }
+    } catch (error) {
+      console.error("Error fetching keywords:", error);
+    }
+
+    // falta fetch de max users
+  };
+
+  const handleAddMember = (memberName) => {
+    const member = userStore.users.find((user) => user.name === memberName);
+    if (member) {
+      setTeamList([...teamList, member]);
+    }
+  };
+
+  const handleRemoveMember = (memberName) => {
+    const member = userStore.users.find((user) => user.name === memberName);
+    if (member) {
+      setTeamList(teamList.filter((user) => user.id !== member.id));
+    }
+  };
+
+  const handleAddSkill = (skillName) => {
+    const skill = skillsList.find((skill) => skill.name === skillName);
+    if (skill) {
+      setSkillsList([...skillsList, skill]);
+    }
+  };
+
+  const handleRemoveSkill = (skillName) => {
+    const skill = skillsList.find((skill) => skill.name === skillName);
+    if (skill) {
+      setSkillsList(skillsList.filter((skill) => skill.id !== skill.id));
+    }
+  };
+
+  const handleAddKeyword = (keywordName) => {
+    const keyword = keywordsList.find(
+      (keyword) => keyword.name === keywordName
+    );
+    if (keyword) {
+      setKeywordsList([...keywordsList, keyword]);
+    }
+  };
+
+  const handleRemoveKeyword = (keywordName) => {
+    const keyword = keywordsList.find(
+      (keyword) => keyword.name === keywordName
+    );
+    if (keyword) {
+      setKeywordsList(
+        keywordsList.filter((keyword) => keyword.id !== keyword.id)
+      );
+    }
+  };
+
+  const handleAddAsset = (assetName) => {
+    const asset = assetsList.find((asset) => asset.name === assetName);
+    if (asset) {
+      setAssetsList([...assetsList, asset]);
+    }
+  };
+
+  const handleRemoveAsset = (assetName) => {
+    const asset = assetsList.find((asset) => asset.name === assetName);
+    if (asset) {
+      setAssetsList(assetsList.filter((asset) => asset.id !== asset.id));
+    }
+  };
 
   const onCreate = (data) => {
     console.log(data);
@@ -42,54 +289,6 @@ const ProjectNew = () => {
       ...formData,
       [name]: value,
     });
-  };
-
-  const handleAddKeyword = () => {
-    const keywordInput = document.getElementById("keywordInput").value;
-    if (keywordInput && !keywords.includes(keywordInput)) {
-      setKeywords([...keywords, keywordInput]);
-    }
-    document.getElementById("keywordInput").value = "";
-  };
-
-  const handleRemoveKeyword = (keyword) => {
-    setKeywords(keywords.filter((k) => k !== keyword));
-  };
-
-  const handleAddSkill = () => {
-    const skillInput = document.getElementById("skillInput").value;
-    if (skillInput && !skills.includes(skillInput)) {
-      setSkills([...skills, skillInput]);
-    }
-    document.getElementById("skillInput").value = "";
-  };
-
-  const handleRemoveSkill = (skill) => {
-    setSkills(skills.filter((s) => s !== skill));
-  };
-
-  const handleAddMember = () => {
-    const memberInput = document.getElementById("memberInput").value;
-    if (memberInput && !members.includes(memberInput)) {
-      setMembers([...members, memberInput]);
-    }
-    document.getElementById("memberInput").value = "";
-  };
-
-  const handleRemoveMember = (member) => {
-    setMembers(members.filter((m) => m !== member));
-  };
-
-  const handleAddAsset = () => {
-    const assetInput = document.getElementById("assetInput").value;
-    if (assetInput && !assets.includes(assetInput)) {
-      setAssets([...assets, assetInput]);
-    }
-    document.getElementById("assetInput").value = "";
-  };
-
-  const handleRemoveAsset = (asset) => {
-    setAssets(assets.filter((a) => a !== asset));
   };
 
   const handleCreate = () => {
@@ -108,10 +307,10 @@ const ProjectNew = () => {
       skills: [],
       assets: [],
     });
-    setSkills([]);
-    setKeywords([]);
-    setMembers([]);
-    setAssets([]);
+    setSkillsList([]);
+    setKeywordsList([]);
+    setTeamList([]);
+    setAssetsList([]);
     setStep(1);
   };
 
@@ -125,6 +324,14 @@ const ProjectNew = () => {
     if (step > 1) {
       setStep(step - 1);
     }
+  };
+
+  const formatCategoryName = (name) => {
+    return name
+      .toLowerCase()
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
   };
 
   const renderStep = () => {
@@ -195,7 +402,7 @@ const ProjectNew = () => {
               </Col>
             </Row>
             <Row className="mt-2 mb-4">
-              {keywords.map((keyword, index) => (
+              {keywordsList.map((keyword, index) => (
                 <Badge pill bg="secondary" key={index} className="me-2">
                   {keyword}{" "}
                   <span
@@ -230,12 +437,11 @@ const ProjectNew = () => {
               <option value="" disabled selected>
                 Choose your Lab
               </option>
-              <option>Coimbra</option>
-              <option>Lisboa</option>
-              <option>Porto</option>
-              <option>Tomar</option>
-              <option>Vila Real</option>
-              <option>Viseu</option>
+              {labEnumList.map((lab) => (
+                <option key={lab.id} value={lab.name}>
+                  {formatCategoryName(lab.name)}
+                </option>
+              ))}
             </Form.Select>
             <Row className="my-2">
               <Col>
@@ -279,10 +485,11 @@ const ProjectNew = () => {
                   <option value="" disabled selected>
                     Choose skill category
                   </option>
-                  <option>Knowledge</option>
-                  <option>Software</option>
-                  <option>Hardware</option>
-                  <option>Tools</option>
+                  {skillsEnumList.map((skill) => (
+                    <option key={skill.id} value={skill.name}>
+                      {formatCategoryName(skill.name)}
+                    </option>
+                  ))}
                 </Form.Select>
               </Col>
               <Col className="my-2">
@@ -296,7 +503,7 @@ const ProjectNew = () => {
               </Col>
             </Row>
             <Row className="mt-2 mb-4">
-              {skills.map((skill, index) => (
+              {skillsList.map((skill, index) => (
                 <Badge pill bg="secondary" key={index} className="me-2">
                   {skill}{" "}
                   <span
@@ -361,8 +568,13 @@ const ProjectNew = () => {
                     <option value="" disabled selected>
                       Choose member type
                     </option>
-                    <option>Manager</option>
-                    <option>Participant</option>
+                    {projectUserEnumList
+                      .filter((user) => user.id === 2 || user.id === 3)
+                      .map((user) => (
+                        <option key={user.id} value={user.name}>
+                          {formatCategoryName(user.name)}
+                        </option>
+                      ))}
                   </Form.Select>
                 </Col>
                 <Col>
@@ -376,7 +588,7 @@ const ProjectNew = () => {
                 </Col>
               </Row>
               <Row className="my-2 mb-4">
-                {members.map((member, index) => (
+                {membersList.map((member, index) => (
                   <Badge pill bg="secondary" key={index} className="me-2">
                     {member}{" "}
                     <span
@@ -435,7 +647,7 @@ const ProjectNew = () => {
               </Row>
               <Row className="mb-3">
                 <div className="mt-2 mb-4">
-                  {assets.map((asset, index) => (
+                  {assetsList.map((asset, index) => (
                     <Badge pill bg="secondary" key={index} className="me-2">
                       {asset}{" "}
                       <span
@@ -459,18 +671,18 @@ const ProjectNew = () => {
             <Card className="my-2 mx-3" style={{ border: "none" }}>
               <Row style={{ justifyContent: "center", gap: "3rem" }}>
                 <Button
-                  onClick={handleCreate}
-                  className="btn-save"
-                  style={{ width: "10rem" }}
-                >
-                  Save
-                </Button>
-                <Button
                   onClick={handleCancel}
                   className="btn-cancel"
                   style={{ width: "10rem" }}
                 >
                   Cancel
+                </Button>
+                <Button
+                  onClick={handleCreate}
+                  className="btn-save"
+                  style={{ width: "10rem" }}
+                >
+                  Save
                 </Button>
               </Row>
             </Card>
