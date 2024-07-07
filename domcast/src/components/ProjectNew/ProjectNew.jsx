@@ -12,8 +12,7 @@ import { Input, Typeahead } from "react-bootstrap-typeahead";
 import "react-bootstrap-typeahead/css/Typeahead.css";
 import "./ProjectNew.css";
 import OthersProgressBar from "../OthersProgressBar/OthersProgressBar";
-import { userStore } from "../../stores/userStore";
-import { useNavigate } from "react-router-dom";
+import { userStore } from "../../stores/UserStore.jsx";
 import {
   Base_url_components_resources,
   Base_url_keywords,
@@ -22,6 +21,7 @@ import {
   Base_url_users,
   Base_url_lab,
 } from "../../functions/UsersFunctions";
+import { useNavigate } from "react-router-dom";
 
 const ProjectNew = () => {
   const navigate = useNavigate();
