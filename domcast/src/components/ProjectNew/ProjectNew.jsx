@@ -334,6 +334,8 @@ const ProjectNew = () => {
       .join(" ");
   };
 
+  // falta retirar os badges, fazer o handleSubmit, fazer os typeaheads como o userRegistration
+
   const renderStep = () => {
     switch (step) {
       case 1:
