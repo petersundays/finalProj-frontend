@@ -16,8 +16,7 @@ import MainFooter from "../components/MainFooter/MainFooter";
 import MainNavbarLogged from "../components/MainNavbarLogged/MainNavbarLogged";
 import MainOffcanvasLogged from "../components/MainOffcanvasLogged/MainOffcanvasLogged";
 import MainSidebar from "../components/MainSidebar/MainSidebar";
-import MessageHubInbox from "../components/MessageHubInbox/MessageHubInbox";
-import MessageHubSent from "../components/MessageHubSent/MessageHubSent";
+import MessageHub from "../components/MessageHub/MessageHub";
 import ProjectEdit from "../components/ProjectEdit/ProjectEdit";
 import ProjectUserList from "../components/ProjectUserList/ProjectUserList";
 import ProjectGlobalList from "../components/ProjectGlobalList/ProjectGlobalList";
@@ -83,8 +82,7 @@ function HomeLogged() {
                   <Route path="/logs/list" element={<LogList />} />
                   <Route path="/log/new" element={<LogNew />} />
                   <Route path="/log/view/:id" element={<LogView />} />
-                  <Route path="/inbox" element={<MessageHubInbox />} />
-                  <Route path="/sent" element={<MessageHubSent />} />
+                  <Route path="/message-hub/*" element={<MessageHub />} />
                   <Route path="/myprojects" element={<ProjectUserList />} />
                   <Route path="/project/edit/:id" element={<ProjectEdit />} />
                   <Route path="/projects/list" element={<ProjectGlobalList />} />

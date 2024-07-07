@@ -7,7 +7,6 @@ import { userStore } from "../../stores/UserStore.jsx";
 function MainSidebar() {
   const navigate = useNavigate();
   const [expandedProjects, setExpandedProjects] = useState(false);
-  const [expandedMessageHub, setExpandedMessageHub] = useState(false);
   const [expandedAssets, setExpandedAssets] = useState(false);
 
   const loggedUser = userStore((state) => state.loggedUser);
@@ -15,19 +14,11 @@ function MainSidebar() {
   const toggleExpandProjects = () => {
     setExpandedProjects(!expandedProjects);
     setExpandedAssets(false);
-    setExpandedMessageHub(false);
-  };
-
-  const toggleExpandMessageHub = () => {
-    setExpandedMessageHub(!expandedMessageHub);
-    setExpandedProjects(false);
-    setExpandedAssets(false);
   };
 
   const toggleExpandAssets = () => {
     setExpandedAssets(!expandedAssets);
     setExpandedProjects(false);
-    setExpandedMessageHub(false);
   };
 
   return (
@@ -54,23 +45,20 @@ function MainSidebar() {
               New Project
             </Nav.Link>
             {loggedUser.type === 300 && (
-              <Nav.Link onClick={() => navigate("/domcast/projects/approval-list")}>
+              <Nav.Link
+                onClick={() => navigate("/domcast/projects/approval-list")}
+              >
                 Approval List
               </Nav.Link>
             )}
           </div>
         )}
-        <Nav.Link onClick={() => navigate("/domcast/users/list")}>Users</Nav.Link>
-        <Nav.Link onClick={toggleExpandMessageHub}>
-          Message Hub
-          <span className="arrow">{expandedMessageHub ? "▲" : "▼"}</span>
+        <Nav.Link onClick={() => navigate("/domcast/users/list")}>
+          Users
         </Nav.Link>
-        {expandedMessageHub && (
-          <div className="ml-3">
-            <Nav.Link onClick={() => navigate("/domcast/inbox")}>Inbox</Nav.Link>
-            <Nav.Link onClick={() => navigate("/domcast/sent")}>Sent</Nav.Link>
-          </div>
-        )}
+        <Nav.Link onClick={() => navigate("/domcast/message-hub")}>
+          Message Hub
+        </Nav.Link>
         <Nav.Link onClick={toggleExpandAssets}>
           Assets<span className="arrow">{expandedAssets ? "▲" : "▼"}</span>
         </Nav.Link>

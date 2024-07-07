@@ -12,7 +12,6 @@ function MainOffcanvasLogged({ show, handleClose }) {
   const clearLoggedUser = userStore((state) => state.clearLoggedUser);
 
   const [expandedProjects, setExpandedProjects] = useState(false);
-  const [expandedMessageHub, setExpandedMessageHub] = useState(false);
   const [expandedAssets, setExpandedAssets] = useState(false);
   const [showModalRedefinePassword, setShowModalRedefinePassword] =
     useState(false);
@@ -39,19 +38,11 @@ function MainOffcanvasLogged({ show, handleClose }) {
   const toggleExpandProjects = () => {
     setExpandedProjects(!expandedProjects);
     setExpandedAssets(false);
-    setExpandedMessageHub(false);
-  };
-
-  const toggleExpandMessageHub = () => {
-    setExpandedMessageHub(!expandedMessageHub);
-    setExpandedProjects(false);
-    setExpandedAssets(false);
   };
 
   const toggleExpandAssets = () => {
     setExpandedAssets(!expandedAssets);
     setExpandedProjects(false);
-    setExpandedMessageHub(false);
   };
 
   const handleLanguageChange = (lang) => {
@@ -120,22 +111,9 @@ function MainOffcanvasLogged({ show, handleClose }) {
             <Nav.Link onClick={() => navigate("/domcast/users/list")}>
               Users
             </Nav.Link>
-            <Nav className="d-flex flex-column justify-content-between sidebarNavbar">
-              <Nav.Link onClick={toggleExpandMessageHub}>
-                Message Hub
-                <span className="arrow">{expandedMessageHub ? "▲" : "▼"}</span>
-              </Nav.Link>
-              {expandedMessageHub && (
-                <div className="ml-3">
-                  <Nav.Link onClick={() => navigate("/domcast/inbox")}>
-                    Inbox
-                  </Nav.Link>
-                  <Nav.Link onClick={() => navigate("/domcast/sent")}>
-                    Sent
-                  </Nav.Link>
-                </div>
-              )}
-            </Nav>
+            <Nav.Link onClick={() => navigate("/domcast/message-hub")}>
+              Message Hub
+            </Nav.Link>
             <Nav className="d-flex flex-column justify-content-between sidebarNavbar">
               <Nav.Link onClick={toggleExpandAssets}>
                 Assets
