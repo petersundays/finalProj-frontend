@@ -1,80 +1,102 @@
+table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+td > a {
+  display: block;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 100%;
+}
+
+td > a > span {
+  white-space: nowrap;
+}
+
 .message-hub-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 7rem;
-    height: 2rem;
-    background-color: var(--color-white);
-    color: var(--color-blue-03);
-    border: 1px solid var(--color-blue-01);
-    border-radius: 0.5rem;
-    font-size: 16px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
-    margin-inline: 1rem;
-  }
-  
-  .message-hub-button:hover {
-    background-color: var(--color-blue-01);
-    color: var(--color-white);
-  }
-  
-  .message-hub-button.active {
-    background-color: var(--color-blue-03);
-    color: var(--color-white);
-    border: 1px solid var(--color-blue-03);
-  }
-  
-  /* Table Styles */
-  .message-hub-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .message-hub-table th,
-  .message-hub-table td {
-    border: 1px solid var(--color-blue-01);
-    padding: 0.5rem;
-    text-align: center;
-  }
-  
-  .message-hub-table th {
-    background-color: var(--color-blue-03);
-    color: var(--color-white);
-    height: 3rem;
-    position: relative;
-  }
-  
-  .message-hub-table td {
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-    height: 2rem;
-  }
-  
-  .message-hub-table td:first-child {
-    width: 20%;
-    color: var(--color-blue-01);
-  }
-  
-  .message-hub-table td:nth-child(2) {
-    width: 30%;
-    color: var(--color-blue-03);
-  }
-  
-  .message-hub-table td:nth-child(3) {
-    width: 40%;
-    color: var(--color-blue-03);
-  }
-  
-  .message-hub-table td:nth-child(4) {
-    width: 10%;
-    color: var(--color-blue-03);
-  }
-  
-  .message-hub-table tbody tr:hover {
-    background-color: var(--color-yellow-01);
-    color: var(--color-coal);
-  }
-  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 7rem;
+  height: 2rem;
+  background-color: var(--color-white);
+  color: var(--color-blue-03);
+  border: 1px solid var(--color-blue-01);
+  border-radius: 0.5rem;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+  margin-inline: 1rem;
+}
+
+.message-hub-button:hover {
+  background-color: var(--color-blue-01);
+  color: var(--color-white);
+}
+
+.message-hub-button.active {
+  background-color: var(--color-blue-03);
+  color: var(--color-white);
+  border: 1px solid var(--color-blue-03);
+}
+
+/* Table Styles */
+.message-hub-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.message-hub-table th,
+.message-hub-table td {
+  border: 1px solid var(--color-blue-01);
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.message-hub-table th {
+  background-color: var(--color-blue-03);
+  color: var(--color-white);
+  height: 3rem;
+}
+
+.message-hub-table td {
+  height: 2rem;
+  text-align: left;
+}
+
+.message-hub-table td:first-child {
+  width: 20% !important;
+  min-width: 20% !important;
+  color: var(--color-blue-01);
+}
+
+.message-hub-table td:nth-child(2) {
+  width: 30% !important;
+  min-width: 30% !important;
+  color: var(--color-blue-03);
+}
+
+.message-hub-table td:nth-child(3) {
+  width: 40% !important;
+  min-width: 40% !important;
+  color: var(--color-blue-03);
+}
+
+.message-hub-table td:nth-child(4) {
+  width: 10% !important;
+  min-width: 10% !important;
+  color: var(--color-blue-03);
+}
+
+.message-hub-table tbody tr:hover {
+  background-color: var(--color-yellow-01);
+  color: var(--color-coal);
+}
+
+.message-hub-cell {
+  text-overflow: ellipsis !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+}

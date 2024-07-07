@@ -1,0 +1,80 @@
+table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+td > a {
+  display: block;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 100%;
+}
+
+td > a > span {
+  white-space: nowrap;
+}
+
+/* Table Styles */
+.asset-list-table .table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.asset-list-table .table th,
+.asset-list-table .table td {
+  border: 1px solid var(--color-blue-01);
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.asset-list-table .table th {
+  background-color: var(--color-blue-03);
+  color: var(--color-white);
+  height: 3rem;
+}
+
+.asset-list-table .table td {
+  height: 2rem;
+  text-align: left;
+}
+
+.asset-list-table .table td:first-child {
+  width: 25% !important;
+  min-width: 25% !important;
+  color: var(--color-blue-01);
+}
+
+.asset-list-table .table td:nth-child(2) {
+  width: 15% !important;
+  min-width: 15% !important;
+  color: var(--color-blue-03);
+}
+
+.asset-list-table .table td:nth-child(3) {
+  width: 20% !important;
+  min-width: 20% !important;
+  color: var(--color-blue-03);
+}
+
+.asset-list-table .table td:nth-child(4) {
+  width: 30% !important;
+  min-width: 30% !important;
+  color: var(--color-blue-03);
+}
+
+.asset-list-table .table td:nth-child(5) {
+  width: 10% !important;
+  min-width: 10% !important;
+  color: var(--color-blue-03);
+}
+
+.asset-list-table .table tbody tr:hover {
+  background-color: var(--color-yellow-01);
+  color: var(--color-coal);
+}
+
+.asset-list-cell {
+  text-overflow: ellipsis !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+}

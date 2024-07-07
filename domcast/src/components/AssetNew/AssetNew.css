@@ -1,0 +1,45 @@
+.btn-custom-asset {
+  background-color: var(--color-white);
+  color: var(--color-blue-03) !important;
+  border: 1px solid var(--color-blue-03);
+  padding: 0.5rem 1rem;
+}
+
+.btn-custom-asset:hover {
+  background-color: var(--color-yellow-01) !important;
+  color: var(--color-coal) !important;
+}
+
+.btn-custom-asset.active {
+  background-color: var(--color-blue-03) !important;
+  color: var(--color-white) !important;
+  border: 1px solid var(--color-blue-03) !important;
+}
+
+.btn-custom-asset.active:hover {
+  background-color: var(--color-blue-03) !important;
+  color: var(--color-white) !important;
+}
+
+.add-asset-cancel-btn {
+    background-color: var(--color-grey-02);
+    color: var(--color-white);
+    border: none;
+    cursor: pointer;
+  }
+  
+  .add-asset-cancel-btn:hover {
+    background-color: var(--color-grey-01);
+  }
+  
+  .add-asset-save-btn {
+    background-color: var(--color-yellow-01);
+    color: var(--color-grey-01);
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .add-asset-save-btn:hover {
+    background-color: var(--color-yellow-02);
+  }

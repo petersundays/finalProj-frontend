@@ -33,9 +33,9 @@ const MessageHub = () => {
       date: "2022-01-04",
     },
     {
-      sender: "Sender 5",
-      title: "Title 5",
-      message: "Message 5",
+      sender: "just because I don't be givin",
+      title: "no man a foot massage",
+      message: "don't make it right for Marsellus to throw Antwone into a glass motherfuckin' house, fuckin' up the way the nigger talks",
       date: "2022-01-05",
     },
     {
@@ -203,7 +203,7 @@ const MessageHub = () => {
 
   return (
     <Card
-      className="message-hub-card ms-5"
+      className="message-hub-card ms-lg-5"
       style={{ border: "none", maxWidth: "85rem", height: "100%" }}
     >
       <Row className="message-hub-row my-4">

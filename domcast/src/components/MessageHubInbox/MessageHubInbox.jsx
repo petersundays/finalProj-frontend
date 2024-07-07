@@ -23,9 +23,9 @@ const MessageHubInbox = ({ data }) => {
         <tbody>
           {data.slice(0, visibleRows).map((item, index) => (
             <tr key={index} className="message-hub-row">
-              <td className="message-hub-cell">{item.sender}</td>
-              <td className="message-hub-cell">{item.title}</td>
-              <td className="message-hub-cell">{item.message}</td>
+              <td className="message-hub-cell" style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.sender}</td>
+              <td className="message-hub-cell" style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.title}</td>
+              <td className="message-hub-cell" style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.message}</td>
               <td className="message-hub-cell">{item.date}</td>
             </tr>
           ))}
