@@ -33,7 +33,16 @@ const MessageHubSent = ({ data }) => {
       </Table>
       {visibleRows < data.length && (
         <div className="d-flex justify-content-center mb-3">
-          <Button className="message-hub-button mt-2" onClick={handleShowMore}>
+          <Button
+            className="custom-show-more-btn mt-2"
+            onClick={handleShowMore}
+            style={{
+              backgroundColor: "var(--color-blue-03)",
+              borderColor: "var(--color-blue-03)",
+              color: "var(--color-white)",
+              fontWeight: "500",
+            }}
+          >
             Show More
           </Button>
         </div>

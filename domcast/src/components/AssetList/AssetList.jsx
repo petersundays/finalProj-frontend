@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Card, Table, Button, Row, Col } from "react-bootstrap";
-import "./AssetList.css"
+import "./AssetList.css";
 
 function AssetList() {
   const [visibleRows, setVisibleRows] = useState(8);
@@ -168,7 +168,7 @@ function AssetList() {
               <th className="asset-list-header">Type</th>
               <th className="asset-list-header">Brand</th>
               <th className="asset-list-header">Supplier</th>
-              <th className="asset-list-header">Quantity</th>
+              <th className="asset-list-header">Qty.</th>
             </tr>
           </thead>
           <tbody>
@@ -230,7 +230,16 @@ function AssetList() {
         </Table>
         {visibleRows < data.length && (
           <div className="d-flex justify-content-center mb-3">
-            <Button className="asset-list-button my-2" onClick={handleShowMore}>
+            <Button
+              className="custom-show-more-btn my-2"
+              onClick={handleShowMore}
+              style={{
+                backgroundColor: "var(--color-blue-03)",
+                borderColor: "var(--color-blue-03)",
+                color: "var(--color-white)",
+                fontWeight: "500",
+              }}
+            >
               Show More
             </Button>
           </div>
