@@ -26,30 +26,39 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { use } from "i18next";
 
 const ProjectNew = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const loggedUser = userStore.loggedUser;
+  const usersList = userStore.users.filter((user) => user.id !== loggedUser.id);
+
+  const [enumsFetched, setEnumsFetched] = useState(false);
+  const [basicDataFetched, setBasicDataFetched] = useState(false);
+  const [maxUsers, setMaxUsers] = useState(1);
+
   const project = projectStore((state) => state.project);
   const setProject = projectStore((state) => state.setProject);
   const clearProject = projectStore((state) => state.clearProject);
-  const loggedUser = userStore.loggedUser;
-  const membersList = userStore.users;
-  const [enumsFetched, setEnumsFetched] = useState(false);
-  const [maxUsers, setMaxUsers] = useState(1);
+
+  const [keywordsList, setKeywordsList] = useState([]);
+  const [keywordsInputValue, setKeywordsInputValue] = useState("");
 
   const [skillsList, setSkillsList] = useState([]);
-  const [keywordsList, setKeywordsList] = useState([]);
-  const [assetsList, setAssetsList] = useState([]);
-  const [customSkill, setCustomSkill] = useState("");
   const [skillType, setSkillType] = useState(1);
-
+  const [customSkill, setCustomSkill] = useState("");
+  const [skillsInputValue, setSkillsInputValue] = useState("");
   const [showSkillModal, setShowSkillModal] = useState(false);
 
-  const [teamList, setTeamList] = useState([]);
-  const [skillsInputValue, setSkillsInputValue] = useState("");
-  const [keywordsInputValue, setKeywordsInputValue] = useState("");
+  const [assetsList, setAssetsList] = useState([]);
   const [assetsInputValue, setAssetsInputValue] = useState("");
+
+  const [teamList, setTeamList] = useState([]);
+  const [teamType, setTeamType] = useState(3);
+  const [customTeam, setCustomTeam] = useState("");
+  const [showTeamModal, setShowTeamModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   const [skillsEnumList, setSkillsEnumList] = useState([]);
   const [labEnumList, setLabEnumList] = useState([]);
@@ -57,7 +66,6 @@ const ProjectNew = () => {
 
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [validationMessage, setValidationMessage] = useState("");
 
   const [step, setStep] = useState(1);
   const steps = ["Step 1", "Step 2", "Step 3"];
@@ -72,6 +80,15 @@ const ProjectNew = () => {
       fetchBasicData();
     }
   }, [enumsFetched]);
+
+  useEffect(() => {
+    if (basicDataFetched) {
+      setProject({
+        ...project,
+        mainManager: loggedUser.id,
+      });
+    }
+  }, [basicDataFetched]);
 
   const fetchEnums = async () => {
     try {
@@ -245,20 +262,8 @@ const ProjectNew = () => {
     } catch (error) {
       console.error("Error fetching max users:", error);
     }
-  };
 
-  const handleAddMember = (memberName) => {
-    const member = userStore.users.find((user) => user.name === memberName);
-    if (member) {
-      setTeamList([...teamList, member]);
-    }
-  };
-
-  const handleAddAsset = (assetName) => {
-    const asset = assetsList.find((asset) => asset.name === assetName);
-    if (asset) {
-      setAssetsList([...assetsList, asset]);
-    }
+    setBasicDataFetched(true);
   };
 
   const handleChange = (e) => {
@@ -284,11 +289,6 @@ const ProjectNew = () => {
       }
     }
   };
-
-
-
-
-
 
   const generateKeywordsOptions = () => {
     const keywordsOptions = keywordsList.map((keyword) => keyword);
@@ -321,6 +321,13 @@ const ProjectNew = () => {
       }
     }
     return skillOptions;
+  };
+
+  const generateTeamOptions = () => {
+    return usersList.map((user) => ({
+      label: `${user.firstName} ${user.lastName}`,
+      ...user,
+    }));
   };
 
   const handleKeywordInputChange = (value) => {
@@ -357,6 +364,12 @@ const ProjectNew = () => {
       } else {
         setProject({ ...project, keywords: selected });
       }
+    } else if (labelKey === "members") {
+      if (labelKey === "members" && selected.length > 0) {
+        handleShowTeamModal(selected[selected.length - 1]);
+      }
+    } else {
+      setProject({ ...project, collaborators: selected });
     }
   };
 
@@ -382,7 +395,59 @@ const ProjectNew = () => {
     setShowSkillModal(false);
     setCustomSkill("");
     setSkillType("");
-    setSkillsInputValue(""); // Clear the input value after adding
+    setSkillsInputValue("");
+  };
+
+  const handleAddMember = () => {
+    if (!selectedUser || !teamType) {
+      console.log("Selected user or team type is missing");
+      toast.error(t("userTypeRequired"));
+      return;
+    } else if (
+      teamList.some((teamMember) => teamMember.id === selectedUser.id)
+    ) {
+      toast.error(t("userAlreadyInTeam"));
+      return;
+    } else if (teamList.length >= maxUsers - 1) {
+      toast.error(t("maxTeamMembersReached"));
+      return;
+    } else {
+      const newProjectTeam = { id: selectedUser.id, role: teamType };
+      const updatedTeamList = [...teamList, newProjectTeam];
+
+      setProject({
+        ...project,
+        projectTeam: [...project.projectTeam, newProjectTeam],
+        collaborators: [...project.collaborators, selectedUser.id],
+      });
+
+      setTeamList(updatedTeamList);
+      handleTypeAheadChange("members", [
+        ...project.collaborators,
+        selectedUser,
+      ]);
+
+      setShowTeamModal(false);
+      setSelectedUser(null);
+      setTeamType("");
+    }
+  };
+
+  const handleAddAsset = (assetName) => {
+    const asset = assetsList.find((asset) => asset.name === assetName);
+    if (asset) {
+      setAssetsList([...assetsList, asset]);
+    }
+  };
+
+  const handleShowTeamModal = (user) => {
+    setSelectedUser(user);
+    setShowTeamModal(true);
+  };
+
+  const handleCloseTeamModal = () => {
+    setSelectedUser(null);
+    setShowTeamModal(false);
   };
 
   const handleSubmit = async () => {
@@ -419,10 +484,10 @@ const ProjectNew = () => {
   };
 
   /*   
--- falta fazer o handleSubmit
+-- falta fazer o handleSubmit:
 || tratado o tyhpeahead das skills e o das keywords, falta testar
--- falta fazer o addMember que é igual às skills
--- add logged.user à team list como user type 1
+|| tratado o addMember, falta testar
+|| add logged.user à team list como user type 1 (useEffect)
 || # team members tratado, falta testar
 || handleDateChange tratado, falta testar
 -- falta fazer o addAsset que é um modal igual ao newAsset (transformar o newAsset em um modal, colocar a lista de assets na sidebar e no offcanvas
@@ -586,11 +651,20 @@ e retirar o newAsset da sidebar e do offcanvas)
                     className="mb-3 ps-1"
                   >
                     <Typeahead
-                      id="member-search"
-                      type="text"
+                      id="member-typeahead"
+                      labelKey="label"
+                      multiple
+                      options={generateTeamOptions()}
+                      selected={project.collaborators.map((collaborator) => ({
+                        label: `${collaborator.firstName} ${collaborator.lastName}`,
+                        ...collaborator,
+                      }))}
+                      onChange={(selected) =>
+                        handleTypeAheadChange("members", selected)
+                      }
                       placeholder="Search user..."
+                      className="mb-3"
                       style={{ width: "25rem" }}
-                      options={[]}
                     />
                   </FloatingLabel>
                 </Col>
@@ -599,9 +673,11 @@ e retirar o newAsset da sidebar e do offcanvas)
                 <Col>
                   <Form.Select
                     controlId="floatingMemberCategory"
+                    value={teamType}
+                    onChange={(e) => setTeamType(e.target.value)}
                     style={{ width: "18.5rem" }}
                   >
-                    <option value="" disabled selected>
+                    <option value="" disabled>
                       Choose member type
                     </option>
                     {projectUserEnumList
@@ -609,7 +685,7 @@ e retirar o newAsset da sidebar e do offcanvas)
                         (userEnum) => userEnum.id === 2 || userEnum.id === 3
                       )
                       .map((userEnum) => (
-                        <option key={userEnum.id} value={userEnum.name}>
+                        <option key={userEnum.id} value={userEnum.id}>
                           {formatCategoryName(userEnum.name)}
                         </option>
                       ))}
@@ -765,6 +841,56 @@ e retirar o newAsset da sidebar e do offcanvas)
             className="modal-skill-interest-save-btn"
           >
             Add Skill
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={showTeamModal} onHide={handleCloseTeamModal}>
+        <Modal.Header closeButton className="mt-2 p-4">
+          <Modal.Title style={{ width: "100%", textAlign: "center" }}>
+            {selectedUser
+              ? `${selectedUser.firstName} ${selectedUser.lastName}`
+              : ""}
+            <p style={{ fontSize: "16px" }}>
+              {" "}
+              will be added to this project, please choose its role
+            </p>
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Select
+            controlId="floatingMemberCategory"
+            value={teamType}
+            onChange={(e) => setTeamType(e.target.value)}
+            style={{ width: "22.5rem" }}
+            className="mb-3 mx-5"
+          >
+            <option value="" disabled>
+              Choose role
+            </option>
+            {projectUserEnumList
+              .filter((userEnum) => userEnum.id === 2 || userEnum.id === 3)
+              .map((userEnum) => (
+                <option key={userEnum.id} value={userEnum.id}>
+                  {formatCategoryName(userEnum.name)}
+                </option>
+              ))}
+          </Form.Select>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={handleCloseTeamModal}
+            className="modal-skill-interest-cancel-btn"
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleAddMember}
+            className="modal-skill-interest-save-btn"
+          >
+            Add Member
           </Button>
         </Modal.Footer>
       </Modal>
