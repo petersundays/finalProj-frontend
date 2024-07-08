@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
-export const useProjectStore = create(
+export const projectStore = create(
   persist(
     (set) => ({
       detailedProject: {
@@ -46,7 +46,7 @@ export const useProjectStore = create(
       resetVisibleRows: () => set({ visibleRows: 1 }),
     }),
     {
-      name: "project-storage",
+      name: "projectStore",
       getStorage: createJSONStorage(),
     }
   )

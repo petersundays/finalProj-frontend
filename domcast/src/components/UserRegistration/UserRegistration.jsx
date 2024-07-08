@@ -215,7 +215,7 @@ const UserRegistration = () => {
   };
 
   const generateSkillOptions = () => {
-    let options = skillsList.map((skill) => skill.name || skill);
+    const skillOptions = skillsList.map((skill) => skill.name || skill);
     if (skillsInputValue.trim().length > 0) {
       const isSkillExist = skillsList.some(
         (skill) =>
@@ -223,14 +223,14 @@ const UserRegistration = () => {
           skillsInputValue.trim().toLowerCase()
       );
       if (!isSkillExist) {
-        options = options.concat(`Add "${skillsInputValue}" as a skill`);
+        skillOptions = skillOptions.concat(`Add "${skillsInputValue}" as a skill`);
       }
     }
-    return options;
+    return skillOptions;
   };
 
   const generateInterestOptions = () => {
-    let options = interestsList.map((interest) => interest.name || interest);
+    const interestOptions = interestsList.map((interest) => interest.name || interest);
     if (interestsInputValue.trim().length > 0) {
       const isInterestExist = interestsList.some(
         (interest) =>
@@ -238,10 +238,10 @@ const UserRegistration = () => {
           interestsInputValue.trim().toLowerCase()
       );
       if (!isInterestExist) {
-        options = options.concat(`Add "${interestsInputValue}" as an interest`);
+        interestOptions = interestOptions.concat(`Add "${interestsInputValue}" as an interest`);
       }
     }
-    return options;
+    return interestOptions;
   };
 
   const handleTypeaheadChange = (labelKey, selected) => {

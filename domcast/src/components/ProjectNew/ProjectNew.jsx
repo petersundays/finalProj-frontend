@@ -5,14 +5,15 @@ import {
   Form,
   Button,
   FloatingLabel,
-  Badge,
   Card,
+  Modal,
 } from "react-bootstrap";
 import { Input, Typeahead } from "react-bootstrap-typeahead";
 import "react-bootstrap-typeahead/css/Typeahead.css";
 import "./ProjectNew.css";
 import OthersProgressBar from "../OthersProgressBar/OthersProgressBar";
 import { userStore } from "../../stores/UserStore.jsx";
+import { projectStore } from "../../stores/ProjectStore.jsx";
 import {
   Base_url_components_resources,
   Base_url_keywords,
@@ -22,28 +23,33 @@ import {
   Base_url_lab,
 } from "../../functions/UsersFunctions";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
 const ProjectNew = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    title: "",
-    lab: "",
-    description: "",
-    startDate: "",
-    duration: "",
-    team: [],
-    keywords: [],
-    skills: [],
-    assets: [],
-  });
+  const { t } = useTranslation();
+  const project = projectStore((state) => state.project);
+  const setProject = projectStore((state) => state.setProject);
+  const clearProject = projectStore((state) => state.clearProject);
   const loggedUser = userStore.loggedUser;
-  const membersList = userStore.users.map((user) => user.name);
+  const membersList = userStore.users;
   const [enumsFetched, setEnumsFetched] = useState(false);
 
   const [skillsList, setSkillsList] = useState([]);
   const [keywordsList, setKeywordsList] = useState([]);
   const [assetsList, setAssetsList] = useState([]);
+  const [customSkill, setCustomSkill] = useState("");
+  const [customKeyword, setCustomKeyword] = useState("");
+  const [skillType, setSkillType] = useState(1);
+
+  const [showSkillModal, setShowSkillModal] = useState(false);
+
   const [teamList, setTeamList] = useState([]);
+  const [skillsInputValue, setSkillsInputValue] = useState("");
+  const [keywordsInputValue, setKeywordsInputValue] = useState("");
+  const [assetsInputValue, setAssetsInputValue] = useState("");
+
   const [skillsEnumList, setSkillsEnumList] = useState([]);
   const [labEnumList, setLabEnumList] = useState([]);
   const [projectUserEnumList, setProjectUserEnumList] = useState([]);
@@ -64,15 +70,14 @@ const ProjectNew = () => {
 
   const fetchEnums = async () => {
     try {
-      const skillsEnumResponse = await fetch(
-        `${Base_url_skills}unconfirmed-user`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const skillsEnumResponse = await fetch(`${Base_url_skills}enum`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          token: loggedUser.sessionToken,
+          id: loggedUser.id,
+        },
+      });
       if (skillsEnumResponse.ok) {
         const skillsData = await skillsEnumResponse.json();
         setSkillsEnumList(skillsData);
@@ -85,10 +90,12 @@ const ProjectNew = () => {
     }
 
     try {
-      const labsEnumResponse = await fetch(`${Base_url_lab}enum-unconfirmed`, {
+      const labsEnumResponse = await fetch(`${Base_url_lab}enum`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          token: loggedUser.sessionToken,
+          id: loggedUser.id,
         },
       });
       if (labsEnumResponse.ok) {
@@ -127,32 +134,6 @@ const ProjectNew = () => {
   };
 
   const fetchBasicData = async () => {
-    try {
-      const urlUsers = new URL(Base_url_users);
-      urlUsers.searchParams.append("workplace", 0);
-      urlUsers.searchParams.append("orderBy", "lab");
-      urlUsers.searchParams.append("orderAsc", "true");
-      urlUsers.searchParams.append("pageSize", 100);
-      urlUsers.searchParams.append("pageNumber", 1);
-
-      const usersResponse = await fetch(urlUsers, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          token: loggedUser.sessionToken,
-          id: loggedUser.id,
-        },
-      });
-      if (usersResponse.ok) {
-        const usersData = await usersResponse.json();
-        userStore.setUsers(usersData);
-      } else {
-        console.error("Error fetching users");
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
-
     try {
       const urlAssets = Base_url_components_resources;
       urlAssets.searchParams.append("orderBy", "name");
@@ -214,6 +195,32 @@ const ProjectNew = () => {
       console.error("Error fetching keywords:", error);
     }
 
+    try {
+      const urlUsers = new URL(Base_url_users);
+      urlUsers.searchParams.append("workplace", 0);
+      urlUsers.searchParams.append("orderBy", "lab");
+      urlUsers.searchParams.append("orderAsc", "true");
+      urlUsers.searchParams.append("pageSize", 100);
+      urlUsers.searchParams.append("pageNumber", 1);
+
+      const usersResponse = await fetch(urlUsers, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          token: loggedUser.sessionToken,
+          id: loggedUser.id,
+        },
+      });
+      if (usersResponse.ok) {
+        const usersData = await usersResponse.json();
+        userStore.setUsers(usersData);
+      } else {
+        console.error("Error fetching users");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+
     // falta fetch de max users
   };
 
@@ -224,47 +231,6 @@ const ProjectNew = () => {
     }
   };
 
-  const handleRemoveMember = (memberName) => {
-    const member = userStore.users.find((user) => user.name === memberName);
-    if (member) {
-      setTeamList(teamList.filter((user) => user.id !== member.id));
-    }
-  };
-
-  const handleAddSkill = (skillName) => {
-    const skill = skillsList.find((skill) => skill.name === skillName);
-    if (skill) {
-      setSkillsList([...skillsList, skill]);
-    }
-  };
-
-  const handleRemoveSkill = (skillName) => {
-    const skill = skillsList.find((skill) => skill.name === skillName);
-    if (skill) {
-      setSkillsList(skillsList.filter((skill) => skill.id !== skill.id));
-    }
-  };
-
-  const handleAddKeyword = (keywordName) => {
-    const keyword = keywordsList.find(
-      (keyword) => keyword.name === keywordName
-    );
-    if (keyword) {
-      setKeywordsList([...keywordsList, keyword]);
-    }
-  };
-
-  const handleRemoveKeyword = (keywordName) => {
-    const keyword = keywordsList.find(
-      (keyword) => keyword.name === keywordName
-    );
-    if (keyword) {
-      setKeywordsList(
-        keywordsList.filter((keyword) => keyword.id !== keyword.id)
-      );
-    }
-  };
-
   const handleAddAsset = (assetName) => {
     const asset = assetsList.find((asset) => asset.name === assetName);
     if (asset) {
@@ -272,41 +238,113 @@ const ProjectNew = () => {
     }
   };
 
-  const handleRemoveAsset = (assetName) => {
-    const asset = assetsList.find((asset) => asset.name === assetName);
-    if (asset) {
-      setAssetsList(assetsList.filter((asset) => asset.id !== asset.id));
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setProject({ ...project, [name]: value });
+  };
+
+  const generateKeywordsOptions = () => {
+    const keywordsOptions = keywordsList.map(
+      (keyword) => keyword.name || keyword
+    );
+    if (keywordsInputValue.trim().length > 0) {
+      const isKeywordExists = keywordsList.some(
+        (keyword) =>
+          (keyword.name || keyword).toLowerCase() ===
+          keywordsInputValue.trim().toLowerCase()
+      );
+      if (!isKeywordExists) {
+        keywordsOptions = keywordsOptions.concat(
+          `Add "${keywordsInputValue}" as a new keyword`
+        );
+      }
+    }
+    return keywordsOptions;
+  };
+
+  const generateSkillOptions = () => {
+    const skillOptions = skillsList.map((skill) => skill.name || skill);
+    if (skillsInputValue.trim().length > 0) {
+      const isSkillExist = skillsList.some(
+        (skill) =>
+          (skill.name || skill).toLowerCase() ===
+          skillsInputValue.trim().toLowerCase()
+      );
+      if (!isSkillExist) {
+        skillOptions = skillOptions.concat(
+          `Add "${skillsInputValue}" as a skill`
+        );
+      }
+    }
+    return skillOptions;
+  };
+
+  const handleKeywordInputChange = (value) => {
+    setKeywordsInputValue(value);
+  };
+
+  const handleSkillsInputChange = (value) => {
+    setSkillsInputValue(value);
+  };
+
+  const handleTypeAheadChange = (labelKey, selected) => {
+    if (labelKey === "skills") {
+      const trimmedInputValue = skillsInputValue.trim();
+      if (
+        trimmedInputValue.length > 0 &&
+        selected.length > 0 &&
+        selected[selected.length - 1].startsWith('Add "')
+      ) {
+        setCustomSkill(trimmedInputValue);
+        setShowSkillModal(true);
+      } else {
+        setProject({ ...project, skills: selected });
+      }
+    } else if (labelKey === "keywords") {
+      const trimmedInputValue = keywordsInputValue.trim();
+      if (
+        trimmedInputValue.length > 0 &&
+        selected.length > 0 &&
+        selected[selected.length - 1].startsWith('Add "')
+      ) {
+        setCustomKeyword(trimmedInputValue);
+      } else {
+        setProject({ ...project, keywords: selected });
+      }
     }
   };
 
-  const onCreate = (data) => {
-    console.log(data);
-  };
+  const handleAddCustomSkill = () => {
+    if (!customSkill || !skillType) {
+      console.log("Custom skill or skill type is missing");
+      toast.error(t("skillNameTypeRequired"));
+      return;
+    }
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
+    const newSkillDto = { name: customSkill, type: skillType };
+    const updatedSkillsList = [...skillsList, newSkillDto];
+
+    setProject({
+      ...project,
+      skillDtos: [...project.skillDtos, newSkillDto],
+      skills: [...project.skills, customSkill],
     });
+
+    setSkillsList(updatedSkillsList);
+    handleTypeAheadChange("skills", [...project.skills, customSkill]);
+
+    setShowSkillModal(false);
+    setCustomSkill("");
+    setSkillType("");
+    setSkillsInputValue(""); // Clear the input value after adding
   };
 
-  const handleCreate = () => {
-    onCreate(formData);
+  const handleSubmit = async () => {
+    console.log("Here goes the handle submit");
   };
 
   const handleCancel = () => {
-    setFormData({
-      title: "",
-      lab: "",
-      description: "",
-      startDate: "",
-      duration: "",
-      team: [],
-      keywords: [],
-      skills: [],
-      assets: [],
-    });
+    clearProject();
     setSkillsList([]);
     setKeywordsList([]);
     setTeamList([]);
@@ -334,7 +372,21 @@ const ProjectNew = () => {
       .join(" ");
   };
 
-  // falta retirar os badges, fazer o handleSubmit, fazer os typeaheads como o userRegistration
+  /*   
+-- falta fazer o handleSubmit
+-- tratado o tyhpeahead das skills mas falta verificar o das keywords, pois não precisa de modal para definir a categoria
+-- falta fazer o addMember que é igual às skills
+-- add logged.user à team list como user type 1
+-- # team members não pode ser menor que 1 nem maior que o fetch de maxUsers - 1 (que é o creator),
+-- tratar da start date e end date para não permitir end date < start date, e verificar como está no backend
+-- falta fazer o addAsset que é um modal igual ao newAsset (transformar o newAsset em um modal, colocar a lista de assets na sidebar e no offcanvas
+e retirar o newAsset da sidebar e do offcanvas)
+-- addAsset tem de incluir sempre a qty a adicionar:
+--------- asset existe -> qty < qty na lista de assets => nova qty lista de assets = qty lista de assets - qty a adicionar
+--------- asset existe -> qty > qty na lista de assets => nova qty lista de assets = qty lista de assets + (qty a adicionar - qty lista de assets)
+--------- asset não existe => nova qty lista de assets = 0
+---- lista de assets tem qty = total - qty usada pelos assets dos projetos (é sempre >= 0)
+   */
 
   const renderStep = () => {
     switch (step) {
@@ -380,48 +432,21 @@ const ProjectNew = () => {
             </Row>
             <Row style={{ justifyContent: "center" }}>
               <Col className="my-2">
-                <FloatingLabel
-                  controlId="floatingKeywords"
+                <Typeahead
+                  id="keyword-search"
+                  labelKey="name"
+                  multiple
+                  options={[generateKeywordsOptions()]}
+                  selected={project.keywords}
+                  onInputChange={handleKeywordInputChange}
+                  onChange={(selected) =>
+                    handleTypeAheadChange(selected, "keywords")
+                  }
+                  placeholder="Search or add keyword..."
                   className="mb-3 ps-1"
                   style={{ width: "18.5rem" }}
-                >
-                  <Typeahead
-                    id="keyword-search"
-                    type="text"
-                    placeholder="Search or add keyword..."
-                    options={[]}
-                  />
-                </FloatingLabel>
+                />
               </Col>
-              <Col className="my-2">
-                <Button
-                  onClick={handleAddKeyword}
-                  className="btn-add"
-                  style={{ width: "5rem" }}
-                >
-                  Add
-                </Button>
-              </Col>
-            </Row>
-            <Row className="mt-2 mb-4">
-              {keywordsList.map((keyword, index) => (
-                <Badge pill bg="secondary" key={index} className="me-2">
-                  {keyword}{" "}
-                  <span
-                    variant="light"
-                    size="sm"
-                    className="ps-2 mb-3"
-                    onClick={() => handleRemoveKeyword(keyword)}
-                    style={{
-                      cursor: "pointer",
-                      position: "relative",
-                      top: "-2px",
-                    }}
-                  >
-                    x
-                  </span>
-                </Badge>
-              ))}
             </Row>
           </Card>
         );
@@ -434,13 +459,14 @@ const ProjectNew = () => {
             <Form.Select
               controlId="floatingLab"
               className="my-2 ps-1"
+              value={project.labId}
               style={{ width: "25rem" }}
             >
-              <option value="" disabled selected>
-                Choose your Lab
+              <option value="" disabled>
+                {t("chooseLab*")}
               </option>
               {labEnumList.map((lab) => (
-                <option key={lab.id} value={lab.name}>
+                <option key={lab.id} value={lab.id}>
                   {formatCategoryName(lab.name)}
                 </option>
               ))}
@@ -468,61 +494,22 @@ const ProjectNew = () => {
               </Col>
             </Row>
             <Row className="my-2" style={{ justifyContent: "center" }}>
-              <FloatingLabel controlId="floatingSkillInput">
+              <Col style={{ display: "flex", justifyContent: "center" }}>
                 <Typeahead
-                  id="skill-search"
-                  type="text"
-                  placeholder="Search or add skill..."
+                  id="skills-typeahead"
+                  labelKey="name"
+                  multiple
+                  options={generateSkillOptions()}
+                  selected={project.skills}
+                  onInputChange={handleSkillsInputChange}
+                  onChange={(selected) =>
+                    handleTypeAheadChange("skills", selected)
+                  }
+                  placeholder="Choose your skills..."
+                  className="mb-3"
                   style={{ width: "25rem" }}
-                  options={[]}
                 />
-              </FloatingLabel>
-            </Row>
-            <Row style={{ justifyContent: "center" }}>
-              <Col className="my-2">
-                <Form.Select
-                  controlId="floatingSkillCategory"
-                  style={{ width: "18.5rem" }}
-                >
-                  <option value="" disabled selected>
-                    Choose skill category
-                  </option>
-                  {skillsEnumList.map((skill) => (
-                    <option key={skill.id} value={skill.name}>
-                      {formatCategoryName(skill.name)}
-                    </option>
-                  ))}
-                </Form.Select>
               </Col>
-              <Col className="my-2">
-                <Button
-                  onClick={handleAddSkill}
-                  className="btn-add"
-                  style={{ width: "5rem" }}
-                >
-                  Add
-                </Button>{" "}
-              </Col>
-            </Row>
-            <Row className="mt-2 mb-4">
-              {skillsList.map((skill, index) => (
-                <Badge pill bg="secondary" key={index} className="me-2">
-                  {skill}{" "}
-                  <span
-                    variant="light"
-                    size="sm"
-                    className="ps-2 mb-3"
-                    onClick={() => handleRemoveSkill(skill)}
-                    style={{
-                      cursor: "pointer",
-                      position: "relative",
-                      top: "-2px",
-                    }}
-                  >
-                    x
-                  </span>
-                </Badge>
-              ))}
             </Row>
           </Card>
         );
@@ -571,10 +558,12 @@ const ProjectNew = () => {
                       Choose member type
                     </option>
                     {projectUserEnumList
-                      .filter((user) => user.id === 2 || user.id === 3)
-                      .map((user) => (
-                        <option key={user.id} value={user.name}>
-                          {formatCategoryName(user.name)}
+                      .filter(
+                        (userEnum) => userEnum.id === 2 || userEnum.id === 3
+                      )
+                      .map((userEnum) => (
+                        <option key={userEnum.id} value={userEnum.name}>
+                          {formatCategoryName(userEnum.name)}
                         </option>
                       ))}
                   </Form.Select>
@@ -588,26 +577,6 @@ const ProjectNew = () => {
                     Add
                   </Button>
                 </Col>
-              </Row>
-              <Row className="my-2 mb-4">
-                {membersList.map((member, index) => (
-                  <Badge pill bg="secondary" key={index} className="me-2">
-                    {member}{" "}
-                    <span
-                      variant="light"
-                      size="sm"
-                      className="ps-2 mb-3"
-                      onClick={() => handleRemoveMember(member)}
-                      style={{
-                        cursor: "pointer",
-                        position: "relative",
-                        top: "-2px",
-                      }}
-                    >
-                      x
-                    </span>
-                  </Badge>
-                ))}
               </Row>
               <Row>
                 <Col>
@@ -647,28 +616,6 @@ const ProjectNew = () => {
                   {/* if this component does not exist, a message should appear below this row saying "This asset does not exist. Do you want to create it?" with a button "Create asset" */}
                 </Col>
               </Row>
-              <Row className="mb-3">
-                <div className="mt-2 mb-4">
-                  {assetsList.map((asset, index) => (
-                    <Badge pill bg="secondary" key={index} className="me-2">
-                      {asset}{" "}
-                      <span
-                        variant="light"
-                        size="sm"
-                        className="ps-2 mb-3"
-                        onClick={() => handleRemoveAsset(asset)}
-                        style={{
-                          cursor: "pointer",
-                          position: "relative",
-                          top: "-2px",
-                        }}
-                      >
-                        x
-                      </span>
-                    </Badge>
-                  ))}
-                </div>
-              </Row>
             </Card>
             <Card className="my-2 mx-3" style={{ border: "none" }}>
               <Row style={{ justifyContent: "center", gap: "3rem" }}>
@@ -680,7 +627,7 @@ const ProjectNew = () => {
                   Cancel
                 </Button>
                 <Button
-                  onClick={handleCreate}
+                  onClick={handleSubmit}
                   className="btn-save"
                   style={{ width: "10rem" }}
                 >
@@ -725,37 +672,88 @@ const ProjectNew = () => {
   };
 
   return (
-    <Card
-      style={{
-        border: "none",
-        height: "100%",
-        width: "100%",
-        position: "relative", // Add this to enable absolute positioning for children
-      }}
-    >
-      <div
-        className="progress-bar-div"
+    <>
+      <Modal show={showSkillModal} onHide={() => setShowSkillModal(false)}>
+        <Modal.Header closeButton className="mt-2 p-4">
+          <Modal.Title style={{ width: "100%", textAlign: "center" }}>
+            Add Custom Skill
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Control
+            type="text"
+            placeholder="Enter custom skill"
+            value={customSkill}
+            onChange={(e) => setCustomSkill(e.target.value)}
+            className="mb-3 mx-5"
+            style={{ width: "22.5rem" }}
+          />
+          <Form.Select
+            controlId="floatingSkill"
+            style={{ width: "22.5rem" }}
+            className="mb-3 mx-5"
+            onChange={skillsEnumList}
+          >
+            <option value="" disabled selected>
+              Choose skill category
+            </option>
+            {skillsEnumList.map((category) => (
+              <option key={category.id} value={category.id}>
+                {formatCategoryName(category.name)}
+              </option>
+            ))}
+          </Form.Select>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => setShowSkillModal(false)}
+            className="modal-skill-interest-cancel-btn"
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleAddCustomSkill}
+            className="modal-skill-interest-save-btn"
+          >
+            Add Skill
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Card
         style={{
-          width: "30%",
-          justifyContent: "center",
-          position: "absolute", // Absolute positioning
-          top: "2rem", // 10rem from the top
-          left: "50%", // Center horizontally
-          transform: "translateX(-50%)", // Center align by translating half of its width
+          border: "none",
+          height: "100%",
+          width: "100%",
+          position: "relative", // Add this to enable absolute positioning for children
         }}
       >
-        <OthersProgressBar step={step} steps={steps} />
-      </div>
+        <div
+          className="progress-bar-div"
+          style={{
+            width: "30%",
+            justifyContent: "center",
+            position: "absolute", // Absolute positioning
+            top: "2rem", // 10rem from the top
+            left: "50%", // Center horizontally
+            transform: "translateX(-50%)", // Center align by translating half of its width
+          }}
+        >
+          <OthersProgressBar step={step} steps={steps} />
+        </div>
 
-      <div style={{ paddingTop: "2.5rem" }}>
-        {" "}
-        {/* Add paddingTop to push the content down */}
-        <Card style={{ border: "none" }} className="my-3">
-          {renderStep()}
-        </Card>
-        <div className="my-2">{renderProgress()}</div>
-      </div>
-    </Card>
+        <div style={{ paddingTop: "2.5rem" }}>
+          {" "}
+          {/* Add paddingTop to push the content down */}
+          <Card style={{ border: "none" }} className="my-3">
+            {renderStep()}
+          </Card>
+          <div className="my-2">{renderProgress()}</div>
+        </div>
+      </Card>
+    </>
   );
 };
 

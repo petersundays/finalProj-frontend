@@ -11,8 +11,9 @@ const MessageHub = () => {
     {
       sender: "Sender 1",
       title: "Title 1",
-      message: "Message 1",
-      date: "2022-01-01",
+      content: "Message 1",
+      timestamp: "2022-01-01",
+      read: false,
     },
     {
       sender: "Sender 2",
