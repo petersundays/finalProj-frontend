@@ -1,9 +1,88 @@
 import React, { useState } from "react";
-import { Card, Table, Button, Row, Col } from "react-bootstrap";
+import {
+  Card,
+  Table,
+  Button,
+  Row,
+  Col,
+  Modal,
+  Form,
+  FloatingLabel,
+} from "react-bootstrap";
 import "./AssetList.css";
+import { toast } from "react-toastify";
+import { Base_url_components_resources } from "../../functions/UsersFunctions";
+import { useNavigate } from "react-router-dom";
+import { userStore } from "../../stores/UserStore.jsx";
+import AssetNewModal from "../AssetNew/AssetNewModal";
+ 
 
 function AssetList() {
+  const navigate = useNavigate();
+  const loggedUser = userStore((state) => state.loggedUser);
   const [visibleRows, setVisibleRows] = useState(8);
+  const [showAssetNewModal, setShowAssetNewModal] = useState(false);
+  const [assetType, setAssetType] = useState("Component");
+  const [formData, setFormData] = useState({
+    type: 1,
+    name: "",
+    description: "",
+    partNumber: 0,
+    brand: "",
+    supplier: "",
+    supplierContact: 0,
+    quantity: 0,
+    observations: "",
+  });
+
+  const handleAssetChange = (type) => {
+    setAssetType(type);
+  };
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleAddAsset = async () => {
+    if (
+      !formData.type ||
+      !formData.name ||
+      !formData.description ||
+      !formData.partNumber ||
+      !formData.brand ||
+      !formData.supplier ||
+      !formData.supplierContact ||
+      !formData.quantity
+    ) {
+      toast.error("mandatoryFieldsError");
+      return;
+    } else {
+      try {
+        const assetsResponse = await fetch(Base_url_components_resources, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            token: loggedUser.sessionToken,
+            id: loggedUser.id,
+          },
+          body: JSON.stringify(formData),
+        });
+        if (assetsResponse.ok) {
+          toast.success("Asset added successfully");
+          setShowAssetNewModal(false);
+        } else {
+          toast.error("Error adding asset");
+        }
+      }
+      catch (error) {
+        console.error("Error adding asset", error);
+        toast.error("Error adding asset");
+      }
+    }
+  };
 
   const data = [
     {
@@ -157,8 +236,24 @@ function AssetList() {
       className="asset-list-card ms-lg-5 my-5"
       style={{ border: "none", maxWidth: "85rem", height: "80%" }}
     >
-      <Row className="asset-list-row">
-        <h2 className="asset-list-title">Asset List</h2>
+      <Row className="asset-list-row mb-2">
+        <Col className="d-flex justify-content-start ms-lg-3">
+          <h2
+            className="asset-list-title"
+            style={{ color: "var(--color-blue-03)" }}
+          >
+            Asset List
+          </h2>
+        </Col>
+        <Col className="d-flex justify-content-end me-lg-3">
+          <Button
+            className="custom-add-asset-btn"
+            style={{ width: "8rem" }}
+            onClick={() => setShowAssetNewModal(true)}
+          >
+            Add Asset
+          </Button>
+        </Col>
       </Row>
       <Col className="mb-3" style={{ border: "none", maxWidth: "85rem" }}>
         <Table className="asset-list-table my-3">
@@ -245,6 +340,11 @@ function AssetList() {
           </div>
         )}
       </Col>
+
+      <AssetNewModal
+        show={showAssetNewModal}
+        onHide={() => setShowAssetNewModal(false)}
+      />
     </Card>
   );
 }

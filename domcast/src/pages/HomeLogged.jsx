@@ -7,7 +7,6 @@ import AdminDashboard from "../components/AdminDashboard/AdminDashboard";
 import AdminProjectsApprovalList from "../components/AdminProjectsApprovalList/AdminProjectsApprovalList";
 import AssetEdit from "../components/AssetEdit/AssetEdit";
 import AssetList from "../components/AssetList/AssetList";
-import AssetNew from "../components/AssetNew/AssetNew";
 import AssetView from "../components/AssetView/AssetView";
 import LogList from "../components/LogList/LogList";
 import LogNew from "../components/LogNew/LogNew";
@@ -77,7 +76,6 @@ function HomeLogged() {
                   <Route path="/admin-projects/approval-list" element={<AdminProjectsApprovalList />} />
                   <Route path="/asset/edit/:id" element={<AssetEdit />} />
                   <Route path="/assets/list" element={<AssetList />} />
-                  <Route path="/asset/new" element={<AssetNew />} />
                   <Route path="/asset/view/:id" element={<AssetView />} />
                   <Route path="/logs/list" element={<LogList />} />
                   <Route path="/log/new" element={<LogNew />} />

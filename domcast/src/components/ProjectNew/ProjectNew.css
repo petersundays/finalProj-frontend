@@ -40,3 +40,29 @@
   background-color: var(--color-yellow-02);
 }
 
+.modal-skill-interest-cancel-btn,
+.modal-team-cancel-btn {
+  background-color: var(--color-grey-02);
+  color: var(--color-white);
+  border: none;
+  cursor: pointer;
+}
+
+.modal-skill-interest-cancel-btn:hover,
+.modal-team-cancel-btn:hover {
+  background-color: var(--color-grey-01);
+}
+
+.modal-skill-interest-save-btn,
+.modal-team-save-btn {
+  background-color: var(--color-yellow-01);
+  color: var(--color-grey-01);
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+}
+
+.modal-skill-interest-save-btn:hover,
+.modal-team-save-btn:hover {
+  background-color: var(--color-yellow-02);
+}

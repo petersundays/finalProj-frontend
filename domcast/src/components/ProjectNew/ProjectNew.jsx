@@ -14,6 +14,7 @@ import "./ProjectNew.css";
 import OthersProgressBar from "../OthersProgressBar/OthersProgressBar";
 import { userStore } from "../../stores/UserStore.jsx";
 import { projectStore } from "../../stores/ProjectStore.jsx";
+import { assetStore } from "../../stores/AssetStore.jsx";
 import {
   Base_url_admins,
   Base_url_components_resources,
@@ -26,13 +27,15 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { use } from "i18next";
 
 const ProjectNew = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const loggedUser = userStore.loggedUser;
   const usersList = userStore.users.filter((user) => user.id !== loggedUser.id);
+  const asset = assetStore.asset;
+  const setAsset = assetStore.setAsset;
+  const resetAsset = assetStore.resetAsset;
 
   const [enumsFetched, setEnumsFetched] = useState(false);
   const [basicDataFetched, setBasicDataFetched] = useState(false);
@@ -52,7 +55,10 @@ const ProjectNew = () => {
   const [showSkillModal, setShowSkillModal] = useState(false);
 
   const [assetsList, setAssetsList] = useState([]);
+  const [assetType, setAssetType] = useState("Component");
   const [assetsInputValue, setAssetsInputValue] = useState("");
+  const [showAssetModal, setShowAssetModal] = useState(false);
+  const [customAsset, setCustomAsset] = useState("");
 
   const [teamList, setTeamList] = useState([]);
   const [teamType, setTeamType] = useState(3);
@@ -271,6 +277,11 @@ const ProjectNew = () => {
     setProject({ ...project, [name]: value });
   };
 
+  const handleAssetChange = (e) => {
+    const { name, value } = e.target;
+    setAsset({ ...asset, [name]: value });
+  };
+
   const handleDateChange = (e) => {
     const { name, value } = e.target;
     if (name === "startDate") {
@@ -323,6 +334,23 @@ const ProjectNew = () => {
     return skillOptions;
   };
 
+  const generateAssetsOptions = () => {
+    const assetOptions = assetsList.map((asset) => asset.name || asset);
+    if (assetsInputValue.trim().length > 0) {
+      const isAssetExist = assetsList.some(
+        (asset) =>
+          (asset.name || asset).toLowerCase() ===
+          assetsInputValue.trim().toLowerCase()
+      );
+      if (!isAssetExist) {
+        assetOptions = assetOptions.concat(
+          `Add "${assetsInputValue}" as an asset`
+        );
+      }
+    }
+    return assetOptions;
+  };
+
   const generateTeamOptions = () => {
     return usersList.map((user) => ({
       label: `${user.firstName} ${user.lastName}`,
@@ -336,6 +364,10 @@ const ProjectNew = () => {
 
   const handleSkillsInputChange = (value) => {
     setSkillsInputValue(value);
+  };
+
+  const handleAssetsInputChange = (value) => {
+    setAssetsInputValue(value);
   };
 
   const handleTypeAheadChange = (labelKey, selected) => {
@@ -364,6 +396,18 @@ const ProjectNew = () => {
       } else {
         setProject({ ...project, keywords: selected });
       }
+    } else if (labelKey === "assets") {
+      const trimmedInputValue = assetsInputValue.trim();
+      if (
+        trimmedInputValue.length > 0 &&
+        selected.length > 0 &&
+        selected[selected.length - 1].startsWith('Add "')
+      ) {
+        setCustomAsset(trimmedInputValue);
+        setShowAssetModal(true);
+      } else {
+        setProject({ ...project, assets: selected });
+      }
     } else if (labelKey === "members") {
       if (labelKey === "members" && selected.length > 0) {
         handleShowTeamModal(selected[selected.length - 1]);
@@ -381,11 +425,10 @@ const ProjectNew = () => {
     }
 
     const newSkillDto = { name: customSkill, type: skillType };
-    const updatedSkillsList = [...skillsList, newSkillDto];
+    const updatedSkillsList = [...skillsList, newSkillDto.name];
 
     setProject({
       ...project,
-      skillDtos: [...project.skillDtos, newSkillDto],
       skills: [...project.skills, customSkill],
     });
 
@@ -397,6 +440,52 @@ const ProjectNew = () => {
     setSkillType("");
     setSkillsInputValue("");
   };
+
+  const handleAddCustomAsset = () => {
+    if (
+      !asset.type ||
+      !asset.name ||
+      !asset.description ||
+      !asset.partNumber ||
+      !asset.brand ||
+      !asset.supplier ||
+      !asset.supplierContact ||
+      !asset.quantity
+    ) {
+      console.log("Asset data is missing");
+      toast.error(t("assetDataRequired"));
+      return;
+    }
+    
+    const newAsset = {
+      type: assetType,
+      name: asset.name,
+      description: asset.description,
+      partNumber: asset.partNumber,
+      brand: asset.brand,
+      supplier: asset.supplier,
+      supplierContact: asset.supplierContact,
+      quantity: asset.quantity,
+      notes: asset.notes || "",
+    };
+    const updatedAssetsList = [...assetsList, newAsset.name];
+
+    setProject({
+      ...project,
+      assets: [...project.assets, newAsset],
+    });
+
+    setAssetsList(updatedAssetsList);
+    handleTypeAheadChange("assets", [...project.assets, newAsset]);
+
+    setShowAssetModal(false);
+    resetAsset();
+    setAssetType("Component");
+    setAssetsInputValue("");
+  };
+
+
+
 
   const handleAddMember = () => {
     if (!selectedUser || !teamType) {
@@ -709,10 +798,17 @@ e retirar o newAsset da sidebar e do offcanvas)
                   >
                     <Typeahead
                       id="asset-search"
-                      type="text"
+                      labelKey="name"
+                      multiple
+                      options={generateAssetsOptions()}
+                      selected={project.assets}
+                      onInputChange={handleAssetsInputChange}
+                      onChange={(selected) =>
+                        handleTypeAheadChange("assets", selected)
+                      }
                       placeholder="Search asset..."
+                      className="mb-3"
                       style={{ width: "25rem" }}
-                      options={[]}
                     />
                   </FloatingLabel>
                 </Col>
@@ -881,19 +977,178 @@ e retirar o newAsset da sidebar e do offcanvas)
           <Button
             variant="secondary"
             onClick={handleCloseTeamModal}
-            className="modal-skill-interest-cancel-btn"
+            className="modal-team-cancel-btn"
           >
             Cancel
           </Button>
           <Button
             variant="primary"
             onClick={handleAddMember}
-            className="modal-skill-interest-save-btn"
+            className="modal-team-save-btn"
           >
             Add Member
           </Button>
         </Modal.Footer>
       </Modal>
+
+      <Modal show={showAssetModal} onHide={() => setShowAssetModal(false)}>
+      <Modal.Header closeButton>
+        <Row className="justify-content-center my-2">
+          <Modal.Title style={{ color: "var(--color-blue-03)" }}>
+            Add New Asset
+          </Modal.Title>
+        </Row>
+      </Modal.Header>
+      <Modal.Body>
+        <Row className="my-4">
+          <Col className="justify-content-center d-flex mb-3">
+            <div className="btn-group" role="group">
+              <button
+                type="button"
+                className={`btn btn-outline-secondary btn-custom-asset ${
+                  assetType === "Component" ? "active" : ""
+                }`}
+                onClick={asset.type(1)}
+                style={{
+                  width: "8rem",
+                  height: "3rem",
+                  fontWeight: "bold",
+                }}
+              >
+                Component
+              </button>
+              <button
+                type="button"
+                className={`btn btn-outline-secondary btn-custom-asset ${
+                  assetType === "Resource" ? "active" : ""
+                }`}
+                onClick={asset.type(2)}
+                style={{
+                  width: "8rem",
+                  height: "3rem",
+                  fontWeight: "bold",
+                }}
+              >
+                Resource
+              </button>
+            </div>
+          </Col>
+        </Row>
+        <Row>
+          <Col md={6}>
+            <FloatingLabel controlId="floatingName" label="Name *" className="mb-3">
+              <Form.Control
+                type="text"
+                name="name"
+                value={asset.name}
+                onChange={handleAssetChange}
+                required
+              />
+            </FloatingLabel>
+            <FloatingLabel controlId="floatingDescription" label="Description *" className="mb-3">
+              <Form.Control
+                type="text"
+                name="description"
+                value={asset.description}
+                onChange={handleAssetChange}
+                required
+              />
+            </FloatingLabel>
+            <FloatingLabel controlId="floatingPartNumber" label="Part Number *" className="mb-3">
+              <Form.Control
+                type="number"
+                name="partNumber"
+                value={asset.partNumber}
+                onChange={handleAssetChange}
+                required
+              />
+            </FloatingLabel>
+            <FloatingLabel controlId="floatingBrand" label="Brand *" className="mb-3">
+              <Form.Control
+                type="text"
+                name="brand"
+                value={asset.brand}
+                onChange={handleAssetChange}
+                required
+              />
+            </FloatingLabel>
+          </Col>
+          <Col md={6}>
+            <FloatingLabel controlId="floatingSupplier" label="Supplier *" className="mb-3">
+              <Form.Control
+                type="text"
+                name="supplier"
+                value={asset.supplier}
+                onChange={handleAssetChange}
+                required
+              />
+            </FloatingLabel>
+            <FloatingLabel controlId="floatingSupplierContact" label="Supplier Contact *" className="mb-3">
+              <Form.Control
+                type="text"
+                name="supplierContact"
+                value={asset.supplierContact}
+                onChange={handleAssetChange}
+                required
+              />
+            </FloatingLabel>
+            <FloatingLabel controlId="floatingQuantity" label="Quantity *" className="mb-3">
+              <Form.Control
+                type="number"
+                name="quantity"
+                value={asset.quantity}
+                onChange={handleAssetChange}
+                min={1}
+                required
+              />
+            </FloatingLabel>
+            <FloatingLabel controlId="floatingNotes" label="Notes" className="mb-3">
+              <Form.Control
+                as="textarea"
+                name="notes"
+                value={asset.observations}
+                onChange={handleAssetChange}
+                style={{ resize: "none" }}
+              />
+            </FloatingLabel>
+          </Col>
+        </Row>
+        <Row className="justify-content-center my-1">
+          <p
+            className="my-1"
+            style={{
+              fontSize: "15px",
+              color: "var(--color-blue-01)",
+              fontWeight: "bold",
+              textAlign: "center",
+              width: "100%",
+            }}
+          >
+            All fields required (except notes)
+          </p>
+        </Row>
+      </Modal.Body>
+      <Modal.Footer className="justify-content-center my-3">
+        <Button
+          variant="secondary"
+          onClick={() => setShowAssetModal(false)}
+          className="modal-add-asset-cancel-btn mx-2"
+          style={{ width: "8rem" }}
+        >
+          Cancel
+        </Button>
+        <Button
+          variant="primary"
+          onClick={handleAddCustomAsset}
+          className="modal-add-asset-save-btn mx-2"
+          style={{ width: "8rem" }}
+        >
+          Add Asset
+        </Button>
+      </Modal.Footer>
+    </Modal>
+
+
 
       <Card
         style={{
