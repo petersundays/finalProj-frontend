@@ -15,6 +15,7 @@ import OthersProgressBar from "../OthersProgressBar/OthersProgressBar";
 import { userStore } from "../../stores/UserStore.jsx";
 import { projectStore } from "../../stores/ProjectStore.jsx";
 import {
+  Base_url_admins,
   Base_url_components_resources,
   Base_url_keywords,
   Base_url_projects,
@@ -35,12 +36,12 @@ const ProjectNew = () => {
   const loggedUser = userStore.loggedUser;
   const membersList = userStore.users;
   const [enumsFetched, setEnumsFetched] = useState(false);
+  const [maxUsers, setMaxUsers] = useState(1);
 
   const [skillsList, setSkillsList] = useState([]);
   const [keywordsList, setKeywordsList] = useState([]);
   const [assetsList, setAssetsList] = useState([]);
   const [customSkill, setCustomSkill] = useState("");
-  const [customKeyword, setCustomKeyword] = useState("");
   const [skillType, setSkillType] = useState(1);
 
   const [showSkillModal, setShowSkillModal] = useState(false);
@@ -53,6 +54,10 @@ const ProjectNew = () => {
   const [skillsEnumList, setSkillsEnumList] = useState([]);
   const [labEnumList, setLabEnumList] = useState([]);
   const [projectUserEnumList, setProjectUserEnumList] = useState([]);
+
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [validationMessage, setValidationMessage] = useState("");
 
   const [step, setStep] = useState(1);
   const steps = ["Step 1", "Step 2", "Step 3"];
@@ -221,7 +226,25 @@ const ProjectNew = () => {
       console.error("Error:", error);
     }
 
-    // falta fetch de max users
+    try {
+      const maxUsersResponse = await fetch(`${Base_url_admins}max-users`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          token: loggedUser.sessionToken,
+          id: loggedUser.id,
+        },
+      });
+      if (maxUsersResponse.ok) {
+        const maxUsersData = await maxUsersResponse.json();
+        setMaxUsers(maxUsersData);
+        console.log("Max users fetched:", maxUsersData);
+      } else {
+        console.error("Error fetching max users");
+      }
+    } catch (error) {
+      console.error("Error fetching max users:", error);
+    }
   };
 
   const handleAddMember = (memberName) => {
@@ -243,15 +266,36 @@ const ProjectNew = () => {
     setProject({ ...project, [name]: value });
   };
 
+  const handleDateChange = (e) => {
+    const { name, value } = e.target;
+    if (name === "startDate") {
+      setStartDate(value);
+      if (endDate && value > endDate) {
+        toast.error(t("startDateBeforeEndDate"));
+      } else {
+        setProject({ ...project, projectedStartDate: value });
+      }
+    } else if (name === "endDate") {
+      setEndDate(value);
+      if (startDate && value < startDate) {
+        toast.error(t("endDateAfterStartDate"));
+      } else {
+        setProject({ ...project, deadline: value });
+      }
+    }
+  };
+
+
+
+
+
+
   const generateKeywordsOptions = () => {
-    const keywordsOptions = keywordsList.map(
-      (keyword) => keyword.name || keyword
-    );
+    const keywordsOptions = keywordsList.map((keyword) => keyword);
     if (keywordsInputValue.trim().length > 0) {
       const isKeywordExists = keywordsList.some(
         (keyword) =>
-          (keyword.name || keyword).toLowerCase() ===
-          keywordsInputValue.trim().toLowerCase()
+          keyword.toLowerCase() === keywordsInputValue.trim().toLowerCase()
       );
       if (!isKeywordExists) {
         keywordsOptions = keywordsOptions.concat(
@@ -307,7 +351,9 @@ const ProjectNew = () => {
         selected.length > 0 &&
         selected[selected.length - 1].startsWith('Add "')
       ) {
-        setCustomKeyword(trimmedInputValue);
+        const newKeyword = trimmedInputValue;
+        setKeywordsList([...keywordsList, newKeyword]);
+        setProject({ ...project, keywords: [...project.keywords, newKeyword] });
       } else {
         setProject({ ...project, keywords: selected });
       }
@@ -374,11 +420,11 @@ const ProjectNew = () => {
 
   /*   
 -- falta fazer o handleSubmit
--- tratado o tyhpeahead das skills mas falta verificar o das keywords, pois não precisa de modal para definir a categoria
+|| tratado o tyhpeahead das skills e o das keywords, falta testar
 -- falta fazer o addMember que é igual às skills
 -- add logged.user à team list como user type 1
--- # team members não pode ser menor que 1 nem maior que o fetch de maxUsers - 1 (que é o creator),
--- tratar da start date e end date para não permitir end date < start date, e verificar como está no backend
+|| # team members tratado, falta testar
+|| handleDateChange tratado, falta testar
 -- falta fazer o addAsset que é um modal igual ao newAsset (transformar o newAsset em um modal, colocar a lista de assets na sidebar e no offcanvas
 e retirar o newAsset da sidebar e do offcanvas)
 -- addAsset tem de incluir sempre a qty a adicionar:
@@ -440,7 +486,7 @@ e retirar o newAsset da sidebar e do offcanvas)
                   selected={project.keywords}
                   onInputChange={handleKeywordInputChange}
                   onChange={(selected) =>
-                    handleTypeAheadChange(selected, "keywords")
+                    handleTypeAheadChange("keywords", selected)
                   }
                   placeholder="Search or add keyword..."
                   className="mb-3 ps-1"
@@ -477,7 +523,7 @@ e retirar o newAsset da sidebar e do offcanvas)
                   <Form.Control
                     type="date"
                     name="startDate"
-                    onChange={handleChange}
+                    onChange={handleDateChange}
                     style={{ width: "11.75rem" }}
                   />
                 </FloatingLabel>
@@ -487,7 +533,7 @@ e retirar o newAsset da sidebar e do offcanvas)
                   <Form.Control
                     type="date"
                     name="endtDate"
-                    onChange={handleChange}
+                    onChange={handleDateChange}
                     style={{ width: "11.75rem" }}
                   />
                 </FloatingLabel>
@@ -527,6 +573,7 @@ e retirar o newAsset da sidebar e do offcanvas)
                     controlId="floatingTeamMembersNo"
                     type="number"
                     min="1"
+                    max={maxUsers}
                     className="mb-3 ps-1"
                     style={{ width: "5rem" }}
                   />
