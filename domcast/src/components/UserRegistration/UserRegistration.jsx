@@ -73,7 +73,6 @@ const UserRegistration = () => {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              token: token,
             },
           }
         );
@@ -354,7 +353,7 @@ const UserRegistration = () => {
         setInterestsList([]);
         setVisibility("private");
         setStep(1);
-        navigate("/"); // Redirect to the home page for user to login
+        navigate("/");
       } else {
         const errorData = await response.json();
         console.error("Failed to confirm user:", errorData);
@@ -365,7 +364,7 @@ const UserRegistration = () => {
         setInterestsList([]);
         setVisibility("private");
         setStep(1);
-        navigate("/"); // Redirect to the home page for user to login
+        navigate("/");
       }
     } catch (error) {
       console.error("Error:", error);

@@ -13,12 +13,17 @@ function MainNavbarLogged({ handleShow, handleLanguageChange, language }) {
   const loggedUser = userStore((state) => state.loggedUser);
   const clearLoggedUser = userStore((state) => state.clearLoggedUser);
 
+  const userId = userStore((state) => state.loggedUser.id);
+
   const [showModalRedefinePassword, setShowModalRedefinePassword] =
     useState(false);
 
+  const viewProfile = () => {
+    navigate(`user/view/${userId}`, { replace: true });
+  };
+
   const editProfile = () => {
-    const id = userStore.getState().loggedUser.id;
-    navigate(`myprofile/${id}`, { replace: true });
+    navigate(`user/edit/${userId}`, { replace: true });
   };
 
   const handleLogout = async (event) => {
@@ -90,11 +95,13 @@ function MainNavbarLogged({ handleShow, handleLanguageChange, language }) {
               id="basic-nav-dropdown"
               className="ms-2 me-5 dropdown-profile"
             >
-              <NavDropdown.Item onClick={editProfile}>Profile</NavDropdown.Item>
+              <NavDropdown.Item onClick={viewProfile}>View Profile</NavDropdown.Item>
+              <NavDropdown.Item onClick={editProfile}>
+                Edit Profile
+              </NavDropdown.Item>
               <NavDropdown.Item onClick={handleOpenModalRedefinePassword}>
                 Change Password
               </NavDropdown.Item>
-              <NavDropdown.Item href="#messages">Message Hub</NavDropdown.Item>
               <NavDropdown.Divider />
               <NavDropdown.Item onClick={handleLogout}>Logout</NavDropdown.Item>
             </NavDropdown>

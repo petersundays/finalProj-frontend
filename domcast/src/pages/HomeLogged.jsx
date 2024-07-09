@@ -3,8 +3,8 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { Container, Row, Col, Card } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./HomeLogged.css";
-import AdminSettings from "../components/AdminSettings/AdminSettings";
-import AdminStats from "../components/AdminStats/AdminStats";
+import AdminDashboard from "../components/AdminDashboard/AdminDashboard";
+import AdminProjectsApprovalList from "../components/AdminProjectsApprovalList/AdminProjectsApprovalList";
 import AssetEdit from "../components/AssetEdit/AssetEdit";
 import AssetList from "../components/AssetList/AssetList";
 import AssetNew from "../components/AssetNew/AssetNew";
@@ -16,9 +16,11 @@ import MainFooter from "../components/MainFooter/MainFooter";
 import MainNavbarLogged from "../components/MainNavbarLogged/MainNavbarLogged";
 import MainOffcanvasLogged from "../components/MainOffcanvasLogged/MainOffcanvasLogged";
 import MainSidebar from "../components/MainSidebar/MainSidebar";
-import MessageHub from "../components/MessageHub/MessageHub";
+import MessageHubInbox from "../components/MessageHubInbox/MessageHubInbox";
+import MessageHubSent from "../components/MessageHubSent/MessageHubSent";
 import ProjectEdit from "../components/ProjectEdit/ProjectEdit";
-import ProjectListLogged from "../components/ProjectListLogged/ProjectListLogged";
+import ProjectUserList from "../components/ProjectUserList/ProjectUserList";
+import ProjectGlobalList from "../components/ProjectGlobalList/ProjectGlobalList";
 import ProjectNew from "../components/ProjectNew/ProjectNew";
 import ProjectView from "../components/ProjectView/ProjectView";
 import TaskEdit from "../components/TaskEdit/TaskEdit";
@@ -72,27 +74,28 @@ function HomeLogged() {
             <Card className="custom-card">
               <Card.Body className="card-body-custom">
                 <Routes>
-                  <Route path="/" element={<ProjectListLogged />} />
-                  <Route path="/settings" element={<AdminSettings />} />
-                  <Route path="/stats" element={<AdminStats />} />
+                  <Route path="/admin-dashboard" element={<AdminDashboard />} />
+                  <Route path="/admin-projects/approval-list" element={<AdminProjectsApprovalList />} />
                   <Route path="/asset/edit/:id" element={<AssetEdit />} />
-                  <Route path="/asset/list" element={<AssetList />} />
+                  <Route path="/assets/list" element={<AssetList />} />
                   <Route path="/asset/new" element={<AssetNew />} />
                   <Route path="/asset/view/:id" element={<AssetView />} />
-                  <Route path="/log/list" element={<LogList />} />
+                  <Route path="/logs/list" element={<LogList />} />
                   <Route path="/log/new" element={<LogNew />} />
                   <Route path="/log/view/:id" element={<LogView />} />
-                  <Route path="/messagehub" element={<MessageHub />} />
+                  <Route path="/inbox" element={<MessageHubInbox />} />
+                  <Route path="/sent" element={<MessageHubSent />} />
+                  <Route path="/myprojects" element={<ProjectUserList />} />
                   <Route path="/project/edit/:id" element={<ProjectEdit />} />
-                  <Route path="/project/list" element={<ProjectListLogged />} />
+                  <Route path="/projects/list" element={<ProjectGlobalList />} />
                   <Route path="/project/new" element={<ProjectNew />} />
                   <Route path="/project/view/:id" element={<ProjectView />} />
                   <Route path="/task/edit/:id" element={<TaskEdit />} />
-                  <Route path="/task/list" element={<TaskList />} />
+                  <Route path="/tasks/list" element={<TaskList />} />
                   <Route path="/task/new" element={<TaskNew />} />
                   <Route path="/task/view/:id" element={<TaskView />} />
-                  <Route path="/myprofile/:id" element={<UserEdit />} />
-                  <Route path="/user/list" element={<UserList />} />
+                  <Route path="/user/edit/:id" element={<UserEdit />} />
+                  <Route path="/users/list" element={<UserList />} />
                   <Route path="/user/view/:id" element={<UserView />} />
                 </Routes>
               </Card.Body>

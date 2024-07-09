@@ -88,27 +88,33 @@ body,
 }
 
 .dropdown-title {
-  color: var(--color-white);
+  color: var(--color-yellow-01) !important;
 }
 
 .btn-group .btn.active {
-  background-color: var(--color-water-green-01);
-  color: var(--color-coal);
+  background-color: var(--color-blue-01);
+  color: var(--color-white);
+}
+
+.btn-group .btn.active:hover {
+  background-color: var(--color-blue-02);
+  color: var(--color-white) !important;
+}
+
+.btn-group .btn.active:focus {
+  background-color: var(--color-blue-01);
+  color: var(--color-white);
 }
 
 .btn-group .btn {
-  border-color: var(--color-water-green-01);
+  border-color: var(--color-blue-01);
   color: var(--color-white);
 }
 
 .btn-group .btn:hover {
-  background-color: transparent;
-  color: var(--color-water-green-01);
-}
-
-.btn-group .btn.active:focus {
-  background-color: var(--color-water-green-01);
-  color: var(--color-coal);
+  background-color: var(--color-blue-02);
+  color: var(--color-white) !important;
+  border-color: var(--color-blue-01);
 }
 
 .navbar .dropdown-menu {
@@ -121,7 +127,7 @@ body,
 
 .navbar .dropdown-item:hover,
 .navbar .dropdown-item:focus {
-  color: var(--color-water-green-01) !important;
+  color: var(--color-yellow-01) !important;
   background-color: var(--color-coal) !important;
 }
 
@@ -132,29 +138,30 @@ body,
 
 .dropdown-title:hover,
 .dropdown-title:focus {
-  color: var(--color-water-green-01) !important;
+  color: var(--color-yellow-02) !important;
 }
 
+.navbar .navbar-nav .nav-link.dropdown-toggle,
 .navbar .navbar-nav .nav-link.dropdown-toggle:hover,
 .navbar .navbar-nav .nav-link.dropdown-toggle:focus {
-  color: var(--color-water-green-01) !important;
+  color: var(--color-yellow-02) !important;
 }
 
 .sidebar-changed {
-  background-color: var(--color-water-green-04) !important;
+  background-color: var(--color-yellow-01) !important;
 }
 
 .sidebar .nav-link,
 .offcanvas-main-changed .nav-link {
-  color: var(--color-grey-02);
+  color: var(--color-coal);
   font-size: 18px;
   font-weight: 500;
 }
 
 .sidebar .nav-link:hover,
 .offcanvas-main-changed .nav-link:hover {
-  color: var(--color-grey-01);
-  background-color: var(--color-water-green-03);
+  color: var(--color-white);
+  background-color: var(--color-blue-01);
   border-radius: 8px;
 }
 
@@ -164,19 +171,20 @@ body,
 }
 
 .btn-offcanvas-main .btn:hover {
-  color: var(--color-dark-blue-02) !important;
+  color: var(--color-white) !important;
 }
 
 .btn-offcanvas-main .btn.active {
-  color: var(--color-grey-01) !important;
+  color: var(--color-white) !important;
 }
 
+
 .offcanvas-main-title {
-  color: var(--color-water-green-01);
+  color: var(--color-blue-01);
 }
 
 .hr {
-  border-top: 1px solid var(--color-water-green-01);
+  border-top: 1px solid var(--color-blue-01);
 }
 
 .row-banner {
@@ -185,6 +193,6 @@ body,
 
 .no-border-card {
   border: none !important;
-  background-color: rgba(31, 156, 240, 0.9);
+  background-color: rgba(255, 255, 255, 0.9);
   margin-inline: 3rem;
 }

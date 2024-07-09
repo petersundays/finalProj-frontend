@@ -22,8 +22,8 @@ body,
 }
 
 .sidebar {
-  padding-top: 56px; /* Altura da navbar */
-  height: calc(100vh-56px-56px); /* Altura total menos a navbar */
+  padding-top: 56px;
+  height: calc(100vh-56px-56px);
 }
 
 @media (max-width: 992px) {
@@ -61,7 +61,7 @@ body,
 }
 
 .bottomNavbar {
-  margin-bottom: 20px; /* Espaço na parte inferior */
+  margin-bottom: 20px;
   text-align: center;
 }
 
@@ -100,15 +100,15 @@ body,
 }
 
 .btn-offcanvas-main .btn:hover {
-  color: var(--color-coal) !important;
+  color: var(--color-white) !important;
 }
 
 .btn-offcanvas-main .btn.active {
-  color: var(--color-grey-01) !important;
+  color: var(--color-white) !important;
 }
 
 .hr {
-  border-top: 1px solid var(--color-water-green-01);
+  border-top: 1px solid var(--color-blue-01);
 }
 
 .central-card {

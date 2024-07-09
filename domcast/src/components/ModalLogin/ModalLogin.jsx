@@ -56,7 +56,7 @@ function ModalLogin({ show, handleClose }) {
           console.log(data);
           await setLoggedUser(data);
           console.log(userStore.getState().user);
-          navigate("/domcast/", { replace: true });
+          navigate("/domcast/myprojects", { replace: true });
         } else {
           console.log("Login failed");
         }

@@ -21,6 +21,7 @@ export const userStore = create(
       unconfirmedPhoto: defaultProfilePic,
       loggedUser: {
         id: null,
+        type: null,
         sessionToken: '',
         firstName: '',
         lastName: '',
@@ -32,6 +33,7 @@ export const userStore = create(
         interests: [],
         skills: [],
       },
+      userList: [],
       setUnconfirmedUser: (newUser) =>
         set((state) => ({
           unconfirmedUser: { ...state.unconfirmedUser, ...newUser },
@@ -75,7 +77,8 @@ export const userStore = create(
           },
         }));
         sessionStorage.removeItem('userStore');
-      }
+      },
+      setUserList: (newList) => set((state) => ({ userList: newList })),
     }),
     {
       name: "userStore",

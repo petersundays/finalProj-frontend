@@ -22,11 +22,18 @@
   border: none !important;
 }
 
-@media (max-width: 962px) {
+@media (max-width: 992px) {
   .projcard-logged {
     width: 100%; /* Torna o card responsivo */
     max-width: 22rem; /* Largura máxima em telas menores */
-    margin-inline: 1rem;
+    margin-inline: 1rem !important;
+  }
+}
 
+@media (max-width: 1024px) {
+  .projcard-logged {
+    width: 100%; /* Torna o card responsivo */
+    max-width: 22rem;
+    margin-inline: 0 !important;
   }
 }

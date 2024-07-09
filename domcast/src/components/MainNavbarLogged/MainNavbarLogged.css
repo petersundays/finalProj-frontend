@@ -18,7 +18,7 @@
 
   .btn-group .btn.active:hover {
     background-color: var(--color-blue-02);
-    color: var(--color-white);
+    color: var(--color-white) !important;
   }
   
   .btn-group .btn.active:focus {
@@ -33,7 +33,7 @@
   
   .btn-group .btn:hover {
     background-color: var(--color-blue-02);
-    color: var(--color-white);
+    color: var(--color-white) !important;
     border-color: var(--color-blue-01);
   }
   
@@ -67,4 +67,6 @@
     color: var(--color-yellow-02) !important;
   }
   
-  
+  .navbar-logo {
+    cursor:pointer;
+  }

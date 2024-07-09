@@ -13,8 +13,7 @@ const OthersProjCardNotLogged = ({ title, lab, description, state, link }) => {
           height: "2.5rem",
         }}
       >
-        <Card.Title       className="card-title-custom"
-        >{title}</Card.Title>
+        <Card.Title className="card-title-custom">{title}</Card.Title>
       </Card.Header>
       <Card.Body>
         <Card.Subtitle
