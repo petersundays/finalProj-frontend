@@ -38,6 +38,41 @@ export const projectStore = create(
             tasks: [],
           },
         }),
+      newProject: {
+        name: "",
+        description: "",
+        labId: null,
+        projectedStartDate: null,
+        deadline: null,
+        keywords: [],
+        existentSkills: [],
+        existentResources: [],
+        maxMembers: 4,
+      },
+      setNewProject: (newProject) => set({ newProject }),
+      resetNewProject: () =>
+        set({
+          newProject: {
+            name: "",
+            description: "",
+            labId: null,
+            projectedStartDate: null,
+            deadline: null,
+            keywords: [],
+            existentSkills: [],
+            existentResources: [],
+            maxMembers: 4,
+          },
+        }),
+      team: [],
+      setTeam: (team) => set({ team }),
+      resetTeam: () => set({ team: [] }),
+      components: [],
+      setComponents: (components) => set({ components }),
+      resetComponents: () => set({ components: [] }),
+      skills: [],
+      setSkills: (skills) => set({ skills }),
+      resetSkills: () => set({ skills: [] }),
       projects: [],
       setProjects: (projects) => set({ projects }),
       resetProjects: () => set({ projects: [] }),
@@ -47,7 +82,7 @@ export const projectStore = create(
     }),
     {
       name: "projectStore",
-      getStorage: createJSONStorage(),
+      storage: createJSONStorage(() => sessionStorage),
     }
   )
 );

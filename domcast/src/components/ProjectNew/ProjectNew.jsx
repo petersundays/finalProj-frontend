@@ -31,8 +31,16 @@ import { toast } from "react-toastify";
 const ProjectNew = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const loggedUser = userStore.loggedUser;
-  const usersList = userStore.users.filter((user) => user.id !== loggedUser.id);
+  const loggedUser = userStore((state) => state.loggedUser);
+  console.log("loggedUser: ", loggedUser);
+  const usersList =
+    userStore.users?.filter((user) => user.id !== loggedUser.id) || [];
+
+  const loggedUserToken = loggedUser.sessionToken;
+  const loggedUserId = loggedUser.id;
+  console.log("loggedUserToken: ", loggedUserToken);
+  console.log("loggedUserId", loggedUserId);
+
   const asset = assetStore.asset;
   const setAsset = assetStore.setAsset;
   const resetAsset = assetStore.resetAsset;
@@ -41,9 +49,9 @@ const ProjectNew = () => {
   const [basicDataFetched, setBasicDataFetched] = useState(false);
   const [maxUsers, setMaxUsers] = useState(1);
 
-  const project = projectStore((state) => state.project);
-  const setProject = projectStore((state) => state.setProject);
-  const clearProject = projectStore((state) => state.clearProject);
+  const project = projectStore((state) => state.newProject);
+  const setProject = projectStore((state) => state.setNewProject);
+  const clearProject = projectStore((state) => state.resetNewProject);
 
   const [keywordsList, setKeywordsList] = useState([]);
   const [keywordsInputValue, setKeywordsInputValue] = useState("");
@@ -65,6 +73,9 @@ const ProjectNew = () => {
   const [customTeam, setCustomTeam] = useState("");
   const [showTeamModal, setShowTeamModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const team = projectStore((state) => state.team);
+  const setTeam = projectStore((state) => state.setTeam);
+  const resetTeam = projectStore((state) => state.resetTeam);
 
   const [skillsEnumList, setSkillsEnumList] = useState([]);
   const [labEnumList, setLabEnumList] = useState([]);
@@ -138,17 +149,14 @@ const ProjectNew = () => {
     }
 
     try {
-      const projectUserEnumResponse = await fetch(
-        `${Base_url_users}user-enum`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            token: loggedUser.sessionToken,
-            id: loggedUser.id,
-          },
-        }
-      );
+      const projectUserEnumResponse = await fetch(`${Base_url_users}enum`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          token: loggedUser.sessionToken,
+          id: loggedUser.id,
+        },
+      });
       if (projectUserEnumResponse.ok) {
         const projectUserData = await projectUserEnumResponse.json();
         setProjectUserEnumList(projectUserData);
@@ -163,7 +171,7 @@ const ProjectNew = () => {
 
   const fetchBasicData = async () => {
     try {
-      const urlAssets = Base_url_components_resources;
+      const urlAssets = new URL(Base_url_components_resources);
       urlAssets.searchParams.append("orderBy", "name");
       urlAssets.searchParams.append("orderAsc", "true");
       urlAssets.searchParams.append("pageSize", 500);
@@ -241,7 +249,7 @@ const ProjectNew = () => {
       });
       if (usersResponse.ok) {
         const usersData = await usersResponse.json();
-        userStore.setUsers(usersData);
+        userStore.getState().setUserList(usersData);
       } else {
         console.error("Error fetching users");
       }
@@ -250,7 +258,7 @@ const ProjectNew = () => {
     }
 
     try {
-      const maxUsersResponse = await fetch(`${Base_url_admins}max-users`, {
+      const maxUsersResponse = await fetch(`${Base_url_admins}max-members`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -275,6 +283,7 @@ const ProjectNew = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProject({ ...project, [name]: value });
+    console.log("Project:", project);
   };
 
   const handleAssetChange = (e) => {
@@ -413,7 +422,7 @@ const ProjectNew = () => {
         handleShowTeamModal(selected[selected.length - 1]);
       }
     } else {
-      setProject({ ...project, collaborators: selected });
+      setTeam({ ...team, [labelKey]: selected });
     }
   };
 
@@ -456,7 +465,7 @@ const ProjectNew = () => {
       toast.error(t("assetDataRequired"));
       return;
     }
-    
+
     const newAsset = {
       type: assetType,
       name: asset.name,
@@ -484,9 +493,6 @@ const ProjectNew = () => {
     setAssetsInputValue("");
   };
 
-
-
-
   const handleAddMember = () => {
     if (!selectedUser || !teamType) {
       console.log("Selected user or team type is missing");
@@ -504,15 +510,12 @@ const ProjectNew = () => {
       const newProjectTeam = { id: selectedUser.id, role: teamType };
       const updatedTeamList = [...teamList, newProjectTeam];
 
-      setProject({
-        ...project,
-        projectTeam: [...project.projectTeam, newProjectTeam],
-        collaborators: [...project.collaborators, selectedUser.id],
-      });
+      setTeam({ ...team, team: updatedTeamList })
+
 
       setTeamList(updatedTeamList);
       handleTypeAheadChange("members", [
-        ...project.collaborators,
+        ...team,
         selectedUser,
       ]);
 
@@ -529,6 +532,14 @@ const ProjectNew = () => {
     }
   };
 
+  const handleAssetTypeChange = (e) => {
+    if (e.target.value === "Component") {
+      setAssetType(1);
+    } else {
+      setAssetType(2);
+    }
+  };
+
   const handleShowTeamModal = (user) => {
     setSelectedUser(user);
     setShowTeamModal(true);
@@ -537,10 +548,6 @@ const ProjectNew = () => {
   const handleCloseTeamModal = () => {
     setSelectedUser(null);
     setShowTeamModal(false);
-  };
-
-  const handleSubmit = async () => {
-    console.log("Here goes the handle submit");
   };
 
   const handleCancel = () => {
@@ -552,7 +559,22 @@ const ProjectNew = () => {
     setStep(1);
   };
 
+  const validateStep1 = () => {
+    if (
+      !project.title ||
+      !project.description ||
+      !project.keywords.length > 0
+    ) {
+      toast.error(t("projectTitleDescKeywordsRequired"));
+      return false;
+    }
+    return true;
+  };
+
   const nextStep = () => {
+    if (step === 1 && !validateStep1()) {
+      return;
+    }
     if (step < 3) {
       setStep(step + 1);
     }
@@ -572,21 +594,56 @@ const ProjectNew = () => {
       .join(" ");
   };
 
+  const handleSubmit = async () => {
+    if (
+      !project.title ||
+      !project.description ||
+      !project.keywords.length > 0
+    ) {
+      toast.error(t("projectTitleDescKeywordsRequired"));
+      return;
+    }
+    const projectData = new FormData();
+    projectData.append("project", JSON.stringify(project));
+    if (teamList.length > 0) {
+      projectData.append("team", JSON.stringify(teamList));
+    }
+    if (assetsList.length > 0) {
+      projectData.append("components", JSON.stringify(assetsList));
+    }
+    if (skillsList.length > 0) {
+      projectData.append("skills", JSON.stringify(skillsList));
+    }
+
+    try {
+      const newProjectResponse = await fetch(Base_url_projects, {
+        method: "POST",
+        headers: {
+          token: loggedUser.sessionToken,
+          id: loggedUser.id,
+        },
+        body: projectData,
+      });
+      if (newProjectResponse.ok) {
+        const newProject = await newProjectResponse.json();
+        const newProjectId = newProject.id;
+        toast.success(t("projectCreated"));
+        navigate("/myprojects");
+      } else {
+        toast.error(t("projectNotCreated"));
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
   /*   
--- falta fazer o handleSubmit:
-|| tratado o tyhpeahead das skills e o das keywords, falta testar
-|| tratado o addMember, falta testar
-|| add logged.user à team list como user type 1 (useEffect)
-|| # team members tratado, falta testar
-|| handleDateChange tratado, falta testar
--- falta fazer o addAsset que é um modal igual ao newAsset (transformar o newAsset em um modal, colocar a lista de assets na sidebar e no offcanvas
-e retirar o newAsset da sidebar e do offcanvas)
 -- addAsset tem de incluir sempre a qty a adicionar:
 --------- asset existe -> qty < qty na lista de assets => nova qty lista de assets = qty lista de assets - qty a adicionar
 --------- asset existe -> qty > qty na lista de assets => nova qty lista de assets = qty lista de assets + (qty a adicionar - qty lista de assets)
 --------- asset não existe => nova qty lista de assets = 0
 ---- lista de assets tem qty = total - qty usada pelos assets dos projetos (é sempre >= 0)
-   */
+*/
 
   const renderStep = () => {
     switch (step) {
@@ -599,7 +656,7 @@ e retirar o newAsset da sidebar e do offcanvas)
             <Row style={{ justifyContent: "center" }}>
               <FloatingLabel
                 controlId="floatingTitle"
-                label="Title"
+                label="Title *"
                 className="mb-3 ps-1"
                 style={{ width: "25rem" }}
               >
@@ -613,13 +670,14 @@ e retirar o newAsset da sidebar e do offcanvas)
             </Row>
             <Row style={{ justifyContent: "center" }}>
               <FloatingLabel
-                controlId="floatingBio"
-                label="Description & motivation"
+                controlId="floatingDescription"
+                label="Description & motivation *"
                 className="mb-3 ps-1"
                 style={{ width: "25rem" }}
               >
                 <Form.Control
                   as="textarea"
+                  name="description"
                   onChange={handleChange}
                   style={{
                     height: "12.5rem",
@@ -627,6 +685,7 @@ e retirar o newAsset da sidebar e do offcanvas)
                     width: "24rem",
                     overflow: "auto",
                   }}
+                  required
                 />
               </FloatingLabel>
             </Row>
@@ -636,18 +695,29 @@ e retirar o newAsset da sidebar e do offcanvas)
                   id="keyword-search"
                   labelKey="name"
                   multiple
-                  options={[generateKeywordsOptions()]}
-                  selected={project.keywords}
+                  options={generateKeywordsOptions()}
+                  selected={project?.keywords ?? []}
                   onInputChange={handleKeywordInputChange}
                   onChange={(selected) =>
                     handleTypeAheadChange("keywords", selected)
                   }
-                  placeholder="Search or add keyword..."
+                  placeholder="Search or add keyword... *"
                   className="mb-3 ps-1"
                   style={{ width: "18.5rem" }}
                 />
               </Col>
             </Row>
+            <span
+              className="d-block text-center"
+              style={{
+                fontSize: "0.8rem",
+                fontStyle: "italic",
+                color: "var(--color-blue-02)",
+                fontWeight: "bold",
+              }}
+            >
+              {t("*mandatoryFields")}
+            </span>
           </Card>
         );
       case 2:
@@ -658,11 +728,12 @@ e retirar o newAsset da sidebar e do offcanvas)
           >
             <Form.Select
               controlId="floatingLab"
+              name="labId"
               className="my-2 ps-1"
-              value={project.labId}
               style={{ width: "25rem" }}
+              onChange={handleChange}
             >
-              <option value="" disabled>
+              <option value="" disabled selected>
                 {t("chooseLab*")}
               </option>
               {labEnumList.map((lab) => (
@@ -744,7 +815,7 @@ e retirar o newAsset da sidebar e do offcanvas)
                       labelKey="label"
                       multiple
                       options={generateTeamOptions()}
-                      selected={project.collaborators.map((collaborator) => ({
+                      selected={team.map((collaborator) => ({
                         label: `${collaborator.firstName} ${collaborator.lastName}`,
                         ...collaborator,
                       }))}
@@ -762,7 +833,6 @@ e retirar o newAsset da sidebar e do offcanvas)
                 <Col>
                   <Form.Select
                     controlId="floatingMemberCategory"
-                    value={teamType}
                     onChange={(e) => setTeamType(e.target.value)}
                     style={{ width: "18.5rem" }}
                   >
@@ -992,163 +1062,185 @@ e retirar o newAsset da sidebar e do offcanvas)
       </Modal>
 
       <Modal show={showAssetModal} onHide={() => setShowAssetModal(false)}>
-      <Modal.Header closeButton>
-        <Row className="justify-content-center my-2">
-          <Modal.Title style={{ color: "var(--color-blue-03)" }}>
-            Add New Asset
-          </Modal.Title>
-        </Row>
-      </Modal.Header>
-      <Modal.Body>
-        <Row className="my-4">
-          <Col className="justify-content-center d-flex mb-3">
-            <div className="btn-group" role="group">
-              <button
-                type="button"
-                className={`btn btn-outline-secondary btn-custom-asset ${
-                  assetType === "Component" ? "active" : ""
-                }`}
-                onClick={asset.type(1)}
-                style={{
-                  width: "8rem",
-                  height: "3rem",
-                  fontWeight: "bold",
-                }}
+        <Modal.Header closeButton>
+          <Row className="justify-content-center my-2">
+            <Modal.Title style={{ color: "var(--color-blue-03)" }}>
+              Add New Asset
+            </Modal.Title>
+          </Row>
+        </Modal.Header>
+        <Modal.Body>
+          <Row className="my-4">
+            <Col className="justify-content-center d-flex mb-3">
+              <div className="btn-group" role="group">
+                <button
+                  type="button"
+                  className={`btn btn-outline-secondary btn-custom-asset ${
+                    assetType === "Component" ? "active" : ""
+                  }`}
+                  onClick={handleAssetTypeChange}
+                  style={{
+                    width: "8rem",
+                    height: "3rem",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Component
+                </button>
+                <button
+                  type="button"
+                  className={`btn btn-outline-secondary btn-custom-asset ${
+                    assetType === "Resource" ? "active" : ""
+                  }`}
+                  onClick={handleAssetTypeChange}
+                  style={{
+                    width: "8rem",
+                    height: "3rem",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Resource
+                </button>
+              </div>
+            </Col>
+          </Row>
+          <Row>
+            <Col md={6}>
+              <FloatingLabel
+                controlId="floatingName"
+                label="Name *"
+                className="mb-3"
               >
-                Component
-              </button>
-              <button
-                type="button"
-                className={`btn btn-outline-secondary btn-custom-asset ${
-                  assetType === "Resource" ? "active" : ""
-                }`}
-                onClick={asset.type(2)}
-                style={{
-                  width: "8rem",
-                  height: "3rem",
-                  fontWeight: "bold",
-                }}
+                <Form.Control
+                  type="text"
+                  name="name"
+                  onChange={handleAssetChange}
+                  required
+                />
+              </FloatingLabel>
+              <FloatingLabel
+                controlId="floatingDescription"
+                label="Description *"
+                className="mb-3"
               >
-                Resource
-              </button>
-            </div>
-          </Col>
-        </Row>
-        <Row>
-          <Col md={6}>
-            <FloatingLabel controlId="floatingName" label="Name *" className="mb-3">
-              <Form.Control
-                type="text"
-                name="name"
-                value={asset.name}
-                onChange={handleAssetChange}
-                required
-              />
-            </FloatingLabel>
-            <FloatingLabel controlId="floatingDescription" label="Description *" className="mb-3">
-              <Form.Control
-                type="text"
-                name="description"
-                value={asset.description}
-                onChange={handleAssetChange}
-                required
-              />
-            </FloatingLabel>
-            <FloatingLabel controlId="floatingPartNumber" label="Part Number *" className="mb-3">
-              <Form.Control
-                type="number"
-                name="partNumber"
-                value={asset.partNumber}
-                onChange={handleAssetChange}
-                required
-              />
-            </FloatingLabel>
-            <FloatingLabel controlId="floatingBrand" label="Brand *" className="mb-3">
-              <Form.Control
-                type="text"
-                name="brand"
-                value={asset.brand}
-                onChange={handleAssetChange}
-                required
-              />
-            </FloatingLabel>
-          </Col>
-          <Col md={6}>
-            <FloatingLabel controlId="floatingSupplier" label="Supplier *" className="mb-3">
-              <Form.Control
-                type="text"
-                name="supplier"
-                value={asset.supplier}
-                onChange={handleAssetChange}
-                required
-              />
-            </FloatingLabel>
-            <FloatingLabel controlId="floatingSupplierContact" label="Supplier Contact *" className="mb-3">
-              <Form.Control
-                type="text"
-                name="supplierContact"
-                value={asset.supplierContact}
-                onChange={handleAssetChange}
-                required
-              />
-            </FloatingLabel>
-            <FloatingLabel controlId="floatingQuantity" label="Quantity *" className="mb-3">
-              <Form.Control
-                type="number"
-                name="quantity"
-                value={asset.quantity}
-                onChange={handleAssetChange}
-                min={1}
-                required
-              />
-            </FloatingLabel>
-            <FloatingLabel controlId="floatingNotes" label="Notes" className="mb-3">
-              <Form.Control
-                as="textarea"
-                name="notes"
-                value={asset.observations}
-                onChange={handleAssetChange}
-                style={{ resize: "none" }}
-              />
-            </FloatingLabel>
-          </Col>
-        </Row>
-        <Row className="justify-content-center my-1">
-          <p
-            className="my-1"
-            style={{
-              fontSize: "15px",
-              color: "var(--color-blue-01)",
-              fontWeight: "bold",
-              textAlign: "center",
-              width: "100%",
-            }}
+                <Form.Control
+                  type="text"
+                  name="description"
+                  onChange={handleAssetChange}
+                  required
+                />
+              </FloatingLabel>
+              <FloatingLabel
+                controlId="floatingPartNumber"
+                label="Part Number *"
+                className="mb-3"
+              >
+                <Form.Control
+                  type="number"
+                  name="partNumber"
+                  onChange={handleAssetChange}
+                  required
+                />
+              </FloatingLabel>
+              <FloatingLabel
+                controlId="floatingBrand"
+                label="Brand *"
+                className="mb-3"
+              >
+                <Form.Control
+                  type="text"
+                  name="brand"
+                  onChange={handleAssetChange}
+                  required
+                />
+              </FloatingLabel>
+            </Col>
+            <Col md={6}>
+              <FloatingLabel
+                controlId="floatingSupplier"
+                label="Supplier *"
+                className="mb-3"
+              >
+                <Form.Control
+                  type="text"
+                  name="supplier"
+                  onChange={handleAssetChange}
+                  required
+                />
+              </FloatingLabel>
+              <FloatingLabel
+                controlId="floatingSupplierContact"
+                label="Supplier Contact *"
+                className="mb-3"
+              >
+                <Form.Control
+                  type="text"
+                  name="supplierContact"
+                  onChange={handleAssetChange}
+                  required
+                />
+              </FloatingLabel>
+              <FloatingLabel
+                controlId="floatingQuantity"
+                label="Quantity *"
+                className="mb-3"
+              >
+                <Form.Control
+                  type="number"
+                  name="quantity"
+                  onChange={handleAssetChange}
+                  min={1}
+                  required
+                />
+              </FloatingLabel>
+              <FloatingLabel
+                controlId="floatingNotes"
+                label="Notes"
+                className="mb-3"
+              >
+                <Form.Control
+                  as="textarea"
+                  name="notes"
+                  onChange={handleAssetChange}
+                  style={{ resize: "none" }}
+                />
+              </FloatingLabel>
+            </Col>
+          </Row>
+          <Row className="justify-content-center my-1">
+            <p
+              className="my-1"
+              style={{
+                fontSize: "15px",
+                color: "var(--color-blue-01)",
+                fontWeight: "bold",
+                textAlign: "center",
+                width: "100%",
+              }}
+            >
+              All fields required (except notes)
+            </p>
+          </Row>
+        </Modal.Body>
+        <Modal.Footer className="justify-content-center my-3">
+          <Button
+            variant="secondary"
+            onClick={() => setShowAssetModal(false)}
+            className="modal-add-asset-cancel-btn mx-2"
+            style={{ width: "8rem" }}
           >
-            All fields required (except notes)
-          </p>
-        </Row>
-      </Modal.Body>
-      <Modal.Footer className="justify-content-center my-3">
-        <Button
-          variant="secondary"
-          onClick={() => setShowAssetModal(false)}
-          className="modal-add-asset-cancel-btn mx-2"
-          style={{ width: "8rem" }}
-        >
-          Cancel
-        </Button>
-        <Button
-          variant="primary"
-          onClick={handleAddCustomAsset}
-          className="modal-add-asset-save-btn mx-2"
-          style={{ width: "8rem" }}
-        >
-          Add Asset
-        </Button>
-      </Modal.Footer>
-    </Modal>
-
-
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleAddCustomAsset}
+            className="modal-add-asset-save-btn mx-2"
+            style={{ width: "8rem" }}
+          >
+            Add Asset
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
       <Card
         style={{

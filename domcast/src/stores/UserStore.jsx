@@ -38,10 +38,11 @@ export const userStore = create(
         set((state) => ({
           unconfirmedUser: { ...state.unconfirmedUser, ...newUser },
         })),
-      setLoggedUser: (newUser) =>
-        set((state) => ({
-          loggedUser: { ...state.loggedUser, ...newUser },
-        })),
+        setLoggedUser: (newUser) => set((state) => {
+          const updatedUser = { ...state.loggedUser, ...newUser };
+          console.log('Updated user:', updatedUser); // Check the state here
+          return { loggedUser: updatedUser };
+        }),
       setUnconfirmedPhoto: (photo) => set(() => ({ unconfirmedPhoto: photo })),
       clearUnconfirmedUser: () => set(() => ({
         unconfirmedUser: {
@@ -78,7 +79,7 @@ export const userStore = create(
         }));
         sessionStorage.removeItem('userStore');
       },
-      setUserList: (newList) => set((state) => ({ userList: newList })),
+      setUserList: (usersData) => set({ userList: usersData }),
     }),
     {
       name: "userStore",

@@ -29,7 +29,7 @@ body,
   justify-content: center !important;
 }
 
-@media (max-width: 992px) {
+@media (maxWidth: 992px) {
   .sidebar {
     display: none;
   }
