@@ -46,21 +46,23 @@ export const projectStore = create(
         deadline: null,
         keywords: [],
         existentSkills: [],
-        existentResources: [],
+        existentResources: {},
         maxMembers: 4,
       },
-      setNewProject: (newProject) => set({ newProject }),
+      setNewProject: (newProject) => set((state) => ({
+        newProject: { ...state.newProject, ...newProject }
+      })),
       resetNewProject: () =>
         set({
           newProject: {
             name: "",
             description: "",
-            labId: null,
+            labId: "",
             projectedStartDate: null,
             deadline: null,
             keywords: [],
             existentSkills: [],
-            existentResources: [],
+            existentResources: {},
             maxMembers: 4,
           },
         }),

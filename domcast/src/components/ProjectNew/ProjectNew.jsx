@@ -46,7 +46,6 @@ const ProjectNew = () => {
   const resetAsset = assetStore.resetAsset;
 
   const [enumsFetched, setEnumsFetched] = useState(false);
-  const [basicDataFetched, setBasicDataFetched] = useState(false);
   const [maxUsers, setMaxUsers] = useState(1);
 
   const project = projectStore((state) => state.newProject);
@@ -58,27 +57,38 @@ const ProjectNew = () => {
 
   const [skillsList, setSkillsList] = useState([]);
   const [skillType, setSkillType] = useState(1);
-  const [customSkill, setCustomSkill] = useState("");
+  const [customSkill, setCustomSkill] = useState(""); 
   const [skillsInputValue, setSkillsInputValue] = useState("");
   const [showSkillModal, setShowSkillModal] = useState(false);
+  const skillsStore = projectStore((state) => state.skills);
+  const setSkillsStore = projectStore((state) => state.setSkills);
+  const resetSkillsStore = projectStore((state) => state.resetSkills);
 
   const [assetsList, setAssetsList] = useState([]);
   const [assetType, setAssetType] = useState("Component");
   const [assetsInputValue, setAssetsInputValue] = useState("");
-  const [showAssetModal, setShowAssetModal] = useState(false);
+  const [existentAssetsList, setExistentAssetsList] = useState([]);
+  const [customAssetList, setCustomAssetList] = useState([]);
   const [customAsset, setCustomAsset] = useState("");
+  const [showAssetModal, setShowAssetModal] = useState(false);
+  const [showAssetQuantityModal, setShowAssetQuantityModal] = useState(false);
+  const [assetQuantity, setAssetQuantity] = useState(1);
+  const componentsStore = projectStore((state) => state.components);
+  const setComponentsStore = projectStore((state) => state.setComponents);
+  const resetComponentsStore = projectStore((state) => state.resetComponents);
 
   const [teamList, setTeamList] = useState([]);
   const [teamType, setTeamType] = useState(3);
   const [customTeam, setCustomTeam] = useState("");
   const [showTeamModal, setShowTeamModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  const team = projectStore((state) => state.team);
-  const setTeam = projectStore((state) => state.setTeam);
-  const resetTeam = projectStore((state) => state.resetTeam);
+  const teamStore = projectStore((state) => state.team);
+  const setTeamStore = projectStore((state) => state.setTeam);
+  const resetTeamStore = projectStore((state) => state.resetTeam);
 
   const [skillsEnumList, setSkillsEnumList] = useState([]);
   const [labEnumList, setLabEnumList] = useState([]);
+  const [selectedLabId, setSelectedLabId] = useState("");
   const [projectUserEnumList, setProjectUserEnumList] = useState([]);
 
   const [startDate, setStartDate] = useState("");
@@ -86,6 +96,10 @@ const ProjectNew = () => {
 
   const [step, setStep] = useState(1);
   const steps = ["Step 1", "Step 2", "Step 3"];
+
+  useEffect(() => {
+    console.log("Project state updated:", project);
+  }, [project]);
 
   useEffect(() => {
     fetchEnums();
@@ -97,15 +111,6 @@ const ProjectNew = () => {
       fetchBasicData();
     }
   }, [enumsFetched]);
-
-  useEffect(() => {
-    if (basicDataFetched) {
-      setProject({
-        ...project,
-        mainManager: loggedUser.id,
-      });
-    }
-  }, [basicDataFetched]);
 
   const fetchEnums = async () => {
     try {
@@ -277,13 +282,11 @@ const ProjectNew = () => {
       console.error("Error fetching max users:", error);
     }
 
-    setBasicDataFetched(true);
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProject({ ...project, [name]: value });
-    console.log("Project:", project);
   };
 
   const handleAssetChange = (e) => {
@@ -308,6 +311,12 @@ const ProjectNew = () => {
         setProject({ ...project, deadline: value });
       }
     }
+  };
+
+  const handleLabChange = (e) => {
+    const newLabId = e.target.value;
+    setSelectedLabId(newLabId);
+    setProject({ labId: newLabId });
   };
 
   const generateKeywordsOptions = () => {
@@ -355,10 +364,18 @@ const ProjectNew = () => {
         assetOptions = assetOptions.concat(
           `Add "${assetsInputValue}" as an asset`
         );
-      }
+      } else {
+        showAssetQuantityModal(true);
+        const assetId = assetsList.find(
+          (asset) => asset.name === assetsInputValue
+        ).id;
+        const assetQty = assetQuantity;
+        setExistentAssetsList([...existentAssetsList, { id: assetId, qty: assetQty }]);
     }
     return assetOptions;
-  };
+  }
+};
+
 
   const generateTeamOptions = () => {
     return usersList.map((user) => ({
@@ -379,7 +396,7 @@ const ProjectNew = () => {
     setAssetsInputValue(value);
   };
 
-  const handleTypeAheadChange = (labelKey, selected) => {
+  const handleTypeAheadSkillsChange = (labelKey, selected) => {
     if (labelKey === "skills") {
       const trimmedInputValue = skillsInputValue.trim();
       if (
@@ -390,9 +407,13 @@ const ProjectNew = () => {
         setCustomSkill(trimmedInputValue);
         setShowSkillModal(true);
       } else {
-        setProject({ ...project, skills: selected });
+        setSkillsStore({ ...skillsStore, skills: selected });
       }
-    } else if (labelKey === "keywords") {
+    }
+  };
+
+  const handleTypeAheadKeywordsChange = (labelKey, selected) => {
+    if (labelKey === "keywords") {
       const trimmedInputValue = keywordsInputValue.trim();
       if (
         trimmedInputValue.length > 0 &&
@@ -405,7 +426,15 @@ const ProjectNew = () => {
       } else {
         setProject({ ...project, keywords: selected });
       }
-    } else if (labelKey === "assets") {
+    }
+  };
+
+  const getAssetQuantityFromModal = () => {
+    return assetQuantity;
+  };
+
+  const handleTypeAssetsAheadChange = (labelKey, selected) => {
+    if (labelKey === "assets") {
       const trimmedInputValue = assetsInputValue.trim();
       if (
         trimmedInputValue.length > 0 &&
@@ -415,39 +444,48 @@ const ProjectNew = () => {
         setCustomAsset(trimmedInputValue);
         setShowAssetModal(true);
       } else {
-        setProject({ ...project, assets: selected });
+        // Step 1: Find the ID of the selected asset
+        const selectedAsset = selected[selected.length - 1];
+        const assetId = selectedAsset.id; // Assuming the selected asset has an 'id' property
+  
+        // Step 2: Show the asset quantity modal
+        setShowAssetQuantityModal(true);
+  
+        // Step 3: Create a constant with the asset ID and quantity
+        const assetQuantity = assetQuantity(); // Assuming this function retrieves the quantity from the modal
+        const newAsset = { id: assetId, quantity: assetQuantity };
+  
+        // Step 4: Update the customAssetList
+        setCustomAssetList((prevList) => [...prevList, newAsset]);
+
       }
-    } else if (labelKey === "members") {
-      if (labelKey === "members" && selected.length > 0) {
-        handleShowTeamModal(selected[selected.length - 1]);
-      }
-    } else {
-      setTeam({ ...team, [labelKey]: selected });
     }
   };
 
-  const handleAddCustomSkill = () => {
-    if (!customSkill || !skillType) {
-      console.log("Custom skill or skill type is missing");
-      toast.error(t("skillNameTypeRequired"));
-      return;
+  const handleAddCustomSkill = (labelKey, selected) => {
+    if (labelKey === "skills") {
+      if (!customSkill) {
+        console.log("Custom skill is missing");
+        toast.error(t("skillDataRequired"));
+        return;
+      }
+
+      const newSkill = {
+        name: customSkill,
+        type: skillType,
+      };
+      const setSkillsStore = [...skillsList, newSkill];
     }
+  };
 
-    const newSkillDto = { name: customSkill, type: skillType };
-    const updatedSkillsList = [...skillsList, newSkillDto.name];
 
-    setProject({
-      ...project,
-      skills: [...project.skills, customSkill],
-    });
 
-    setSkillsList(updatedSkillsList);
-    handleTypeAheadChange("skills", [...project.skills, customSkill]);
-
-    setShowSkillModal(false);
-    setCustomSkill("");
-    setSkillType("");
-    setSkillsInputValue("");
+  const handleTypeTeamAheadChange = (labelKey, selected) => {
+    if (labelKey === "members" && selected.length > 0) {
+      handleShowTeamModal(selected[selected.length - 1]);
+    } else {
+      setTeamStore(selected);
+    }
   };
 
   const handleAddCustomAsset = () => {
@@ -477,15 +515,10 @@ const ProjectNew = () => {
       quantity: asset.quantity,
       notes: asset.notes || "",
     };
-    const updatedAssetsList = [...assetsList, newAsset.name];
+    const updatedAssetsList = [...assetsList, newAsset];
 
-    setProject({
-      ...project,
-      assets: [...project.assets, newAsset],
-    });
-
-    setAssetsList(updatedAssetsList);
-    handleTypeAheadChange("assets", [...project.assets, newAsset]);
+    setCustomAssetList(...customAssetList, newAsset);
+    handleTypeAssetsAheadChange("assets", [...componentsStore, newAsset]);
 
     setShowAssetModal(false);
     resetAsset();
@@ -510,14 +543,10 @@ const ProjectNew = () => {
       const newProjectTeam = { id: selectedUser.id, role: teamType };
       const updatedTeamList = [...teamList, newProjectTeam];
 
-      setTeam({ ...team, team: updatedTeamList })
-
+      setTeamStore(updatedTeamList);
 
       setTeamList(updatedTeamList);
-      handleTypeAheadChange("members", [
-        ...team,
-        selectedUser,
-      ]);
+      handleTypeTeamAheadChange("members", [...teamList, selectedUser]);
 
       setShowTeamModal(false);
       setSelectedUser(null);
@@ -525,18 +554,11 @@ const ProjectNew = () => {
     }
   };
 
-  const handleAddAsset = (assetName) => {
-    const asset = assetsList.find((asset) => asset.name === assetName);
-    if (asset) {
-      setAssetsList([...assetsList, asset]);
-    }
-  };
-
   const handleAssetTypeChange = (e) => {
     if (e.target.value === "Component") {
-      setAssetType(1);
+      setAsset({ type: 1 })
     } else {
-      setAssetType(2);
+      setAsset({ type: 2 })
     }
   };
 
@@ -560,12 +582,16 @@ const ProjectNew = () => {
   };
 
   const validateStep1 = () => {
-    if (
-      !project.title ||
-      !project.description ||
-      !project.keywords.length > 0
-    ) {
-      toast.error(t("projectTitleDescKeywordsRequired"));
+    if (!project.name || !project.description || !project.keywords.length > 0) {
+      toast.error(t("projectNameDescKeywordsRequired"));
+      return false;
+    }
+    return true;
+  };
+
+  const validateStep2 = () => {
+    if (!project.labId) {
+      toast.error(t("labRequired"));
       return false;
     }
     return true;
@@ -573,6 +599,8 @@ const ProjectNew = () => {
 
   const nextStep = () => {
     if (step === 1 && !validateStep1()) {
+      return;
+    } else if (step === 2 && !validateStep2()) {
       return;
     }
     if (step < 3) {
@@ -595,24 +623,25 @@ const ProjectNew = () => {
   };
 
   const handleSubmit = async () => {
-    if (
-      !project.title ||
-      !project.description ||
-      !project.keywords.length > 0
-    ) {
-      toast.error(t("projectTitleDescKeywordsRequired"));
+    if (!project.name || !project.description || !project.keywords.length > 0) {
+      toast.error(t("projectNameDescKeywordsRequired"));
       return;
     }
+    console.log("Project no handle submit:", project);
+    console.log("Team no handle submit:", teamList);
+    console.log("Assets no handle submit:", customAssetList);
+    console.log("Skills no handle submit:", skillsStore);
+
     const projectData = new FormData();
     projectData.append("project", JSON.stringify(project));
     if (teamList.length > 0) {
       projectData.append("team", JSON.stringify(teamList));
     }
     if (assetsList.length > 0) {
-      projectData.append("components", JSON.stringify(assetsList));
+      projectData.append("components", JSON.stringify(customAssetList));
     }
     if (skillsList.length > 0) {
-      projectData.append("skills", JSON.stringify(skillsList));
+      projectData.append("skills", JSON.stringify(skillsStore));
     }
 
     try {
@@ -655,14 +684,14 @@ const ProjectNew = () => {
           >
             <Row style={{ justifyContent: "center" }}>
               <FloatingLabel
-                controlId="floatingTitle"
-                label="Title *"
+                controlId="floatingName"
+                label="Name *"
                 className="mb-3 ps-1"
                 style={{ width: "25rem" }}
               >
                 <Form.Control
                   type="text"
-                  name="title"
+                  name="name"
                   onChange={handleChange}
                   required
                 />
@@ -699,7 +728,7 @@ const ProjectNew = () => {
                   selected={project?.keywords ?? []}
                   onInputChange={handleKeywordInputChange}
                   onChange={(selected) =>
-                    handleTypeAheadChange("keywords", selected)
+                    handleTypeAheadKeywordsChange("keywords", selected)
                   }
                   placeholder="Search or add keyword... *"
                   className="mb-3 ps-1"
@@ -731,9 +760,10 @@ const ProjectNew = () => {
               name="labId"
               className="my-2 ps-1"
               style={{ width: "25rem" }}
-              onChange={handleChange}
+              onChange={handleLabChange}
+              value={selectedLabId} // Ensure the value is correctly set
             >
-              <option value="" disabled selected>
+              <option value="" disabled>
                 {t("chooseLab*")}
               </option>
               {labEnumList.map((lab) => (
@@ -774,7 +804,7 @@ const ProjectNew = () => {
                   selected={project.skills}
                   onInputChange={handleSkillsInputChange}
                   onChange={(selected) =>
-                    handleTypeAheadChange("skills", selected)
+                    handleTypeAheadSkillsChange("skills", selected)
                   }
                   placeholder="Choose your skills..."
                   className="mb-3"
@@ -815,49 +845,18 @@ const ProjectNew = () => {
                       labelKey="label"
                       multiple
                       options={generateTeamOptions()}
-                      selected={team.map((collaborator) => ({
+                      selected={teamStore.map((collaborator) => ({
                         label: `${collaborator.firstName} ${collaborator.lastName}`,
                         ...collaborator,
                       }))}
                       onChange={(selected) =>
-                        handleTypeAheadChange("members", selected)
+                        handleTypeTeamAheadChange("members", selected)
                       }
                       placeholder="Search user..."
                       className="mb-3"
                       style={{ width: "25rem" }}
                     />
                   </FloatingLabel>
-                </Col>
-              </Row>
-              <Row className="mb-3">
-                <Col>
-                  <Form.Select
-                    controlId="floatingMemberCategory"
-                    onChange={(e) => setTeamType(e.target.value)}
-                    style={{ width: "18.5rem" }}
-                  >
-                    <option value="" disabled>
-                      Choose member type
-                    </option>
-                    {projectUserEnumList
-                      .filter(
-                        (userEnum) => userEnum.id === 2 || userEnum.id === 3
-                      )
-                      .map((userEnum) => (
-                        <option key={userEnum.id} value={userEnum.id}>
-                          {formatCategoryName(userEnum.name)}
-                        </option>
-                      ))}
-                  </Form.Select>
-                </Col>
-                <Col>
-                  <Button
-                    className="btn-add"
-                    style={{ width: "5rem" }}
-                    onClick={handleAddMember}
-                  >
-                    Add
-                  </Button>
                 </Col>
               </Row>
               <Row>
@@ -874,35 +873,13 @@ const ProjectNew = () => {
                       selected={project.assets}
                       onInputChange={handleAssetsInputChange}
                       onChange={(selected) =>
-                        handleTypeAheadChange("assets", selected)
+                        handleTypeAssetsAheadChange("assets", selected)
                       }
                       placeholder="Search asset..."
                       className="mb-3"
                       style={{ width: "25rem" }}
                     />
                   </FloatingLabel>
-                </Col>
-              </Row>
-              <Row className="my-3" style={{ width: "25rem" }}>
-                <Col>
-                  <span className="my-2 mx-3">Quantity</span>
-                  <Input
-                    controlId="floatingAssetQuantity"
-                    type="number"
-                    min="1"
-                    className="my-2 ps-1"
-                    style={{ width: "5rem" }}
-                  />
-                </Col>
-                <Col>
-                  <Button
-                    className="btn-add my-2"
-                    style={{ width: "5rem" }}
-                    onClick={handleAddAsset}
-                  >
-                    Add
-                  </Button>
-                  {/* if this component does not exist, a message should appear below this row saying "This asset does not exist. Do you want to create it?" with a button "Create asset" */}
                 </Col>
               </Row>
             </Card>
@@ -962,6 +939,42 @@ const ProjectNew = () => {
 
   return (
     <>
+    <Modal show={showAssetQuantityModal} onHide={() => setShowAssetQuantityModal(false)}>
+    <Modal.Header closeButton className="mt-2 p-4">
+    <Modal.Title style={{ width: "100%", textAlign: "center" }}>
+Choose quantity
+    </Modal.Title>
+    </Modal.Header>
+    <Modal.Body>
+    <Form.Control
+    type="number"
+    placeholder="Enter quantity"
+    value={assetQuantity}
+    onChange={(e) => setAssetQuantity(e.target.value)}
+    className="mb-3 mx-5"
+    style={{ width: "22.5rem" }}
+    />
+    </Modal.Body>
+    <Modal.Footer>
+    <Button
+    variant="secondary"
+    onClick={() => setShowAssetQuantityModal(false)}
+    className="modal-skill-interest-cancel-btn"
+    >
+    Cancel
+    </Button>
+    <Button
+    variant="primary"
+    onClick={() => setAssetQuantity(assetQuantity)}
+    className="modal-skill-interest-save-btn"
+    >
+    Save
+    </Button>
+    </Modal.Footer>
+    </Modal>
+
+
+
       <Modal show={showSkillModal} onHide={() => setShowSkillModal(false)}>
         <Modal.Header closeButton className="mt-2 p-4">
           <Modal.Title style={{ width: "100%", textAlign: "center" }}>
@@ -981,7 +994,7 @@ const ProjectNew = () => {
             controlId="floatingSkill"
             style={{ width: "22.5rem" }}
             className="mb-3 mx-5"
-            onChange={skillsEnumList}
+            onChange={setSkillType}
           >
             <option value="" disabled selected>
               Choose skill category
