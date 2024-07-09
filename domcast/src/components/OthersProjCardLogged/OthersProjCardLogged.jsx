@@ -1,15 +1,58 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Card, Button } from "react-bootstrap";
 import "./OthersProjCardLogged.css";
+import ProjectPrivate from "../ProjectView/ProjectPrivate/ProjectPrivate";
+import ProjectPublic from "../ProjectView/ProjectPublic/ProjectPublic";
+import { userStore } from "../../stores/UserStore";
+import { Base_url_projects } from "../../functions/UsersFunctions";
 
 const OthersProjCardLogged = ({
+  id,
   title,
   lab,
   description,
   vacancies,
   state,
-  link,
 }) => {
+  const loggedUser = userStore((state) => state.loggedUser);
+  const [project, setProject] = useState({});
+
+  useEffect(() => {
+    fetchProject();
+  }, []);
+
+  const fetchProject = async () => {
+    try {
+    const projectResponse = await fetch(`${Base_url_projects}public/${id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        token: loggedUser.sessionToken,
+        id: loggedUser.id,
+      },
+    });
+    const projectData = await projectResponse.json();
+    setProject(projectData);
+    }
+    catch (error) {
+      console.error(error);
+    }
+  };
+
+
+
+  const goToProject = () => {
+    // check if loggedUser is the main manager or a collaborator of the project
+    if (project.mainManager.id === loggedUser.id || project.collaborators.some((collaborator) => collaborator.id === loggedUser.id)) {
+      <ProjectPrivate id={id} />;
+    } else {
+      <ProjectPublic id={id} />;
+    }
+  };
+
+
+
+
   return (
     <Card className="mb-4 projcard-logged" style={{ width: "22rem" }}>
       <Card.Header
@@ -47,7 +90,7 @@ const OthersProjCardLogged = ({
             <h6 className="h6">State: {state}</h6>
           </div>
         </div>
-        <Button href={link} variant="primary" className="custom-button">
+        <Button variant="primary" className="custom-button" onClick={goToProject}>
           More info »
         </Button>
       </Card.Body>
