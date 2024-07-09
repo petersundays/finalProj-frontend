@@ -57,17 +57,14 @@ const ProjectNew = () => {
 
   const [skillsList, setSkillsList] = useState([]);
   const [skillType, setSkillType] = useState(1);
-  const [customSkill, setCustomSkill] = useState(""); 
+  const [customSkill, setCustomSkill] = useState("");
+  const [customSkillList, setCustomSkillList] = useState([]);
   const [skillsInputValue, setSkillsInputValue] = useState("");
   const [showSkillModal, setShowSkillModal] = useState(false);
-  const skillsStore = projectStore((state) => state.skills);
-  const setSkillsStore = projectStore((state) => state.setSkills);
-  const resetSkillsStore = projectStore((state) => state.resetSkills);
 
   const [assetsList, setAssetsList] = useState([]);
   const [assetType, setAssetType] = useState("Component");
   const [assetsInputValue, setAssetsInputValue] = useState("");
-  const [existentAssetsList, setExistentAssetsList] = useState([]);
   const [customAssetList, setCustomAssetList] = useState([]);
   const [customAsset, setCustomAsset] = useState("");
   const [showAssetModal, setShowAssetModal] = useState(false);
@@ -281,7 +278,6 @@ const ProjectNew = () => {
     } catch (error) {
       console.error("Error fetching max users:", error);
     }
-
   };
 
   const handleChange = (e) => {
@@ -294,23 +290,34 @@ const ProjectNew = () => {
     setAsset({ ...asset, [name]: value });
   };
 
-  const handleDateChange = (e) => {
-    const { name, value } = e.target;
-    if (name === "startDate") {
-      setStartDate(value);
-      if (endDate && value > endDate) {
-        toast.error(t("startDateBeforeEndDate"));
-      } else {
-        setProject({ ...project, projectedStartDate: value });
-      }
-    } else if (name === "endDate") {
-      setEndDate(value);
-      if (startDate && value < startDate) {
-        toast.error(t("endDateAfterStartDate"));
-      } else {
-        setProject({ ...project, deadline: value });
-      }
+  const handleStartDateChange = (e) => {
+    const newStartDate = e.target.value;
+    // start date is before today and after the end date
+    if (new Date(newStartDate) > new Date(endDate)) {
+      toast.error(t("startDateAfterEndDate"));
+      return;
+    } else if (new Date(newStartDate) < new Date(new Date().setDate(new Date().getDate() - 1))) {
+      toast.error(t("startDateBeforeYesterday"));
+      return;
+    } 
+    setStartDate(newStartDate);
+    const formattedStartDate = `${newStartDate}T23:59:59`; // Adding time information
+    setProject({ ...project, projectedStartDate: formattedStartDate });
+  };
+  
+  const handleEndDateChange = (e) => {
+    const newEndDate = e.target.value;
+    // end date is before today and before or the same as the start date
+    if (new Date(newEndDate) <= new Date(startDate)) {
+      toast.error(t("endDateBeforeStartDate"));
+      return;
+    } else if (new Date(newEndDate) < new Date()) {
+      toast.error(t("endDateBeforeToday"));
+      return;
     }
+    setEndDate(newEndDate);
+    const formattedEndDate = `${newEndDate}T00:00:00`; // Adding time information
+    setProject({ ...project, deadline: formattedEndDate });
   };
 
   const handleLabChange = (e) => {
@@ -364,18 +371,10 @@ const ProjectNew = () => {
         assetOptions = assetOptions.concat(
           `Add "${assetsInputValue}" as an asset`
         );
-      } else {
-        showAssetQuantityModal(true);
-        const assetId = assetsList.find(
-          (asset) => asset.name === assetsInputValue
-        ).id;
-        const assetQty = assetQuantity;
-        setExistentAssetsList([...existentAssetsList, { id: assetId, qty: assetQty }]);
+      }
+      return assetOptions;
     }
-    return assetOptions;
-  }
-};
-
+  };
 
   const generateTeamOptions = () => {
     return usersList.map((user) => ({
@@ -407,7 +406,10 @@ const ProjectNew = () => {
         setCustomSkill(trimmedInputValue);
         setShowSkillModal(true);
       } else {
-        setSkillsStore({ ...skillsStore, skills: selected });
+        const findSkillId = skillsList.find(
+          (skill) => skill.name === trimmedInputValue
+        ).id;
+        setProject({ ...project, existentSkills: selected, findSkillId });
       }
     }
   };
@@ -429,10 +431,6 @@ const ProjectNew = () => {
     }
   };
 
-  const getAssetQuantityFromModal = () => {
-    return assetQuantity;
-  };
-
   const handleTypeAssetsAheadChange = (labelKey, selected) => {
     if (labelKey === "assets") {
       const trimmedInputValue = assetsInputValue.trim();
@@ -447,38 +445,35 @@ const ProjectNew = () => {
         // Step 1: Find the ID of the selected asset
         const selectedAsset = selected[selected.length - 1];
         const assetId = selectedAsset.id; // Assuming the selected asset has an 'id' property
-  
+
         // Step 2: Show the asset quantity modal
         setShowAssetQuantityModal(true);
-  
+
         // Step 3: Create a constant with the asset ID and quantity
         const assetQuantity = assetQuantity(); // Assuming this function retrieves the quantity from the modal
         const newAsset = { id: assetId, quantity: assetQuantity };
-  
-        // Step 4: Update the customAssetList
-        setCustomAssetList((prevList) => [...prevList, newAsset]);
 
+        // Step 4: Update the customAssetList
+        setProject({ ...project, existentResources: newAsset });
       }
     }
   };
 
   const handleAddCustomSkill = (labelKey, selected) => {
     if (labelKey === "skills") {
-      if (!customSkill) {
+      if (!selected) {
         console.log("Custom skill is missing");
         toast.error(t("skillDataRequired"));
         return;
       }
 
       const newSkill = {
-        name: customSkill,
+        name: selected,
         type: skillType,
       };
-      const setSkillsStore = [...skillsList, newSkill];
+      setCustomSkillList = [...skillsList, newSkill];
     }
   };
-
-
 
   const handleTypeTeamAheadChange = (labelKey, selected) => {
     if (labelKey === "members" && selected.length > 0) {
@@ -556,9 +551,9 @@ const ProjectNew = () => {
 
   const handleAssetTypeChange = (e) => {
     if (e.target.value === "Component") {
-      setAsset({ type: 1 })
+      setAsset({ type: 1 });
     } else {
-      setAsset({ type: 2 })
+      setAsset({ type: 2 });
     }
   };
 
@@ -574,6 +569,9 @@ const ProjectNew = () => {
 
   const handleCancel = () => {
     clearProject();
+    resetTeamStore();
+    resetComponentsStore();
+    setCustomSkillList([]);
     setSkillsList([]);
     setKeywordsList([]);
     setTeamList([]);
@@ -592,6 +590,9 @@ const ProjectNew = () => {
   const validateStep2 = () => {
     if (!project.labId) {
       toast.error(t("labRequired"));
+      return false;
+    } else if (!project.projectedStartDate || !project.deadline) {
+      toast.error(t("datesRequired"));
       return false;
     }
     return true;
@@ -630,7 +631,7 @@ const ProjectNew = () => {
     console.log("Project no handle submit:", project);
     console.log("Team no handle submit:", teamList);
     console.log("Assets no handle submit:", customAssetList);
-    console.log("Skills no handle submit:", skillsStore);
+    console.log("Skills no handle submit:", customSkillList);
 
     const projectData = new FormData();
     projectData.append("project", JSON.stringify(project));
@@ -641,7 +642,7 @@ const ProjectNew = () => {
       projectData.append("components", JSON.stringify(customAssetList));
     }
     if (skillsList.length > 0) {
-      projectData.append("skills", JSON.stringify(skillsStore));
+      projectData.append("skills", JSON.stringify(customSkillList));
     }
 
     try {
@@ -657,7 +658,8 @@ const ProjectNew = () => {
         const newProject = await newProjectResponse.json();
         const newProjectId = newProject.id;
         toast.success(t("projectCreated"));
-        navigate("/myprojects");
+        clearProject();
+        navigate("/domcast/myprojects");
       } else {
         toast.error(t("projectNotCreated"));
       }
@@ -665,14 +667,6 @@ const ProjectNew = () => {
       console.error("Error:", error);
     }
   };
-
-  /*   
--- addAsset tem de incluir sempre a qty a adicionar:
---------- asset existe -> qty < qty na lista de assets => nova qty lista de assets = qty lista de assets - qty a adicionar
---------- asset existe -> qty > qty na lista de assets => nova qty lista de assets = qty lista de assets + (qty a adicionar - qty lista de assets)
---------- asset não existe => nova qty lista de assets = 0
----- lista de assets tem qty = total - qty usada pelos assets dos projetos (é sempre >= 0)
-*/
 
   const renderStep = () => {
     switch (step) {
@@ -764,7 +758,7 @@ const ProjectNew = () => {
               value={selectedLabId} // Ensure the value is correctly set
             >
               <option value="" disabled>
-                {t("chooseLab*")}
+                {t("chooseLab *")}
               </option>
               {labEnumList.map((lab) => (
                 <option key={lab.id} value={lab.id}>
@@ -774,21 +768,23 @@ const ProjectNew = () => {
             </Form.Select>
             <Row className="my-2">
               <Col>
-                <FloatingLabel controlId="floatingStartDate" label="Start Date">
+                <FloatingLabel controlId="floatingStartDate" label="Start Date *">
                   <Form.Control
                     type="date"
                     name="startDate"
-                    onChange={handleDateChange}
+                    value={startDate}
+                    onChange={handleStartDateChange}
                     style={{ width: "11.75rem" }}
                   />
                 </FloatingLabel>
               </Col>
               <Col>
-                <FloatingLabel controlId="floatingEndDate" label="End Date">
+                <FloatingLabel controlId="floatingEndDate" label="End Date *">
                   <Form.Control
                     type="date"
-                    name="endtDate"
-                    onChange={handleDateChange}
+                    name="endDate"
+                    value={endDate}
+                    onChange={handleEndDateChange}
                     style={{ width: "11.75rem" }}
                   />
                 </FloatingLabel>
@@ -801,7 +797,7 @@ const ProjectNew = () => {
                   labelKey="name"
                   multiple
                   options={generateSkillOptions()}
-                  selected={project.skills}
+                  selected={project.existentSkills}
                   onInputChange={handleSkillsInputChange}
                   onChange={(selected) =>
                     handleTypeAheadSkillsChange("skills", selected)
@@ -812,6 +808,17 @@ const ProjectNew = () => {
                 />
               </Col>
             </Row>
+            <span
+              className="d-block text-center"
+              style={{
+                fontSize: "0.8rem",
+                fontStyle: "italic",
+                color: "var(--color-blue-02)",
+                fontWeight: "bold",
+              }}
+            >
+              {t("*mandatoryFields")}
+            </span>
           </Card>
         );
       case 3:
@@ -939,41 +946,42 @@ const ProjectNew = () => {
 
   return (
     <>
-    <Modal show={showAssetQuantityModal} onHide={() => setShowAssetQuantityModal(false)}>
-    <Modal.Header closeButton className="mt-2 p-4">
-    <Modal.Title style={{ width: "100%", textAlign: "center" }}>
-Choose quantity
-    </Modal.Title>
-    </Modal.Header>
-    <Modal.Body>
-    <Form.Control
-    type="number"
-    placeholder="Enter quantity"
-    value={assetQuantity}
-    onChange={(e) => setAssetQuantity(e.target.value)}
-    className="mb-3 mx-5"
-    style={{ width: "22.5rem" }}
-    />
-    </Modal.Body>
-    <Modal.Footer>
-    <Button
-    variant="secondary"
-    onClick={() => setShowAssetQuantityModal(false)}
-    className="modal-skill-interest-cancel-btn"
-    >
-    Cancel
-    </Button>
-    <Button
-    variant="primary"
-    onClick={() => setAssetQuantity(assetQuantity)}
-    className="modal-skill-interest-save-btn"
-    >
-    Save
-    </Button>
-    </Modal.Footer>
-    </Modal>
-
-
+      <Modal
+        show={showAssetQuantityModal}
+        onHide={() => setShowAssetQuantityModal(false)}
+      >
+        <Modal.Header closeButton className="mt-2 p-4">
+          <Modal.Title style={{ width: "100%", textAlign: "center" }}>
+            Choose quantity
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Control
+            type="number"
+            placeholder="Enter quantity"
+            value={assetQuantity}
+            onChange={(e) => setAssetQuantity(e.target.value)}
+            className="mb-3 mx-5"
+            style={{ width: "22.5rem" }}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => setShowAssetQuantityModal(false)}
+            className="modal-skill-interest-cancel-btn"
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={() => setAssetQuantity(assetQuantity)}
+            className="modal-skill-interest-save-btn"
+          >
+            Save
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
       <Modal show={showSkillModal} onHide={() => setShowSkillModal(false)}>
         <Modal.Header closeButton className="mt-2 p-4">
