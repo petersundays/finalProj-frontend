@@ -33,8 +33,10 @@ const ProjectNew = () => {
   const { t } = useTranslation();
   const loggedUser = userStore((state) => state.loggedUser);
   console.log("loggedUser: ", loggedUser);
-  const usersList =
-    userStore.users?.filter((user) => user.id !== loggedUser.id) || [];
+  const usersListFromStore = userStore((state) => state.userList);
+  const usersList = usersListFromStore.filter(
+    (user) => user.id !== loggedUser.id
+  );
 
   const loggedUserToken = loggedUser.sessionToken;
   const loggedUserId = loggedUser.id;
@@ -73,15 +75,16 @@ const ProjectNew = () => {
   const [assetQuantity, setAssetQuantity] = useState(1);
   const [showAssets, setShowAssets] = useState([]);
   const componentsStore = projectStore((state) => state.components);
-  const setComponentsStore = projectStore((state) => state.setComponents);
   const resetComponentsStore = projectStore((state) => state.resetComponents);
+  const [selectedAssetToModal, setSelectedAssetToModal] = useState({});
   const [selectedAssetIdToModal, setSelectedAssetIdToModal] = useState(null);
 
-  const [teamList, setTeamList] = useState([]);
   const [teamType, setTeamType] = useState(3);
-  const [customTeam, setCustomTeam] = useState("");
+  const [showUsers, setShowUsers] = useState([]);
   const [showTeamModal, setShowTeamModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [nameToTeamModal, setNameToTeamModal] = useState("");
+  const [idToTeamModal, setIdToTeamModal] = useState(0);
   const teamStore = projectStore((state) => state.team);
   const setTeamStore = projectStore((state) => state.setTeam);
   const resetTeamStore = projectStore((state) => state.resetTeam);
@@ -154,7 +157,7 @@ const ProjectNew = () => {
     }
 
     try {
-      const projectUserEnumResponse = await fetch(`${Base_url_users}enum`, {
+      const projectUserEnumResponse = await fetch(`${Base_url_projects}user-enum`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -354,21 +357,21 @@ const ProjectNew = () => {
     const skillOptions = skillsList.map((skill) => ({
       name: skill.name || skill,
     }));
-  
+
     if (skillsInputValue.trim().length > 0) {
       const isSkillExist = skillsList.some(
         (skill) =>
           (skill.name || skill).toLowerCase() ===
           skillsInputValue.trim().toLowerCase()
       );
-  
+
       if (!isSkillExist) {
         skillOptions = skillOptions.concat({
           name: `Add "${skillsInputValue}" as a skill`,
         });
       }
     }
-  
+
     return skillOptions;
   };
 
@@ -394,13 +397,15 @@ const ProjectNew = () => {
     return assetsOptions;
   };
 
-
-
   const generateTeamOptions = () => {
-    return usersList.map((user) => ({
-      label: `${user.firstName} ${user.lastName}`,
-      ...user,
+    // Map the users list to show on the options list the firstName and lastName of the users
+    const teamOptions = usersList.map((user) => ({
+      name: `${user.firstName} ${user.lastName}`,
     }));
+
+    console.log("teamOptions:", teamOptions);
+
+    return teamOptions;
   };
 
   const handleMaxMembersChange = (e) => {
@@ -421,7 +426,12 @@ const ProjectNew = () => {
   };
 
   const handleTypeAheadSkillsChange = (labelKey, selected) => {
-    console.log("handleTypeAheadSkillsChange called with labelKey:", labelKey, "and selected:", selected);
+    console.log(
+      "handleTypeAheadSkillsChange called with labelKey:",
+      labelKey,
+      "and selected:",
+      selected
+    );
 
     if (labelKey === "skills") {
       const trimmedInputValue = skillsInputValue.trim();
@@ -441,7 +451,10 @@ const ProjectNew = () => {
           (skill) => skill.name === selected[selected.length - 1].name
         );
         const selectedSkillId = selectedSkill.id;
-        setProject({ ...project, existentSkills: [...project.existentSkills, selectedSkillId] });
+        setProject({
+          ...project,
+          existentSkills: [...project.existentSkills, selectedSkillId],
+        });
       }
     }
   };
@@ -464,7 +477,12 @@ const ProjectNew = () => {
   };
 
   const handleTypeAssetsAheadChange = (labelKey, selected) => {
-    console.log("handleTypeAssetsAheadChange called with labelKey:", labelKey, "and selected:", selected);
+    console.log(
+      "handleTypeAssetsAheadChange called with labelKey:",
+      labelKey,
+      "and selected:",
+      selected
+    );
     if (labelKey === "assets") {
       const trimmedInputValue = assetsInputValue.trim();
       if (
@@ -475,48 +493,103 @@ const ProjectNew = () => {
         setCustomAsset(trimmedInputValue);
         setShowAssetModal(true);
       } else {
-        setShowAssets(selected);
         const selectedString = selected[selected.length - 1].name;
         const [name, brand] = selectedString.split(" by ");
         const selectedAsset = assetsList.find(
-            (asset) => asset.name === name.trim() && asset.brand === brand.trim()
+          (asset) => asset.name === name.trim() && asset.brand === brand.trim()
         );
         if (selectedAsset) {
-            const selectedAssetId = selectedAsset.id;
-            setSelectedAssetIdToModal(selectedAssetId);
-            console.log("Selected asset id:", selectedAssetId);
-            setShowAssetQuantityModal(true);
+          const selectedAssetId = selectedAsset.id;
+          setSelectedAssetToModal(selected);
+          setSelectedAssetIdToModal(selectedAssetId);
+          console.log("Selected asset id:", selectedAssetId);
+          setShowAssetQuantityModal(true);
         } else {
-            console.error("Asset not found");
+          console.error("Asset not found");
         }
+      }
     }
-}
-};
+  };
+
+  const handleTypeTeamAheadChange = (labelKey, selected) => {
+    console.log(
+      "handleTypeTeamAheadChange called with labelKey:",
+      labelKey,
+      "and selected:",
+      selected
+    );
+    if (labelKey === "members" && selected.length > 0) {
+      setNameToTeamModal(selected[selected.length - 1].name);
+      console.log("Selected user name xxx:", selected[selected.length - 1].name);
+      // find the selected user id on the usersList
+      const selectedUser = usersList.find(
+        (user) => user.firstName + " " + user.lastName === selected[0].name
+      );
+      const selectedUserId = selectedUser.id;
+
+      setIdToTeamModal(selectedUserId);
+      console.log("Selected user id xxx:", selectedUserId);
+      setShowTeamModal(true);
+      setShowUsers(selected);
+    }    
+  };
+
   const handleSetProjectAsset = () => {
     if (assetQuantity <= 0) {
       toast.error(t("assetQuantityRequired"));
       return;
     } else {
-      const existentResources = project.existentResources instanceof Map
+      const existentResources =
+        project.existentResources instanceof Map
           ? project.existentResources
           : new Map();
 
-        // Ensure both key and value are integers
-        const parsedAssetId = parseInt(selectedAssetIdToModal, 10);
-        const parsedAssetQuantity = parseInt(assetQuantity, 10);
+      // Ensure both key and value are integers
+      const parsedAssetId = parseInt(selectedAssetIdToModal, 10);
+      const parsedAssetQuantity = parseInt(assetQuantity, 10);
 
-        setProject({
-            ...project,
-            existentResources: new Map([
-                ...existentResources,
-                [parsedAssetId, parsedAssetQuantity],
-            ]),
-        });
-        setShowAssetQuantityModal(false);
-        setAssetQuantity(1);
-  }
+      setProject({
+        ...project,
+        existentResources: new Map([
+          ...existentResources,
+          [parsedAssetId, parsedAssetQuantity],
+        ]),
+      });
+      setShowAssets(selectedAssetToModal);
+      setShowAssetQuantityModal(false);
+      setAssetQuantity(1);
+    }
   };
 
+  const handleCancelQuantityModal = () => {
+    setShowAssetQuantityModal(false);
+    setAssetQuantity(1);
+    setShowAssets([]);
+  };
+
+  
+  const handleAddMember = () => {
+    if (teamStore.length >= maxUsers - 1) {
+      toast.error(t("maxMembersReached"));
+      return;
+    } else {
+      const userId = parseInt(idToTeamModal, 10);
+      const userType = parseInt(teamType, 10);
+
+    setTeamStore([...teamStore, new Map ([
+      [userId, userType]
+    ])]);
+
+    console.log("Team Store:", teamStore);
+
+    setShowTeamModal(false);
+  }
+};
+
+  const handleCloseTeamModal = () => {
+    setShowTeamModal(false);
+    setShowUsers([]);
+  };
 
   const handleAddCustomSkill = (labelKey, selected) => {
     if (labelKey === "skills") {
@@ -531,14 +604,6 @@ const ProjectNew = () => {
         type: skillType,
       };
       setCustomSkillList = [...skillsList, newSkill];
-    }
-  };
-
-  const handleTypeTeamAheadChange = (labelKey, selected) => {
-    if (labelKey === "members" && selected.length > 0) {
-      handleShowTeamModal(selected[selected.length - 1]);
-    } else {
-      setTeamStore(selected);
     }
   };
 
@@ -580,33 +645,7 @@ const ProjectNew = () => {
     setAssetsInputValue("");
   };
 
-  const handleAddMember = () => {
-    if (!selectedUser || !teamType) {
-      console.log("Selected user or team type is missing");
-      toast.error(t("userTypeRequired"));
-      return;
-    } else if (
-      teamList.some((teamMember) => teamMember.id === selectedUser.id)
-    ) {
-      toast.error(t("userAlreadyInTeam"));
-      return;
-    } else if (teamList.length >= maxUsers - 1) {
-      toast.error(t("maxTeamMembersReached"));
-      return;
-    } else {
-      const newProjectTeam = { id: selectedUser.id, role: teamType };
-      const updatedTeamList = [...teamList, newProjectTeam];
 
-      setTeamStore(updatedTeamList);
-
-      setTeamList(updatedTeamList);
-      handleTypeTeamAheadChange("members", [...teamList, selectedUser]);
-
-      setShowTeamModal(false);
-      setSelectedUser(null);
-      setTeamType("");
-    }
-  };
 
   const handleAssetTypeChange = (e) => {
     if (e.target.value === "Component") {
@@ -616,16 +655,6 @@ const ProjectNew = () => {
     }
   };
 
-  const handleShowTeamModal = (user) => {
-    setSelectedUser(user);
-    setShowTeamModal(true);
-  };
-
-  const handleCloseTeamModal = () => {
-    setSelectedUser(null);
-    setShowTeamModal(false);
-  };
-
   const handleCancel = () => {
     clearProject();
     resetTeamStore();
@@ -633,7 +662,7 @@ const ProjectNew = () => {
     setCustomSkillList([]);
     setSkillsList([]);
     setKeywordsList([]);
-    setTeamList([]);
+    setTeamStore([]);
     setAssetsList([]);
     setStep(1);
   };
@@ -688,14 +717,14 @@ const ProjectNew = () => {
       return;
     }
     console.log("Project no handle submit:", project);
-    console.log("Team no handle submit:", teamList);
+    console.log("Team no handle submit:", teamStore);
     console.log("Assets no handle submit:", customAssetList);
     console.log("Skills no handle submit:", customSkillList);
 
     const projectData = new FormData();
     projectData.append("project", JSON.stringify(project));
-    if (teamList.length > 0) {
-      projectData.append("team", JSON.stringify(teamList));
+    if (teamStore.length > 0) {
+      projectData.append("team", JSON.stringify(teamStore));
     }
     if (assetsList.length > 0) {
       projectData.append("components", JSON.stringify(customAssetList));
@@ -912,10 +941,10 @@ const ProjectNew = () => {
                   >
                     <Typeahead
                       id="member-typeahead"
-                      labelKey="label"
+                      labelKey="name"
                       multiple
                       options={generateTeamOptions()}
-                      selected={teamList ?? []}
+                      selected={showUsers ?? []}
                       onChange={(selected) =>
                         handleTypeTeamAheadChange("members", selected)
                       }
@@ -1010,6 +1039,7 @@ const ProjectNew = () => {
         show={showAssetQuantityModal}
         onHide={() => setShowAssetQuantityModal(false)}
         assetid={selectedAssetIdToModal}
+        selected={selectedAssetToModal}
       >
         <Modal.Header closeButton className="mt-2 p-4">
           <Modal.Title style={{ width: "100%", textAlign: "center" }}>
@@ -1029,7 +1059,7 @@ const ProjectNew = () => {
         <Modal.Footer>
           <Button
             variant="secondary"
-            onClick={() => setShowAssetQuantityModal(false)}
+            onClick={handleCancelQuantityModal}
             className="modal-skill-interest-cancel-btn"
           >
             Cancel
@@ -1093,15 +1123,19 @@ const ProjectNew = () => {
         </Modal.Footer>
       </Modal>
 
-      <Modal show={showTeamModal} onHide={handleCloseTeamModal}>
+      <Modal
+        show={showTeamModal}
+        onHide={handleCloseTeamModal}
+        nameToTeamModal={nameToTeamModal}
+        idToTeamModal={idToTeamModal}
+        projectsEnumList={projectUserEnumList}
+        
+      >
         <Modal.Header closeButton className="mt-2 p-4">
           <Modal.Title style={{ width: "100%", textAlign: "center" }}>
-            {selectedUser
-              ? `${selectedUser.firstName} ${selectedUser.lastName}`
-              : ""}
+            <span style={{ color: "var(--color-blue-03)" }}>{nameToTeamModal}</span>
             <p style={{ fontSize: "16px" }}>
-              {" "}
-              will be added to this project, please choose its role
+              Will be added to {project.name} project. Choose its role.
             </p>
           </Modal.Title>
         </Modal.Header>

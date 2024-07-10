@@ -30,7 +30,10 @@ const ProjectUserList = () => {
   const [showMoreProjects, setShowMoreProjects] = useState(6);
   const [numberOfProjects, setNumberOfProjects] = useState(0);
 
-  const { userList, setUserList } = userStore();
+  const userList = userStore((state) => state.userList);
+  const setUserList = userStore((state) => state.setUserList);
+
+  console.log("userList", userList);
 
   useEffect(() => {
     fetchEnums();
