@@ -46,7 +46,7 @@ export const projectStore = create(
         deadline: null,
         keywords: [],
         existentSkills: [],
-        existentResources: {},
+        existentResources: new Map(),
         maxMembers: 4,
       },
       setNewProject: (newProject) => set((state) => ({
@@ -62,7 +62,7 @@ export const projectStore = create(
             deadline: null,
             keywords: [],
             existentSkills: [],
-            existentResources: {},
+            existentResources: new Map(),
             maxMembers: 4,
           },
         }),

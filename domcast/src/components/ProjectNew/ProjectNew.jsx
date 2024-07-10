@@ -61,6 +61,7 @@ const ProjectNew = () => {
   const [customSkillList, setCustomSkillList] = useState([]);
   const [skillsInputValue, setSkillsInputValue] = useState("");
   const [showSkillModal, setShowSkillModal] = useState(false);
+  const [showSkills, setShowSkills] = useState([]);
 
   const [assetsList, setAssetsList] = useState([]);
   const [assetType, setAssetType] = useState("Component");
@@ -70,9 +71,11 @@ const ProjectNew = () => {
   const [showAssetModal, setShowAssetModal] = useState(false);
   const [showAssetQuantityModal, setShowAssetQuantityModal] = useState(false);
   const [assetQuantity, setAssetQuantity] = useState(1);
+  const [showAssets, setShowAssets] = useState([]);
   const componentsStore = projectStore((state) => state.components);
   const setComponentsStore = projectStore((state) => state.setComponents);
   const resetComponentsStore = projectStore((state) => state.resetComponents);
+  const [selectedAssetIdToModal, setSelectedAssetIdToModal] = useState(null);
 
   const [teamList, setTeamList] = useState([]);
   const [teamType, setTeamType] = useState(3);
@@ -190,6 +193,8 @@ const ProjectNew = () => {
       if (assetsResponse.ok) {
         const assetsData = await assetsResponse.json();
         setAssetsList(assetsData);
+        console.log("Assets fetched:", assetsData);
+        console.log("Assets list:", assetsList);
       } else {
         console.error("Error fetching assets");
       }
@@ -296,15 +301,18 @@ const ProjectNew = () => {
     if (new Date(newStartDate) > new Date(endDate)) {
       toast.error(t("startDateAfterEndDate"));
       return;
-    } else if (new Date(newStartDate) < new Date(new Date().setDate(new Date().getDate() - 1))) {
+    } else if (
+      new Date(newStartDate) <
+      new Date(new Date().setDate(new Date().getDate() - 1))
+    ) {
       toast.error(t("startDateBeforeYesterday"));
       return;
-    } 
+    }
     setStartDate(newStartDate);
     const formattedStartDate = `${newStartDate}T23:59:59`; // Adding time information
     setProject({ ...project, projectedStartDate: formattedStartDate });
   };
-  
+
   const handleEndDateChange = (e) => {
     const newEndDate = e.target.value;
     // end date is before today and before or the same as the start date
@@ -343,44 +351,60 @@ const ProjectNew = () => {
   };
 
   const generateSkillOptions = () => {
-    const skillOptions = skillsList.map((skill) => skill.name || skill);
+    const skillOptions = skillsList.map((skill) => ({
+      name: skill.name || skill,
+    }));
+  
     if (skillsInputValue.trim().length > 0) {
       const isSkillExist = skillsList.some(
         (skill) =>
           (skill.name || skill).toLowerCase() ===
           skillsInputValue.trim().toLowerCase()
       );
+  
       if (!isSkillExist) {
-        skillOptions = skillOptions.concat(
-          `Add "${skillsInputValue}" as a skill`
-        );
+        skillOptions = skillOptions.concat({
+          name: `Add "${skillsInputValue}" as a skill`,
+        });
       }
     }
+  
     return skillOptions;
   };
 
   const generateAssetsOptions = () => {
-    const assetOptions = assetsList.map((asset) => asset.name || asset);
+    const assetsOptions = assetsList.map((asset) => ({
+      name: `${asset.name || asset} by ${asset.brand || ""}`,
+    }));
+
     if (assetsInputValue.trim().length > 0) {
       const isAssetExist = assetsList.some(
         (asset) =>
           (asset.name || asset).toLowerCase() ===
           assetsInputValue.trim().toLowerCase()
       );
+
       if (!isAssetExist) {
-        assetOptions = assetOptions.concat(
-          `Add "${assetsInputValue}" as an asset`
-        );
+        assetsOptions = assetsOptions.concat({
+          name: `Add "${assetsInputValue}" as an asset`,
+        });
       }
-      return assetOptions;
     }
+
+    return assetsOptions;
   };
+
+
 
   const generateTeamOptions = () => {
     return usersList.map((user) => ({
       label: `${user.firstName} ${user.lastName}`,
       ...user,
     }));
+  };
+
+  const handleMaxMembersChange = (e) => {
+    setProject({ ...project, maxMembers: e.target.value });
   };
 
   const handleKeywordInputChange = (value) => {
@@ -392,24 +416,32 @@ const ProjectNew = () => {
   };
 
   const handleAssetsInputChange = (value) => {
+    console.log("handleAssetsInputChange called with value:", value);
     setAssetsInputValue(value);
   };
 
   const handleTypeAheadSkillsChange = (labelKey, selected) => {
+    console.log("handleTypeAheadSkillsChange called with labelKey:", labelKey, "and selected:", selected);
+
     if (labelKey === "skills") {
       const trimmedInputValue = skillsInputValue.trim();
+      console.log("trimmedInputValue:", trimmedInputValue);
+
       if (
         trimmedInputValue.length > 0 &&
         selected.length > 0 &&
-        selected[selected.length - 1].startsWith('Add "')
+        selected[selected.length - 1].name.startsWith('Add "')
       ) {
         setCustomSkill(trimmedInputValue);
         setShowSkillModal(true);
       } else {
-        const findSkillId = skillsList.find(
-          (skill) => skill.name === trimmedInputValue
-        ).id;
-        setProject({ ...project, existentSkills: selected, findSkillId });
+        setShowSkills(selected);
+        // find the selected skill id on the skillsList
+        const selectedSkill = skillsList.find(
+          (skill) => skill.name === selected[selected.length - 1].name
+        );
+        const selectedSkillId = selectedSkill.id;
+        setProject({ ...project, existentSkills: [...project.existentSkills, selectedSkillId] });
       }
     }
   };
@@ -432,6 +464,7 @@ const ProjectNew = () => {
   };
 
   const handleTypeAssetsAheadChange = (labelKey, selected) => {
+    console.log("handleTypeAssetsAheadChange called with labelKey:", labelKey, "and selected:", selected);
     if (labelKey === "assets") {
       const trimmedInputValue = assetsInputValue.trim();
       if (
@@ -442,22 +475,48 @@ const ProjectNew = () => {
         setCustomAsset(trimmedInputValue);
         setShowAssetModal(true);
       } else {
-        // Step 1: Find the ID of the selected asset
-        const selectedAsset = selected[selected.length - 1];
-        const assetId = selectedAsset.id; // Assuming the selected asset has an 'id' property
-
-        // Step 2: Show the asset quantity modal
-        setShowAssetQuantityModal(true);
-
-        // Step 3: Create a constant with the asset ID and quantity
-        const assetQuantity = assetQuantity(); // Assuming this function retrieves the quantity from the modal
-        const newAsset = { id: assetId, quantity: assetQuantity };
-
-        // Step 4: Update the customAssetList
-        setProject({ ...project, existentResources: newAsset });
-      }
+        setShowAssets(selected);
+        const selectedString = selected[selected.length - 1].name;
+        const [name, brand] = selectedString.split(" by ");
+        const selectedAsset = assetsList.find(
+            (asset) => asset.name === name.trim() && asset.brand === brand.trim()
+        );
+        if (selectedAsset) {
+            const selectedAssetId = selectedAsset.id;
+            setSelectedAssetIdToModal(selectedAssetId);
+            console.log("Selected asset id:", selectedAssetId);
+            setShowAssetQuantityModal(true);
+        } else {
+            console.error("Asset not found");
+        }
     }
+}
+};
+  const handleSetProjectAsset = () => {
+    if (assetQuantity <= 0) {
+      toast.error(t("assetQuantityRequired"));
+      return;
+    } else {
+      const existentResources = project.existentResources instanceof Map
+          ? project.existentResources
+          : new Map();
+
+        // Ensure both key and value are integers
+        const parsedAssetId = parseInt(selectedAssetIdToModal, 10);
+        const parsedAssetQuantity = parseInt(assetQuantity, 10);
+
+        setProject({
+            ...project,
+            existentResources: new Map([
+                ...existentResources,
+                [parsedAssetId, parsedAssetQuantity],
+            ]),
+        });
+        setShowAssetQuantityModal(false);
+        setAssetQuantity(1);
+  }
   };
+
 
   const handleAddCustomSkill = (labelKey, selected) => {
     if (labelKey === "skills") {
@@ -768,7 +827,10 @@ const ProjectNew = () => {
             </Form.Select>
             <Row className="my-2">
               <Col>
-                <FloatingLabel controlId="floatingStartDate" label="Start Date *">
+                <FloatingLabel
+                  controlId="floatingStartDate"
+                  label="Start Date *"
+                >
                   <Form.Control
                     type="date"
                     name="startDate"
@@ -797,7 +859,7 @@ const ProjectNew = () => {
                   labelKey="name"
                   multiple
                   options={generateSkillOptions()}
-                  selected={project.existentSkills}
+                  selected={showSkills ?? []}
                   onInputChange={handleSkillsInputChange}
                   onChange={(selected) =>
                     handleTypeAheadSkillsChange("skills", selected)
@@ -836,6 +898,7 @@ const ProjectNew = () => {
                     type="number"
                     min="1"
                     max={maxUsers}
+                    onChange={handleMaxMembersChange}
                     className="mb-3 ps-1"
                     style={{ width: "5rem" }}
                   />
@@ -852,10 +915,7 @@ const ProjectNew = () => {
                       labelKey="label"
                       multiple
                       options={generateTeamOptions()}
-                      selected={teamStore.map((collaborator) => ({
-                        label: `${collaborator.firstName} ${collaborator.lastName}`,
-                        ...collaborator,
-                      }))}
+                      selected={teamList ?? []}
                       onChange={(selected) =>
                         handleTypeTeamAheadChange("members", selected)
                       }
@@ -877,7 +937,7 @@ const ProjectNew = () => {
                       labelKey="name"
                       multiple
                       options={generateAssetsOptions()}
-                      selected={project.assets}
+                      selected={showAssets ?? []}
                       onInputChange={handleAssetsInputChange}
                       onChange={(selected) =>
                         handleTypeAssetsAheadChange("assets", selected)
@@ -949,6 +1009,7 @@ const ProjectNew = () => {
       <Modal
         show={showAssetQuantityModal}
         onHide={() => setShowAssetQuantityModal(false)}
+        assetid={selectedAssetIdToModal}
       >
         <Modal.Header closeButton className="mt-2 p-4">
           <Modal.Title style={{ width: "100%", textAlign: "center" }}>
@@ -975,7 +1036,7 @@ const ProjectNew = () => {
           </Button>
           <Button
             variant="primary"
-            onClick={() => setAssetQuantity(assetQuantity)}
+            onClick={handleSetProjectAsset}
             className="modal-skill-interest-save-btn"
           >
             Save

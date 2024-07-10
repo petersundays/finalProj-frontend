@@ -140,6 +140,7 @@ const ProjectUserList = () => {
           const cardsData = projectsList.map((project) => {
             return {
               ...project,
+              id: project.id,
               title: project.name,
               lab: formatName(
                 labList.find((lab) => lab.id === project.labId)?.name

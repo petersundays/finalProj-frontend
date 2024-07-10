@@ -1,23 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { Card, Button } from "react-bootstrap";
 import "./ProjectPublic.css";
-import { userStore } from "../../stores/UserStore";
-import { Base_url_projects } from "../../functions/UsersFunctions";
+import { userStore } from "../../../stores/UserStore";
+import { Base_url_projects } from "../../../functions/UsersFunctions";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { useParams } from "react-router-dom";
 
-const ProjectPublic = ({ id }) => {
+const ProjectPublic = () => {
   const loggedUser = userStore((state) => state.loggedUser);
   const { t } = useTranslation();
   const [project, setProject] = useState({});
+  const { id } = useParams();
 
   useEffect(() => {
+    console.log("loggedUser", loggedUser);
     fetchProject();
+    console.log("project public", project);
   }, []);
 
   const fetchProject = async () => {
     try {
-      const projectResponse = await fetch(`${Base_url_projects}public/${id}`, {
+      const projectResponse = await fetch(`${Base_url_projects}public?id=${id}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -72,7 +76,7 @@ const ProjectPublic = ({ id }) => {
           <span style={{ fontWeight: "bold", color: "var(--color-blue-01)" }}>
             {project.mainManager}
           </span>
-          {project.collaborators.map((member, index) => (
+          {project.projectUsers.map((member, index) => (
             <span
               key={index}
               style={{ color: "var(--color-blue-03)" }}
@@ -86,7 +90,7 @@ const ProjectPublic = ({ id }) => {
           <h6 style={{ fontWeight: "bold", color: "var(--color-yellow-02)" }}>
             Keywords:
           </h6>
-          {project.keywords.name.map((keyword, index) => (
+          {project.keywords.map((keyword, index) => (
             <span
               key={index}
               style={{ color: "var(--color-blue-03)" }}
@@ -100,7 +104,7 @@ const ProjectPublic = ({ id }) => {
           <h6 style={{ fontWeight: "bold", color: "var(--color-yellow-02)" }}>
             Skills:
           </h6>
-          {project.skills.name.map((skill, index) => (
+          {project.skills.map((skill, index) => (
             <span
               key={index}
               style={{ color: "var(--color-blue-03)" }}

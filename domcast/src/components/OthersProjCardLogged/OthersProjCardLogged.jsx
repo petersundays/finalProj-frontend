@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Card, Button } from "react-bootstrap";
+import { Card, Button, Modal } from "react-bootstrap";
 import "./OthersProjCardLogged.css";
 import ProjectPrivate from "../ProjectView/ProjectPrivate/ProjectPrivate";
 import ProjectPublic from "../ProjectView/ProjectPublic/ProjectPublic";
 import { userStore } from "../../stores/UserStore";
-import { Base_url_projects } from "../../functions/UsersFunctions";
+import {
+  Base_url_projects,
+  Base_url_lab,
+} from "../../functions/UsersFunctions";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
 const OthersProjCardLogged = ({
   id,
@@ -14,8 +20,12 @@ const OthersProjCardLogged = ({
   vacancies,
   state,
 }) => {
+  const navigate = useNavigate();
   const loggedUser = userStore((state) => state.loggedUser);
   const [project, setProject] = useState({});
+  const [labsEnum, setLabsEnum] = useState([]);
+  const [stateEnum, setStateEnum] = useState([]);
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetchProject();
@@ -23,35 +33,97 @@ const OthersProjCardLogged = ({
 
   const fetchProject = async () => {
     try {
-    const projectResponse = await fetch(`${Base_url_projects}public/${id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        token: loggedUser.sessionToken,
-        id: loggedUser.id,
-      },
-    });
-    const projectData = await projectResponse.json();
-    setProject(projectData);
-    }
-    catch (error) {
+      const projectResponse = await fetch(
+        `${Base_url_projects}public?id=${id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            token: loggedUser.sessionToken,
+            id: loggedUser.id,
+          },
+        }
+      );
+      const projectData = await projectResponse.json();
+      setProject(projectData);
+      console.log("projectData em cada card", projectData);
+    } catch (error) {
       console.error(error);
     }
   };
 
-
-
-  const goToProject = () => {
+  const goToProject = async () => {
     // check if loggedUser is the main manager or a collaborator of the project
-    if (project.mainManager.id === loggedUser.id || project.collaborators.some((collaborator) => collaborator.id === loggedUser.id)) {
-      <ProjectPrivate id={id} />;
+    const projectUsers = project.projectUsers.map(
+      (projectUser) => projectUser.id
+    );
+    if (
+      project.mainManager.id === loggedUser.id ||
+      projectUsers.includes(loggedUser.id)
+    ) {
+      try {
+        const labsEnumResponse = await fetch(`${Base_url_lab}enum`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            token: loggedUser.sessionToken,
+            id: loggedUser.id,
+          },
+        });
+        const labsEnumData = await labsEnumResponse.json();
+        console.log("labsEnumData", labsEnumData);
+        setLabsEnum(labsEnumData);
+      } catch (error) {
+        console.error(error);
+      }
+
+      try {
+        const projectEnumResponse = await fetch(
+          `${Base_url_projects}state-enum`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const projectEnumData = await projectEnumResponse.json();
+        console.log("projectEnumData", projectEnumData);
+        setStateEnum(projectEnumData);
+      } catch (error) {
+        console.error(error);
+      }
+
+      try {
+        const projectResponse = await fetch(
+          `${Base_url_projects}private?id=${id}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              token: loggedUser.sessionToken,
+              id: loggedUser.id,
+            },
+          }
+        );
+        const projectData = await projectResponse.json();
+        setProject(projectData);
+      } catch (error) {
+        console.log("error", error);
+        console.error(error);
+      }
+
+      navigate(`/domcast/myproject/view/${project.id}`, {
+        state: {
+          project,
+          labsEnum,
+          stateEnum,
+        },
+      });
     } else {
-      <ProjectPublic id={id} />;
+      navigate(`/domcast/project/view/${project.id}`);
     }
   };
-
-
-
 
   return (
     <Card className="mb-4 projcard-logged" style={{ width: "22rem" }}>
@@ -90,7 +162,11 @@ const OthersProjCardLogged = ({
             <h6 className="h6">State: {state}</h6>
           </div>
         </div>
-        <Button variant="primary" className="custom-button" onClick={goToProject}>
+        <Button
+          variant="primary"
+          className="custom-button"
+          onClick={goToProject}
+        >
           More info »
         </Button>
       </Card.Body>

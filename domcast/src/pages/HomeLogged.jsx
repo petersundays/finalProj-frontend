@@ -20,7 +20,8 @@ import ProjectEdit from "../components/ProjectEdit/ProjectEdit";
 import ProjectUserList from "../components/ProjectUserList/ProjectUserList";
 import ProjectGlobalList from "../components/ProjectGlobalList/ProjectGlobalList";
 import ProjectNew from "../components/ProjectNew/ProjectNew";
-import ProjectView from "../components/ProjectView/ProjectView";
+import ProjectPublic from "../components/ProjectView/ProjectPublic/ProjectPublic";
+import ProjectPrivate from "../components/ProjectView/ProjectPrivate/ProjectPrivate";
 import TaskEdit from "../components/TaskEdit/TaskEdit";
 import TaskList from "../components/TaskList/TaskList";
 import TaskNew from "../components/TaskNew/TaskNew";
@@ -28,6 +29,7 @@ import TaskView from "../components/TaskView/TaskView";
 import UserEdit from "../components/UserEdit/UserEdit";
 import UserList from "../components/UserList/UserList";
 import UserView from "../components/UserView/UserView";
+
 
 function HomeLogged() {
   const [show, setShow] = useState(false);
@@ -85,7 +87,8 @@ function HomeLogged() {
                   <Route path="/project/edit/:id" element={<ProjectEdit />} />
                   <Route path="/projects/list" element={<ProjectGlobalList />} />
                   <Route path="/project/new" element={<ProjectNew />} />
-                  <Route path="/project/view/:id" element={<ProjectView />} />
+                  <Route path="/project/view/:id" element={<ProjectPublic />} />
+                  <Route path="/myproject/view/:id" element={<ProjectPrivate />} />
                   <Route path="/task/edit/:id" element={<TaskEdit />} />
                   <Route path="/tasks/list" element={<TaskList />} />
                   <Route path="/task/new" element={<TaskNew />} />
