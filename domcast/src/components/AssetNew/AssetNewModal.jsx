@@ -16,7 +16,7 @@ function AssetNewModal({ show, onHide }) {
     supplier: "",
     supplierContact: "",
     quantity: 1,
-    notes: "",
+    observations: "",
   });
 
   const handleAssetChange = (type) => {
@@ -187,7 +187,7 @@ function AssetNewModal({ show, onHide }) {
             <FloatingLabel controlId="floatingNotes" label="Notes" className="mb-3">
               <Form.Control
                 as="textarea"
-                name="notes"
+                name="observations"
                 value={formData.observations}
                 onChange={handleChange}
                 style={{ resize: "none" }}

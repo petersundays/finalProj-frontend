@@ -14,7 +14,6 @@ import "./ProjectNew.css";
 import OthersProgressBar from "../OthersProgressBar/OthersProgressBar";
 import { userStore } from "../../stores/UserStore.jsx";
 import { projectStore } from "../../stores/ProjectStore.jsx";
-import { assetStore } from "../../stores/AssetStore.jsx";
 import {
   Base_url_admins,
   Base_url_components_resources,
@@ -71,7 +70,7 @@ const ProjectNew = () => {
     supplier: "",
     supplierContact: "",
     quantity: 1,
-    notes: "",
+    observations: "",
   });
   const [assetsList, setAssetsList] = useState([]);
   const [assetType, setAssetType] = useState("Component");
@@ -82,8 +81,6 @@ const ProjectNew = () => {
   const [showAssetQuantityModal, setShowAssetQuantityModal] = useState(false);
   const [assetQuantity, setAssetQuantity] = useState(1);
   const [showAssets, setShowAssets] = useState([]);
-  const componentsStore = projectStore((state) => state.components);
-  const resetComponentsStore = projectStore((state) => state.resetComponents);
   const [selectedAssetToModal, setSelectedAssetToModal] = useState({});
   const [selectedAssetIdToModal, setSelectedAssetIdToModal] = useState(null);
   const [previousSelectedAssets, setPreviousSelectedAssets] = useState([]);
@@ -91,7 +88,6 @@ const ProjectNew = () => {
   const [teamType, setTeamType] = useState(3);
   const [showUsers, setShowUsers] = useState([]);
   const [showTeamModal, setShowTeamModal] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
   const [nameToTeamModal, setNameToTeamModal] = useState("");
   const [idToTeamModal, setIdToTeamModal] = useState(0);
   const [previousSelectedTeam, setPreviousSelectedTeam] = useState([]);
@@ -778,6 +774,10 @@ const ProjectNew = () => {
     setShowUsers([]);
   };
 
+  const handleSkillTypeChange = (e) => {
+    setSkillType(e.target.value);
+  };
+
   const handleAddCustomSkill = () => {
     console.log("Skill type:", skillType);
     if (!skillType) {
@@ -853,7 +853,7 @@ const ProjectNew = () => {
   const handleCancel = () => {
     clearProject();
     setTeamStore([]);
-    resetComponentsStore();
+    setCustomAssetList([]);
     setStartDate("");
     setEndDate("");
     setSelectedLabId("");
@@ -920,7 +920,12 @@ const ProjectNew = () => {
     const projectData = new FormData();
     projectData.append("project", JSON.stringify(project));
     if (teamStore.length > 0) {
-      projectData.append("team", JSON.stringify(teamStore));
+      // Flatten the teamStore array into a single map
+      const teamMap = teamStore.reduce((acc, member) => {
+        acc[member.userId] = member.userType;
+        return acc;
+      }, {});
+      projectData.append("team", JSON.stringify(teamMap));
     }
     if (assetsList.length > 0) {
       projectData.append("components", JSON.stringify(customAssetList));
@@ -1294,7 +1299,7 @@ const ProjectNew = () => {
             style={{ width: "22.5rem" }}
             className="mb-3 mx-5"
             value={skillType}
-            onChange={setSkillType}
+            onChange={handleSkillTypeChange}
           >
             <option value="" disabled>
               Choose skill category
@@ -1529,7 +1534,7 @@ const ProjectNew = () => {
               >
                 <Form.Control
                   as="textarea"
-                  name="notes"
+                  name="observations"
                   value={asset.observations}
                   onChange={handleAssetChange}
                   style={{ resize: "none" }}
