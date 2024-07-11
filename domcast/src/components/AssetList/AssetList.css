@@ -63,13 +63,6 @@ td > a > span {
   color: var(--color-blue-03);
 }
 
-.asset-list-table td:nth-child(5) {
-  width: 10% !important;
-  /* min-width: 10% !important; */
-  color: var(--color-blue-03);
-  text-align: center;
-}
-
 .asset-list-table tbody tr:hover {
   background-color: var(--color-yellow-01);
   color: var(--color-coal);
