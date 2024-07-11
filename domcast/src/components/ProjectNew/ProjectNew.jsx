@@ -58,12 +58,13 @@ const ProjectNew = () => {
   const [keywordsInputValue, setKeywordsInputValue] = useState("");
 
   const [skillsList, setSkillsList] = useState([]);
-  const [skillType, setSkillType] = useState(1);
+  const [skillType, setSkillType] = useState("");
   const [customSkill, setCustomSkill] = useState("");
   const [customSkillList, setCustomSkillList] = useState([]);
   const [skillsInputValue, setSkillsInputValue] = useState("");
   const [showSkillModal, setShowSkillModal] = useState(false);
   const [showSkills, setShowSkills] = useState([]);
+  const [previousSelectedSkills, setPreviousSelectedSkills] = useState([]);
 
   const [assetsList, setAssetsList] = useState([]);
   const [assetType, setAssetType] = useState("Component");
@@ -102,6 +103,9 @@ const ProjectNew = () => {
 
   useEffect(() => {
     console.log("Project state updated:", project);
+    console.log("Custom skill list:", customSkillList);
+    console.log("Custom asset list:", customAssetList);
+    console.log("Team store:", teamStore);
   }, [project]);
 
   useEffect(() => {
@@ -157,14 +161,17 @@ const ProjectNew = () => {
     }
 
     try {
-      const projectUserEnumResponse = await fetch(`${Base_url_projects}user-enum`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          token: loggedUser.sessionToken,
-          id: loggedUser.id,
-        },
-      });
+      const projectUserEnumResponse = await fetch(
+        `${Base_url_projects}user-enum`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            token: loggedUser.sessionToken,
+            id: loggedUser.id,
+          },
+        }
+      );
       if (projectUserEnumResponse.ok) {
         const projectUserData = await projectUserEnumResponse.json();
         setProjectUserEnumList(projectUserData);
@@ -338,7 +345,7 @@ const ProjectNew = () => {
   };
 
   const generateKeywordsOptions = () => {
-    const keywordsOptions = keywordsList.map((keyword) => keyword);
+    let keywordsOptions = keywordsList.map((keyword) => keyword);
     if (keywordsInputValue.trim().length > 0) {
       const isKeywordExists = keywordsList.some(
         (keyword) =>
@@ -354,7 +361,7 @@ const ProjectNew = () => {
   };
 
   const generateSkillOptions = () => {
-    const skillOptions = skillsList.map((skill) => ({
+    let skillOptions = skillsList.map((skill) => ({
       name: skill.name || skill,
     }));
 
@@ -376,7 +383,7 @@ const ProjectNew = () => {
   };
 
   const generateAssetsOptions = () => {
-    const assetsOptions = assetsList.map((asset) => ({
+    let assetsOptions = assetsList.map((asset) => ({
       name: `${asset.name || asset} by ${asset.brand || ""}`,
     }));
 
@@ -444,17 +451,79 @@ const ProjectNew = () => {
       ) {
         setCustomSkill(trimmedInputValue);
         setShowSkillModal(true);
-      } else {
+      } else if (selected.length > 0) {
         setShowSkills(selected);
         // find the selected skill id on the skillsList
         const selectedSkill = skillsList.find(
           (skill) => skill.name === selected[selected.length - 1].name
         );
-        const selectedSkillId = selectedSkill.id;
-        setProject({
-          ...project,
-          existentSkills: [...project.existentSkills, selectedSkillId],
-        });
+        if (selectedSkill) {
+          const selectedSkillId = selectedSkill.id;
+          setProject({
+            ...project,
+            existentSkills: [...project.existentSkills, selectedSkillId],
+          });
+          setPreviousSelectedSkills(selected);
+        }
+      } else {
+        // when user remove a skill from the typeahead input let's remove it from the project.existentSkills or from the customSkillList
+        if (selected.length < previousSelectedSkills.length) {
+          const removedSkill = previousSelectedSkills.find(
+            (skill) => !selected.includes(skill)
+          );
+          console.log("Removed skill:", removedSkill);
+          if (removedSkill.type === undefined) {
+            const removedSkillObj = skillsList.find(
+              (skill) => skill.name === removedSkill.name
+            );
+          
+            if (removedSkillObj) {
+              const removedSkillId = removedSkillObj.id;
+              console.log("Removed skill id:", removedSkillId);
+            setProject({
+              ...project,
+              existentSkills: project.existentSkills.filter(
+                (skillId) => skillId !== removedSkillId
+              ),
+            });
+            console.log("Project existent skills:", project.existentSkills);
+            // remove the skil from the showSkills list
+            setShowSkills((prevShowSkills) =>
+              prevShowSkills.filter((skill) => skill.name !== removedSkill.name)
+            );
+            setPreviousSelectedSkills((prevShowSkills) =>
+              prevShowSkills.filter((skill) => skill.name !== removedSkill.name)
+            );
+          } else {console.error("Skill not found in skillsList");}
+        } else {
+            // remove the skill from the customSkillList and from the showSkills list
+            const removedCustomSkill = customSkillList.find(
+              (skill) => skill.name === removedSkill.name
+            );
+            console.log("Removed custom skill:", removedCustomSkill);
+            if (removedCustomSkill) {
+              setCustomSkillList((prevCustomSkillList) => {
+                const updatedList = prevCustomSkillList.filter(
+                  (skill) => skill.name !== removedCustomSkill.name
+                );
+                console.log("Updated custom skill list:", updatedList);
+                return updatedList;
+                console.log("Updated custom skill list 2:", updatedList);
+              });
+              console.log("Custom skill list 2:", customSkillList);
+              setShowSkills((prevShowSkills) =>
+                prevShowSkills.filter(
+                  (skill) => skill.name !== removedCustomSkill.name
+                )
+              );
+              setPreviousSelectedSkills((prevShowSkills) =>
+                prevShowSkills.filter(
+                  (skill) => skill.name !== removedCustomSkill.name
+                )
+              );
+            }
+          }
+        }
       }
     }
   };
@@ -520,7 +589,10 @@ const ProjectNew = () => {
     );
     if (labelKey === "members" && selected.length > 0) {
       setNameToTeamModal(selected[selected.length - 1].name);
-      console.log("Selected user name xxx:", selected[selected.length - 1].name);
+      console.log(
+        "Selected user name xxx:",
+        selected[selected.length - 1].name
+      );
       // find the selected user id on the usersList
       const selectedUser = usersList.find(
         (user) => user.firstName + " " + user.lastName === selected[0].name
@@ -531,7 +603,7 @@ const ProjectNew = () => {
       console.log("Selected user id xxx:", selectedUserId);
       setShowTeamModal(true);
       setShowUsers(selected);
-    }    
+    }
   };
 
   const handleSetProjectAsset = () => {
@@ -567,7 +639,6 @@ const ProjectNew = () => {
     setShowAssets([]);
   };
 
-  
   const handleAddMember = () => {
     if (teamStore.length >= maxUsers - 1) {
       toast.error(t("maxMembersReached"));
@@ -576,34 +647,44 @@ const ProjectNew = () => {
       const userId = parseInt(idToTeamModal, 10);
       const userType = parseInt(teamType, 10);
 
-    setTeamStore([...teamStore, new Map ([
-      [userId, userType]
-    ])]);
-
-    console.log("Team Store:", teamStore);
-
-    setShowTeamModal(false);
-  }
-};
+      // Update teamStore with a new object instead of a Map
+      setTeamStore([...teamStore, { userId, userType }]);
+      console.log("Team Store:", [...teamStore, { userId, userType }]); // Log the updated state
+      setShowTeamModal(false);
+    }
+  };
 
   const handleCloseTeamModal = () => {
     setShowTeamModal(false);
     setShowUsers([]);
   };
 
-  const handleAddCustomSkill = (labelKey, selected) => {
-    if (labelKey === "skills") {
-      if (!selected) {
-        console.log("Custom skill is missing");
-        toast.error(t("skillDataRequired"));
-        return;
-      }
-
+  const handleAddCustomSkill = () => {
+    console.log("Skill type:", skillType);
+    if (!skillType) {
+      console.log("Skill type is missing");
+      toast.error(t("skillTypeRequired"));
+      return;
+    } else {
       const newSkill = {
-        name: selected,
+        name: customSkill,
         type: skillType,
       };
-      setCustomSkillList = [...skillsList, newSkill];
+      setCustomSkillList((prevCustomSkillList) => {
+        const updatedList = [...prevCustomSkillList, newSkill];
+        console.log("Updated custom skill list:", updatedList);
+        return updatedList;
+      });
+      setShowSkills((prevShowSkills) => [...prevShowSkills, newSkill]);
+      setPreviousSelectedSkills((prevShowSkills) => [
+        ...prevShowSkills,
+        newSkill,
+      ]);
+      setCustomSkill("");
+      setSkillType("");
+      setSkillsInputValue("");
+      console.log("Custom skill list:", customSkillList);
+      setShowSkillModal(false);
     }
   };
 
@@ -645,8 +726,6 @@ const ProjectNew = () => {
     setAssetsInputValue("");
   };
 
-
-
   const handleAssetTypeChange = (e) => {
     if (e.target.value === "Component") {
       setAsset({ type: 1 });
@@ -659,12 +738,13 @@ const ProjectNew = () => {
     clearProject();
     resetTeamStore();
     resetComponentsStore();
+    setStartDate("");
+    setEndDate("");
+    setSelectedLabId("");
+    setShowSkills([]);
     setCustomSkillList([]);
-    setSkillsList([]);
-    setKeywordsList([]);
-    setTeamStore([]);
-    setAssetsList([]);
     setStep(1);
+    // clear all fields and go back to step 1
   };
 
   const validateStep1 = () => {
@@ -1074,7 +1154,11 @@ const ProjectNew = () => {
         </Modal.Footer>
       </Modal>
 
-      <Modal show={showSkillModal} onHide={() => setShowSkillModal(false)}>
+      <Modal
+        show={showSkillModal}
+        onHide={() => setShowSkillModal(false)}
+        customSkill={customSkill}
+      >
         <Modal.Header closeButton className="mt-2 p-4">
           <Modal.Title style={{ width: "100%", textAlign: "center" }}>
             Add Custom Skill
@@ -1093,9 +1177,10 @@ const ProjectNew = () => {
             controlId="floatingSkill"
             style={{ width: "22.5rem" }}
             className="mb-3 mx-5"
+            value={skillType}
             onChange={setSkillType}
           >
-            <option value="" disabled selected>
+            <option value="" disabled>
               Choose skill category
             </option>
             {skillsEnumList.map((category) => (
@@ -1129,11 +1214,12 @@ const ProjectNew = () => {
         nameToTeamModal={nameToTeamModal}
         idToTeamModal={idToTeamModal}
         projectsEnumList={projectUserEnumList}
-        
       >
         <Modal.Header closeButton className="mt-2 p-4">
           <Modal.Title style={{ width: "100%", textAlign: "center" }}>
-            <span style={{ color: "var(--color-blue-03)" }}>{nameToTeamModal}</span>
+            <span style={{ color: "var(--color-blue-03)" }}>
+              {nameToTeamModal}
+            </span>
             <p style={{ fontSize: "16px" }}>
               Will be added to {project.name} project. Choose its role.
             </p>
