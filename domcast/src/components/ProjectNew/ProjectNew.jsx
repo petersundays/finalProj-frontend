@@ -90,6 +90,7 @@ const ProjectNew = () => {
   const setTeamStore = projectStore((state) => state.setTeam);
   const resetTeamStore = projectStore((state) => state.resetTeam);
 
+
   const [skillsEnumList, setSkillsEnumList] = useState([]);
   const [labEnumList, setLabEnumList] = useState([]);
   const [selectedLabId, setSelectedLabId] = useState("");
@@ -528,6 +529,64 @@ const ProjectNew = () => {
     }
   };
 
+  const handleTypeTeamAheadChange = (labelKey, selected) => {
+    console.log(
+      "handleTypeTeamAheadChange called with labelKey:",
+      labelKey,
+      "and selected:",
+      selected
+    );
+    if (labelKey === "members" && selected.length > 0) {
+      setNameToTeamModal(selected[selected.length - 1].name);
+      console.log(
+        "Selected user name xxx:",
+        selected[selected.length - 1].name
+      );
+      // find the selected user id on the usersList
+      const selectedUser = usersList.find(
+        (user) => user.firstName + " " + user.lastName === selected[0].name
+      );
+      const selectedUserId = selectedUser.id;
+
+      setIdToTeamModal(selectedUserId);
+      console.log("Selected user id xxx:", selectedUserId);
+      setShowTeamModal(true);
+      setShowUsers(selected);
+    } else {
+      // when user remove a user from the typeahead input let's remove it from the teamStore
+      if (selected.length < showUsers.length) {
+        const removedUser = showUsers.find(
+          (user) => !selected.includes(user)
+        );
+        console.log("Removed user:", removedUser);
+
+          console.log("Removed user name:", removedUser.name);
+          //find user id by firstName and lastName
+          const removedUserId = usersList.find(
+            (user) => user.firstName + " " + user.lastName === removedUser.name
+          ).id;
+          console.log("Removed user id:", removedUserId);
+/*        remove the entry id: removedUserId from the teamStore which is a Map, where id is the key and the value is the userType;
+          setTeamStore is a function that updates the teamStore which is a Map initiliazed on projectStore */
+          setTeamStore((prevTeamStore) => {
+            const updatedTeamStore = new Map(prevTeamStore);
+            updatedTeamStore.delete(removedUserId);
+            console.log("Updated team store:", updatedTeamStore);
+            return updatedTeamStore;
+          });
+
+
+          console.log("Team store:", teamStore);
+          // remove the user from the showUsers list
+          setShowUsers((prevShowUsers) =>
+            prevShowUsers.filter((user) => user.name !== removedUser.name)
+          );
+        
+      }
+    }
+  };
+
+
   const handleTypeAheadKeywordsChange = (labelKey, selected) => {
     if (labelKey === "keywords") {
       const trimmedInputValue = keywordsInputValue.trim();
@@ -580,31 +639,6 @@ const ProjectNew = () => {
     }
   };
 
-  const handleTypeTeamAheadChange = (labelKey, selected) => {
-    console.log(
-      "handleTypeTeamAheadChange called with labelKey:",
-      labelKey,
-      "and selected:",
-      selected
-    );
-    if (labelKey === "members" && selected.length > 0) {
-      setNameToTeamModal(selected[selected.length - 1].name);
-      console.log(
-        "Selected user name xxx:",
-        selected[selected.length - 1].name
-      );
-      // find the selected user id on the usersList
-      const selectedUser = usersList.find(
-        (user) => user.firstName + " " + user.lastName === selected[0].name
-      );
-      const selectedUserId = selectedUser.id;
-
-      setIdToTeamModal(selectedUserId);
-      console.log("Selected user id xxx:", selectedUserId);
-      setShowTeamModal(true);
-      setShowUsers(selected);
-    }
-  };
 
   const handleSetProjectAsset = () => {
     if (assetQuantity <= 0) {
