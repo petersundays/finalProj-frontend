@@ -1,124 +1,80 @@
-import React, { useState, useMemo } from "react";
-import { Container, Row, Col, Form, Button, Table } from "react-bootstrap";
-import { Typeahead } from "react-bootstrap-typeahead";
-import { useTable, useSortBy, useGlobalFilter } from "react-table";
-import "react-bootstrap-typeahead/css/Typeahead.css";
-import "./MessageHubInbox.css";
+import React, { useState } from "react";
+import { Card, Table, Button } from "react-bootstrap";
+import "../MessageHub/MessageHub.css";
 
-const MessageHubInbox = ({ data = [] }) => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filterType, setFilterType] = useState("");
-  const [filteredData, setFilteredData] = useState(data || []);
+const MessageHubInbox = ({ data }) => {
+  const [visibleRows, setVisibleRows] = useState(10);
 
-  const columns = useMemo(
-    () => [
-      { Header: "Sender", accessor: "sender" },
-      { Header: "Title", accessor: "title" },
-      { Header: "Date/Hour", accessor: "date" },
-    ],
-    []
-  );
-
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-    setGlobalFilter,
-  } = useTable(
-    {
-      columns,
-      data: filteredData || [],
-      initialState: { sortBy: [{ id: "date", desc: true }] },
-    },
-    useGlobalFilter,
-    useSortBy
-  );
-
-  const handleSearch = (query) => {
-    setSearchQuery(query);
-    setGlobalFilter(query);
-  };
-
-  const handleFilterType = (type) => {
-    setFilterType(type);
-    const filtered = data.filter((item) => item.type === type);
-    setFilteredData(filtered.length ? filtered : data);
-  };
-
-  const handleResetFilter = () => {
-    setFilteredData(data);
-    setFilterType("");
-    setSearchQuery("");
-    setGlobalFilter("");
+  const handleShowMore = () => {
+    setVisibleRows((prev) => Math.min(prev + 10, data.length));
   };
 
   return (
-    <Container>
-      <Row className="mb-3">
-        <Col md={4}>
-          <Typeahead
-            id="search"
-            labelKey="title"
-            onChange={(selected) => handleSearch(selected[0] || "")}
-            options={data ? data.map((item) => item.title) : []}
-            placeholder="Search..."
-            selected={searchQuery ? [searchQuery] : []}
-            onInputChange={handleSearch}
-          />
-        </Col>
-        <Col md={4}>
-          <Form.Select
-            aria-label="Filter by type"
-            onChange={(e) => handleFilterType(e.target.value)}
-            value={filterType}
-          >
-            <option value="">Filter by type</option>
-            <option value="message">Message</option>
-            <option value="projects">Projects</option>
-            <option value="system">System</option>
-          </Form.Select>
-        </Col>
-        <Col md={4}>
-          <Button variant="secondary" onClick={handleResetFilter}>
-            Reset Filter
-          </Button>
-        </Col>
-      </Row>
-      <Table {...getTableProps()} striped bordered hover>
+    <Card className="message-hub-card mt-2 mb-4" style={{ border: "none" }}>
+      <Table className="message-hub-table">
         <thead>
-          {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map((column) => (
-                <th {...column.getHeaderProps(column.getSortByToggleProps())}>
-                  {column.render("Header")}
-                  <span>
-                    {column.isSorted
-                      ? column.isSortedDesc
-                        ? "▼"
-                        : "▲"
-                      : ""}
-                  </span>
-                </th>
-              ))}
+          <tr>
+            <th className="message-hub-header">From</th>
+            <th className="message-hub-header">Title</th>
+            <th className="message-hub-header">Message</th>
+            <th className="message-hub-header">Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.slice(0, visibleRows).map((item, index) => (
+            <tr key={index} className="message-hub-row">
+              <td
+                className="message-hub-cell"
+                style={{
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {item.sender}
+              </td>
+              <td
+                className="message-hub-cell"
+                style={{
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {item.title}
+              </td>
+              <td
+                className="message-hub-cell"
+                style={{
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {item.message}
+              </td>
+              <td className="message-hub-cell">{item.date}</td>
             </tr>
           ))}
-        </thead>
-        <tbody {...getTableBodyProps()}>
-          {rows ? rows.map((row) => {
-            prepareRow(row);
-            return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map((cell) => (
-                  <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
-                ))}
-              </tr>
-            );
-          }) : null}
         </tbody>
       </Table>
-    </Container>
+      {visibleRows < data.length && (
+        <div className="d-flex justify-content-center mb-3">
+          <Button
+            className="custom-show-more-btn mt-2"
+            onClick={handleShowMore}
+            style={{
+              backgroundColor: "var(--color-blue-03)",
+              borderColor: "var(--color-blue-03)",
+              color: "var(--color-white)",
+              fontWeight: "500",
+            }}
+          >
+            Show More
+          </Button>
+        </div>
+      )}
+    </Card>
   );
 };
 

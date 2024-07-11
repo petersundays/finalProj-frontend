@@ -1,8 +1,14 @@
 import React from "react";
 import { Card, Button } from "react-bootstrap";
 import "./OthersProjCardNotLogged.css";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
-const OthersProjCardNotLogged = ({ title, lab, description, state, link }) => {
+const OthersProjCardNotLogged = ({ id, title, lab, description, state }) => {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+
   return (
     <Card className="mb-4 projcard-logged" style={{ width: "22rem" }}>
       <Card.Header
@@ -36,10 +42,6 @@ const OthersProjCardNotLogged = ({ title, lab, description, state, link }) => {
           <div style={{ color: "var(--color-blue-03)" }}>
             <h6 className="h6">State: {state}</h6>
           </div>
-
-          <Button href={link} variant="primary" className="custom-button">
-            More info »
-          </Button>
         </div>
       </Card.Body>
     </Card>

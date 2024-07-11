@@ -1,0 +1,54 @@
+.profile-card-users-list {
+  margin-inline: 3rem;
+}
+
+
+.card-img-top {
+  width: 4rem;
+  height: 4rem;
+  object-fit: cover;
+}
+
+.card-title-profile-card .card-title .h5 {
+  font-size: 18px !important;
+  color: var(--color-blue-01) !important;
+}
+
+.profile-card-users-list {
+  width: 20rem;
+  padding: 0.5rem;
+}
+
+.profile-card-view-profile {
+  background-color: var(--color-blue-03);
+  color: var(--color-white);
+  border-color: var(--color-blue-03);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.profile-card-view-profile:hover {
+  background-color: var(--color-white);
+  border-color: var(--color-blue-03);
+  color: var(--color-blue-03);
+}
+
+.profile-card-send-message {
+  background-color: var(--color-yellow-01);
+  border-color: var(--color-yellow-01);
+  color: var(--color-coal);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.profile-card-send-message:hover {
+  background-color: var(--color-white);
+  border-color: var(--color-yellow-01);
+  color: var(--color-coal);
+}
+
+.profile-card-private-profile {
+  color: var(--color-blue-01);
+  font-size: 14px;
+  font-weight: 500;
+}

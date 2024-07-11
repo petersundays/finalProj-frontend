@@ -183,6 +183,7 @@ const ProjectGlobalList = () => {
           const cardsData = projectsList.map((project) => {
             return {
               ...project,
+              id: project.id,
               title: project.name,
               lab: labList.find((lab) => lab.id === project.labId)?.name,
               description: project.description,

@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
-export const useProjectStore = create(
+export const projectStore = create(
   persist(
     (set) => ({
       detailedProject: {
@@ -38,6 +38,43 @@ export const useProjectStore = create(
             tasks: [],
           },
         }),
+      newProject: {
+        name: "",
+        description: "",
+        labId: null,
+        projectedStartDate: null,
+        deadline: null,
+        keywords: [],
+        existentSkills: [],
+        existentResources: new Map(),
+        maxMembers: 4,
+      },
+      setNewProject: (newProject) => set((state) => ({
+        newProject: { ...state.newProject, ...newProject }
+      })),
+      resetNewProject: () =>
+        set({
+          newProject: {
+            name: "",
+            description: "",
+            labId: "",
+            projectedStartDate: null,
+            deadline: null,
+            keywords: [],
+            existentSkills: [],
+            existentResources: new Map(),
+            maxMembers: 4,
+          },
+        }),
+      team: new Map(),
+      setTeam: (team) => set({ team }),
+      resetTeam: () => set({ team: new Map() }),
+      components: [],
+      setComponents: (components) => set({ components }),
+      resetComponents: () => set({ components: [] }),
+      skills: [],
+      setSkills: (skills) => set({ skills }),
+      resetSkills: () => set({ skills: [] }),
       projects: [],
       setProjects: (projects) => set({ projects }),
       resetProjects: () => set({ projects: [] }),
@@ -46,8 +83,8 @@ export const useProjectStore = create(
       resetVisibleRows: () => set({ visibleRows: 1 }),
     }),
     {
-      name: "project-storage",
-      getStorage: createJSONStorage(),
+      name: "projectStore",
+      storage: createJSONStorage(() => sessionStorage),
     }
   )
 );

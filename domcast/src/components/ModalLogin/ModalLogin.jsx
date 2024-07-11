@@ -54,10 +54,12 @@ function ModalLogin({ show, handleClose }) {
         if (response.ok) {
           const data = await response.json();
           console.log(data);
-          await setLoggedUser(data);
-          console.log(userStore.getState().user);
-          navigate("/domcast/myprojects", { replace: true });
-        } else {
+          setLoggedUser(data);
+          setTimeout(() => {
+            console.log(userStore.getState().loggedUser);
+            navigate("/domcast/myprojects", { replace: true });
+          }, 100);
+          } else {
           console.log("Login failed");
         }
       } catch (error) {

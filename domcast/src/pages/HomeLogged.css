@@ -26,7 +26,7 @@ body,
   height: calc(100vh-56px-56px);
 }
 
-@media (max-width: 992px) {
+@media (maxWidth: 992px) {
   .sidebar {
     display: none;
   }
@@ -136,7 +136,7 @@ body,
   max-height: 80vh; /* Define a altura máxima do Card.Body */
 }
 
-@media (max-width: 992px) {
+@media (maxWidth: 992px) {
   .custom-card {
     width: 95%;
     height: 95%;
