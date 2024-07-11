@@ -46,7 +46,7 @@ const OthersProjCardLogged = ({
       );
       const projectData = await projectResponse.json();
       setProject(projectData);
-      console.log("projectData em cada card", projectData);
+      //console.log("projectData em cada card", projectData);
     } catch (error) {
       console.error(error);
     }
