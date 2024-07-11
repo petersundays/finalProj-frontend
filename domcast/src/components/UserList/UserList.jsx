@@ -4,6 +4,7 @@ import "./UserList.css";
 import { userStore } from "../../stores/UserStore";
 import { useNavigate } from "react-router-dom";
 import UserCard from "../UserCard/UserCard";
+import { Base_url_users } from "../../functions/UsersFunctions";
 
 function UserList() {
   const navigate = useNavigate();
@@ -15,9 +16,40 @@ function UserList() {
   const [showMoreUsers, setShowMoreUsers] = useState(6);
   const visibleCards = usersList.slice(0, visibleRows * 3);
 
-  console.log("usersList:", usersList);
-  console.log("visibleCards:", visibleCards);
-  console.log("Sample user:", usersList[0]);
+  useEffect(() => {
+    fetchUsers();
+  }
+  , []);
+
+  const fetchUsers = async () => {
+    try {
+      const urlUsers = Base_url_users;
+      urlUsers.searchParams.append("workplace", 0);
+      urlUsers.searchParams.append("orderBy", "lab");
+      urlUsers.searchParams.append("orderAsc", "true");
+      urlUsers.searchParams.append("pageSize", 100);
+      urlUsers.searchParams.append("pageNumber", 1);
+
+      const usersResponse = await fetch(urlUsers, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          token: loggedUser.sessionToken,
+          id: loggedUser.id,
+        },
+      });
+      if (usersResponse.ok) {
+        const data = await usersResponse.json();
+        userStore.setState({ userList: data });
+      } else {
+        console.log("Error fetching users");
+      }
+    }
+    catch (error) {
+      console.log("Error fetching users", error);
+    }
+  };
+      
 
   const handleShowMore = () => {
     setShowMoreUsers((prev) => prev + 6);
@@ -41,7 +73,7 @@ function UserList() {
       </Row>
       {visibleCards.length < usersList.length && (
         <div className="text-center">
-          <Button variant="primary" onClick={handleShowMore} className="mt-3">
+          <Button variant="primary" className="custom-show-more-btn my-2" onClick={handleShowMore}>
             Show More
           </Button>
         </div>

@@ -1,17 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Navbar, Container, Nav, NavDropdown } from "react-bootstrap";
 import defaultProfilePic from "../../multimedia/default-profile-pic.png";
 import logo from "../../multimedia/logo/domcast-05-navbar-logo.png";
 import "./MainNavbarLogged.css";
 import { useNavigate } from "react-router-dom";
 import { userStore } from "../../stores/UserStore.jsx";
+import { projectStore } from "../../stores/ProjectStore.jsx";
 import { Base_url_users } from "../../functions/UsersFunctions.jsx";
 import ModalRedefinePassword from "../ModalRedefinePassword/ModalRedefinePassword.jsx";
+import { NotificationWS } from "../../websockets/NotificationWS.jsx";
 
 function MainNavbarLogged({ handleShow, handleLanguageChange, language }) {
   const navigate = useNavigate();
   const loggedUser = userStore((state) => state.loggedUser);
   const clearLoggedUser = userStore((state) => state.clearLoggedUser);
+  const resetDetailedProject = projectStore((state) => state.resetDetailedProject);
+  const resetNewProject = projectStore((state) => state.resetNewProject);
+
+
+  const { ws } = NotificationWS();
 
   const userId = userStore((state) => state.loggedUser.id);
 
@@ -45,6 +52,8 @@ function MainNavbarLogged({ handleShow, handleLanguageChange, language }) {
       if (response.ok) {
         console.log("Logout successful");
         clearLoggedUser();
+        resetDetailedProject();
+        resetNewProject();
         navigate("/", { replace: true });
       } else {
         console.log("Logout failed");

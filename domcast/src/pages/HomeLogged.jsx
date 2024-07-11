@@ -7,7 +7,6 @@ import AdminDashboard from "../components/AdminDashboard/AdminDashboard";
 import AdminProjectsApprovalList from "../components/AdminProjectsApprovalList/AdminProjectsApprovalList";
 import AssetEdit from "../components/AssetEdit/AssetEdit";
 import AssetList from "../components/AssetList/AssetList";
-import AssetNew from "../components/AssetNew/AssetNew";
 import AssetView from "../components/AssetView/AssetView";
 import LogList from "../components/LogList/LogList";
 import LogNew from "../components/LogNew/LogNew";
@@ -16,13 +15,13 @@ import MainFooter from "../components/MainFooter/MainFooter";
 import MainNavbarLogged from "../components/MainNavbarLogged/MainNavbarLogged";
 import MainOffcanvasLogged from "../components/MainOffcanvasLogged/MainOffcanvasLogged";
 import MainSidebar from "../components/MainSidebar/MainSidebar";
-import MessageHubInbox from "../components/MessageHubInbox/MessageHubInbox";
-import MessageHubSent from "../components/MessageHubSent/MessageHubSent";
+import MessageHub from "../components/MessageHub/MessageHub";
 import ProjectEdit from "../components/ProjectEdit/ProjectEdit";
 import ProjectUserList from "../components/ProjectUserList/ProjectUserList";
 import ProjectGlobalList from "../components/ProjectGlobalList/ProjectGlobalList";
 import ProjectNew from "../components/ProjectNew/ProjectNew";
-import ProjectView from "../components/ProjectView/ProjectView";
+import ProjectPublic from "../components/ProjectView/ProjectPublic/ProjectPublic";
+import ProjectPrivate from "../components/ProjectView/ProjectPrivate/ProjectPrivate";
 import TaskEdit from "../components/TaskEdit/TaskEdit";
 import TaskList from "../components/TaskList/TaskList";
 import TaskNew from "../components/TaskNew/TaskNew";
@@ -30,6 +29,7 @@ import TaskView from "../components/TaskView/TaskView";
 import UserEdit from "../components/UserEdit/UserEdit";
 import UserList from "../components/UserList/UserList";
 import UserView from "../components/UserView/UserView";
+
 
 function HomeLogged() {
   const [show, setShow] = useState(false);
@@ -78,18 +78,17 @@ function HomeLogged() {
                   <Route path="/admin-projects/approval-list" element={<AdminProjectsApprovalList />} />
                   <Route path="/asset/edit/:id" element={<AssetEdit />} />
                   <Route path="/assets/list" element={<AssetList />} />
-                  <Route path="/asset/new" element={<AssetNew />} />
                   <Route path="/asset/view/:id" element={<AssetView />} />
                   <Route path="/logs/list" element={<LogList />} />
                   <Route path="/log/new" element={<LogNew />} />
                   <Route path="/log/view/:id" element={<LogView />} />
-                  <Route path="/inbox" element={<MessageHubInbox />} />
-                  <Route path="/sent" element={<MessageHubSent />} />
+                  <Route path="/message-hub/*" element={<MessageHub />} />
                   <Route path="/myprojects" element={<ProjectUserList />} />
                   <Route path="/project/edit/:id" element={<ProjectEdit />} />
                   <Route path="/projects/list" element={<ProjectGlobalList />} />
                   <Route path="/project/new" element={<ProjectNew />} />
-                  <Route path="/project/view/:id" element={<ProjectView />} />
+                  <Route path="/project/view/:id" element={<ProjectPublic />} />
+                  <Route path="/myproject/view/:id" element={<ProjectPrivate />} />
                   <Route path="/task/edit/:id" element={<TaskEdit />} />
                   <Route path="/tasks/list" element={<TaskList />} />
                   <Route path="/task/new" element={<TaskNew />} />

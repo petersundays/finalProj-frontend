@@ -1,0 +1,116 @@
+table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+td > a {
+  display: block;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 100%;
+}
+
+td > a > span {
+  white-space: nowrap;
+}
+
+/* Table Styles */
+.asset-list-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.asset-list-table th,
+.asset-list-table td {
+  border: 1px solid var(--color-blue-01);
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.asset-list-table th {
+  background-color: var(--color-blue-03);
+  color: var(--color-white);
+  height: 3rem;
+}
+
+.asset-list-table td {
+  height: 2rem;
+  text-align: left;
+  padding-inline: 1rem;
+}
+
+.asset-list-table td:first-child {
+  width: 25% !important;
+  /* min-width: 25% !important; */
+  color: var(--color-blue-01);
+}
+
+.asset-list-table td:nth-child(2) {
+  width: 15% !important;
+  /* min-width: 15% !important; */
+  color: var(--color-blue-03);
+}
+
+.asset-list-table td:nth-child(3) {
+  width: 20% !important;
+  /* min-width: 20% !important; */
+  color: var(--color-blue-03);
+}
+
+.asset-list-table td:nth-child(4) {
+  width: 30% !important;
+  /* min-width: 30% !important; */
+  color: var(--color-blue-03);
+}
+
+.asset-list-table tbody tr:hover {
+  background-color: var(--color-yellow-01);
+  color: var(--color-coal);
+}
+
+.asset-list-header {
+  vertical-align: middle;
+}
+
+.asset-list-cell {
+  text-overflow: ellipsis !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+}
+
+.custom-add-asset-btn {
+  background-color: var(--color-yellow-01);
+  color: var(--color-coal);
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.custom-add-asset-btn:hover {
+  background-color: var(--color-yellow-02);
+  color: var(--color-white);
+  border: none;
+}
+
+.modal-add-asset-cancel-btn {
+  background-color: var(--color-grey-02);
+  color: var(--color-white);
+  border: none;
+  cursor: pointer;
+}
+
+.modal-add-asset-cancel-btn:hover {
+  background-color: var(--color-grey-01);
+}
+
+.modal-add-asset-save-btn {
+  background-color: var(--color-yellow-01);
+  color: var(--color-grey-01);
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+}
+
+.modal-add-asset-save-btn:hover {
+  background-color: var(--color-yellow-02);
+}

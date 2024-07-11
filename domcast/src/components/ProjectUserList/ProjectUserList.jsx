@@ -30,7 +30,10 @@ const ProjectUserList = () => {
   const [showMoreProjects, setShowMoreProjects] = useState(6);
   const [numberOfProjects, setNumberOfProjects] = useState(0);
 
-  const { userList, setUserList } = userStore();
+  const userList = userStore((state) => state.userList);
+  const setUserList = userStore((state) => state.setUserList);
+
+  console.log("userList", userList);
 
   useEffect(() => {
     fetchEnums();
@@ -69,6 +72,8 @@ const ProjectUserList = () => {
           const labsData = await labsResponse.json();
           setLabList(labsData);
           console.log("Labs fetched:", labsData);
+        } else {
+          console.error("Error fetching labs:", labsResponse);
         }
       } catch (error) {
         console.error("Error fetching labs:", error);
@@ -85,6 +90,8 @@ const ProjectUserList = () => {
           const projectsData = await projectsResponse.json();
           setProjectStateList(projectsData);
           console.log("Project states fetched:", projectsData);
+        } else {
+          console.error("Error fetching project states:", projectsResponse);
         }
       } catch (error) {
         console.error("Error fetching project states:", error);
@@ -136,6 +143,7 @@ const ProjectUserList = () => {
           const cardsData = projectsList.map((project) => {
             return {
               ...project,
+              id: project.id,
               title: project.name,
               lab: formatName(
                 labList.find((lab) => lab.id === project.labId)?.name

@@ -1,4 +1,4 @@
-@media (max-width: 992px) {
+@media (maxWidth: 992px) {
     .row [class^="col"] {
       width: 100%;
       margin-bottom: 20px;

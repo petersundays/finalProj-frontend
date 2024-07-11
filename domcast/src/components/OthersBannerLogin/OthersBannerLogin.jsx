@@ -7,7 +7,7 @@ function OthersBannerLogin() {
     className="banner py-5 text-center" 
     style={{
         maxWidth: '45rem', 
-        '@media (max-width: 992px)': {
+        '@media (maxWidth: 992px)': {
             width: '80%'
         },
     }}
