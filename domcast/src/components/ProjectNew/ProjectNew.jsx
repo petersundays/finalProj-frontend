@@ -43,10 +43,6 @@ const ProjectNew = () => {
   console.log("loggedUserToken: ", loggedUserToken);
   console.log("loggedUserId", loggedUserId);
 
-  const asset = assetStore.asset;
-  const setAsset = assetStore.setAsset;
-  const resetAsset = assetStore.resetAsset;
-
   const [enumsFetched, setEnumsFetched] = useState(false);
   const [maxUsers, setMaxUsers] = useState(1);
 
@@ -66,6 +62,17 @@ const ProjectNew = () => {
   const [showSkills, setShowSkills] = useState([]);
   const [previousSelectedSkills, setPreviousSelectedSkills] = useState([]);
 
+  const [asset, setAsset] = useState({
+    type: 1,
+    name: "",
+    description: "",
+    partNumber: 0,
+    brand: "",
+    supplier: "",
+    supplierContact: "",
+    quantity: 1,
+    notes: "",
+  });
   const [assetsList, setAssetsList] = useState([]);
   const [assetType, setAssetType] = useState("Component");
   const [assetsInputValue, setAssetsInputValue] = useState("");
@@ -79,6 +86,7 @@ const ProjectNew = () => {
   const resetComponentsStore = projectStore((state) => state.resetComponents);
   const [selectedAssetToModal, setSelectedAssetToModal] = useState({});
   const [selectedAssetIdToModal, setSelectedAssetIdToModal] = useState(null);
+  const [previousSelectedAssets, setPreviousSelectedAssets] = useState([]);
 
   const [teamType, setTeamType] = useState(3);
   const [showUsers, setShowUsers] = useState([]);
@@ -86,10 +94,8 @@ const ProjectNew = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [nameToTeamModal, setNameToTeamModal] = useState("");
   const [idToTeamModal, setIdToTeamModal] = useState(0);
-  const teamStore = projectStore((state) => state.team);
-  const setTeamStore = projectStore((state) => state.setTeam);
-  const resetTeamStore = projectStore((state) => state.resetTeam);
-
+  const [previousSelectedTeam, setPreviousSelectedTeam] = useState([]);
+  const [teamStore, setTeamStore] = useState([]);
 
   const [skillsEnumList, setSkillsEnumList] = useState([]);
   const [labEnumList, setLabEnumList] = useState([]);
@@ -301,11 +307,6 @@ const ProjectNew = () => {
     setProject({ ...project, [name]: value });
   };
 
-  const handleAssetChange = (e) => {
-    const { name, value } = e.target;
-    setAsset({ ...asset, [name]: value });
-  };
-
   const handleStartDateChange = (e) => {
     const newStartDate = e.target.value;
     // start date is before today and after the end date
@@ -433,6 +434,23 @@ const ProjectNew = () => {
     setAssetsInputValue(value);
   };
 
+  const handleTypeAheadKeywordsChange = (labelKey, selected) => {
+    if (labelKey === "keywords") {
+      const trimmedInputValue = keywordsInputValue.trim();
+      if (
+        trimmedInputValue.length > 0 &&
+        selected.length > 0 &&
+        selected[selected.length - 1].startsWith('Add "')
+      ) {
+        const newKeyword = trimmedInputValue;
+        setKeywordsList([...keywordsList, newKeyword]);
+        setProject({ ...project, keywords: [...project.keywords, newKeyword] });
+      } else {
+        setProject({ ...project, keywords: selected });
+      }
+    }
+  };
+
   const handleTypeAheadSkillsChange = (labelKey, selected) => {
     console.log(
       "handleTypeAheadSkillsChange called with labelKey:",
@@ -477,26 +495,32 @@ const ProjectNew = () => {
             const removedSkillObj = skillsList.find(
               (skill) => skill.name === removedSkill.name
             );
-          
+
             if (removedSkillObj) {
               const removedSkillId = removedSkillObj.id;
               console.log("Removed skill id:", removedSkillId);
-            setProject({
-              ...project,
-              existentSkills: project.existentSkills.filter(
-                (skillId) => skillId !== removedSkillId
-              ),
-            });
-            console.log("Project existent skills:", project.existentSkills);
-            // remove the skil from the showSkills list
-            setShowSkills((prevShowSkills) =>
-              prevShowSkills.filter((skill) => skill.name !== removedSkill.name)
-            );
-            setPreviousSelectedSkills((prevShowSkills) =>
-              prevShowSkills.filter((skill) => skill.name !== removedSkill.name)
-            );
-          } else {console.error("Skill not found in skillsList");}
-        } else {
+              setProject({
+                ...project,
+                existentSkills: project.existentSkills.filter(
+                  (skillId) => skillId !== removedSkillId
+                ),
+              });
+              console.log("Project existent skills:", project.existentSkills);
+              // remove the skil from the showSkills list
+              setShowSkills((prevShowSkills) =>
+                prevShowSkills.filter(
+                  (skill) => skill.name !== removedSkill.name
+                )
+              );
+              setPreviousSelectedSkills((prevShowSkills) =>
+                prevShowSkills.filter(
+                  (skill) => skill.name !== removedSkill.name
+                )
+              );
+            } else {
+              console.error("Skill not found in skillsList");
+            }
+          } else {
             // remove the skill from the customSkillList and from the showSkills list
             const removedCustomSkill = customSkillList.find(
               (skill) => skill.name === removedSkill.name
@@ -529,81 +553,6 @@ const ProjectNew = () => {
     }
   };
 
-  const handleTypeTeamAheadChange = (labelKey, selected) => {
-    console.log(
-      "handleTypeTeamAheadChange called with labelKey:",
-      labelKey,
-      "and selected:",
-      selected
-    );
-    if (labelKey === "members" && selected.length > 0) {
-      setNameToTeamModal(selected[selected.length - 1].name);
-      console.log(
-        "Selected user name xxx:",
-        selected[selected.length - 1].name
-      );
-      // find the selected user id on the usersList
-      const selectedUser = usersList.find(
-        (user) => user.firstName + " " + user.lastName === selected[0].name
-      );
-      const selectedUserId = selectedUser.id;
-
-      setIdToTeamModal(selectedUserId);
-      console.log("Selected user id xxx:", selectedUserId);
-      setShowTeamModal(true);
-      setShowUsers(selected);
-    } else {
-      // when user remove a user from the typeahead input let's remove it from the teamStore
-      if (selected.length < showUsers.length) {
-        const removedUser = showUsers.find(
-          (user) => !selected.includes(user)
-        );
-        console.log("Removed user:", removedUser);
-
-          console.log("Removed user name:", removedUser.name);
-          //find user id by firstName and lastName
-          const removedUserId = usersList.find(
-            (user) => user.firstName + " " + user.lastName === removedUser.name
-          ).id;
-          console.log("Removed user id:", removedUserId);
-/*        remove the entry id: removedUserId from the teamStore which is a Map, where id is the key and the value is the userType;
-          setTeamStore is a function that updates the teamStore which is a Map initiliazed on projectStore */
-          setTeamStore((prevTeamStore) => {
-            const updatedTeamStore = new Map(prevTeamStore);
-            updatedTeamStore.delete(removedUserId);
-            console.log("Updated team store:", updatedTeamStore);
-            return updatedTeamStore;
-          });
-
-
-          console.log("Team store:", teamStore);
-          // remove the user from the showUsers list
-          setShowUsers((prevShowUsers) =>
-            prevShowUsers.filter((user) => user.name !== removedUser.name)
-          );
-        
-      }
-    }
-  };
-
-
-  const handleTypeAheadKeywordsChange = (labelKey, selected) => {
-    if (labelKey === "keywords") {
-      const trimmedInputValue = keywordsInputValue.trim();
-      if (
-        trimmedInputValue.length > 0 &&
-        selected.length > 0 &&
-        selected[selected.length - 1].startsWith('Add "')
-      ) {
-        const newKeyword = trimmedInputValue;
-        setKeywordsList([...keywordsList, newKeyword]);
-        setProject({ ...project, keywords: [...project.keywords, newKeyword] });
-      } else {
-        setProject({ ...project, keywords: selected });
-      }
-    }
-  };
-
   const handleTypeAssetsAheadChange = (labelKey, selected) => {
     console.log(
       "handleTypeAssetsAheadChange called with labelKey:",
@@ -616,11 +565,16 @@ const ProjectNew = () => {
       if (
         trimmedInputValue.length > 0 &&
         selected.length > 0 &&
-        selected[selected.length - 1].startsWith('Add "')
+        selected[selected.length - 1].name && // Check if label exists
+        selected[selected.length - 1].name.startsWith('Add "')
       ) {
         setCustomAsset(trimmedInputValue);
+        setAsset({
+          ...asset,
+          name: trimmedInputValue,
+        });
         setShowAssetModal(true);
-      } else {
+      } else if (selected.length > 0) {
         const selectedString = selected[selected.length - 1].name;
         const [name, brand] = selectedString.split(" by ");
         const selectedAsset = assetsList.find(
@@ -635,12 +589,79 @@ const ProjectNew = () => {
         } else {
           console.error("Asset not found");
         }
+      } else {
+        // when user remove an asset from the typeahead input let's remove it from the customAssetList
+        if (selected.length < previousSelectedAssets.length) {
+          const removedAsset = previousSelectedAssets.find(
+            (asset) => !selected.includes(asset)
+          );
+          console.log("Removed asset:", removedAsset);
+          // filter if the removedAsset string includes " by "
+          if (removedAsset.name.includes(" by ")) {
+            // remove the asset with the name and brand from the project.existentResources, the name is before " by " and the brand is after
+            const [name, brand] = removedAsset.name.split(" by ");
+            const removedAssetObj = assetsList.find(
+              (asset) =>
+                asset.name === name.trim() && asset.brand === brand.trim()
+            );
+            // find the selected asset name and brand on the assetsList
+            if (removedAssetObj) {
+              const removedAssetId = removedAssetObj.id;
+              console.log("Removed asset id:", removedAssetId);
+              setProject({
+                ...project,
+                existentResources: new Map(
+                  [...project.existentResources].filter(
+                    ([key, value]) => key !== removedAssetId
+                  )
+                ),
+              });
+              setShowAssets((prevShowAssets) =>
+                prevShowAssets.filter(
+                  (asset) => asset.name !== removedAsset.name
+                )
+              );
+              setPreviousSelectedAssets((prevShowAssets) =>
+                prevShowAssets.filter(
+                  (asset) => asset.name !== removedAsset.name
+                )
+              );
+            } else {
+              console.error("Asset not found in assetsList");
+            }
+          } else {
+            // remove the asset from the customAssetList and from the showAssets list
+            const removedCustomAsset = customAssetList.find(
+              (asset) => asset.name === removedAsset.name
+            );
+            console.log("Removed custom asset:", removedCustomAsset);
+            if (removedCustomAsset) {
+              setCustomAssetList((prevCustomAssetList) => {
+                const updatedList = prevCustomAssetList.filter(
+                  (asset) => asset.name !== removedCustomAsset.name
+                );
+                console.log("Updated custom asset list:", updatedList);
+                return updatedList;
+              });
+              console.log("Custom asset list:", customAssetList);
+              setShowAssets((prevShowAssets) =>
+                prevShowAssets.filter(
+                  (asset) => asset.name !== removedCustomAsset.name
+                )
+              );
+              setPreviousSelectedAssets((prevShowAssets) =>
+                prevShowAssets.filter(
+                  (asset) => asset.name !== removedCustomAsset.name
+                )
+              );
+            }
+          }
+        }
       }
     }
   };
 
-
-  const handleSetProjectAsset = () => {
+  const handleAddAsset = () => {
     if (assetQuantity <= 0) {
       toast.error(t("assetQuantityRequired"));
       return;
@@ -662,6 +683,7 @@ const ProjectNew = () => {
         ]),
       });
       setShowAssets(selectedAssetToModal);
+      setPreviousSelectedAssets(selectedAssetToModal);
       setShowAssetQuantityModal(false);
       setAssetQuantity(1);
     }
@@ -671,6 +693,69 @@ const ProjectNew = () => {
     setShowAssetQuantityModal(false);
     setAssetQuantity(1);
     setShowAssets([]);
+  };
+
+  const handleTypeTeamAheadChange = (labelKey, selected) => {
+    console.log(
+      "handleTypeTeamAheadChange called with labelKey:",
+      labelKey,
+      "and selected:",
+      selected
+    );
+
+    if (labelKey === "members") {
+      if (selected.length > previousSelectedTeam.length) {
+        // Adding a user
+        setNameToTeamModal(selected[selected.length - 1].name);
+        console.log(
+          "Selected user name xxx:",
+          selected[selected.length - 1].name
+        );
+        // Find the selected user id on the usersList
+        const selectedUserId = usersList.find(
+          (user) =>
+            user.firstName + " " + user.lastName ===
+            selected[selected.length - 1].name
+        ).id;
+
+        setIdToTeamModal(selectedUserId);
+        console.log("Selected user id xxx:", selectedUserId);
+        setShowTeamModal(true);
+        setShowUsers(selected);
+        setPreviousSelectedTeam(selected);
+        console.log("Show users:", showUsers);
+      } else {
+        // Removing a user
+        if (selected.length < previousSelectedTeam.length) {
+          const removedUser = previousSelectedTeam.find(
+            (user) => !selected.includes(user)
+          );
+          console.log("Removed user:", removedUser);
+          if (removedUser) {
+            console.log("Removed user name:", removedUser.name);
+            // Find user id by firstName and lastName
+            const removedUserId = usersList.find(
+              (user) =>
+                user.firstName + " " + user.lastName === removedUser.name
+            ).id;
+            if (removedUserId) {
+              console.log("Removed user id:", removedUserId);
+              setTeamStore((prevTeamStore) =>
+                prevTeamStore.filter((user) => user.userId !== removedUserId)
+              );
+              console.log("User removed from team store");
+              setShowUsers((prevShowUsers) =>
+                prevShowUsers.filter((user) => user.name !== removedUser.name)
+              );
+
+              setShowTeamModal(false);
+            } else {
+              console.error("User not found in usersList");
+            }
+          }
+        }
+      }
+    }
   };
 
   const handleAddMember = () => {
@@ -738,39 +823,36 @@ const ProjectNew = () => {
       return;
     }
 
-    const newAsset = {
-      type: assetType,
-      name: asset.name,
-      description: asset.description,
-      partNumber: asset.partNumber,
-      brand: asset.brand,
-      supplier: asset.supplier,
-      supplierContact: asset.supplierContact,
-      quantity: asset.quantity,
-      notes: asset.notes || "",
-    };
-    const updatedAssetsList = [...assetsList, newAsset];
-
-    setCustomAssetList(...customAssetList, newAsset);
-    handleTypeAssetsAheadChange("assets", [...componentsStore, newAsset]);
-
-    setShowAssetModal(false);
-    resetAsset();
-    setAssetType("Component");
+    setCustomAssetList((prevCustomAssetList) => {
+      const updatedList = [...prevCustomAssetList, asset];
+      console.log("Updated custom asset list:", updatedList);
+      return updatedList;
+    });
+    setShowAssets((prevShowAssets) => [...prevShowAssets, asset]);
+    setPreviousSelectedAssets((prevShowAssets) => [...prevShowAssets, asset]);
+    setAsset({ type: 1 });
     setAssetsInputValue("");
+    setShowAssetModal(false);
   };
 
-  const handleAssetTypeChange = (e) => {
-    if (e.target.value === "Component") {
-      setAsset({ type: 1 });
-    } else {
-      setAsset({ type: 2 });
-    }
+  const handleAssetTypeChange = (type) => {
+    setAssetType(type);
+    setAsset({
+      ...asset,
+      type: type === "Component" ? 1 : 2,
+    });
+  };
+
+  const handleAssetChange = (e) => {
+    setAsset({
+      ...asset,
+      [e.target.name]: e.target.value,
+    });
   };
 
   const handleCancel = () => {
     clearProject();
-    resetTeamStore();
+    setTeamStore([]);
     resetComponentsStore();
     setStartDate("");
     setEndDate("");
@@ -1180,7 +1262,7 @@ const ProjectNew = () => {
           </Button>
           <Button
             variant="primary"
-            onClick={handleSetProjectAsset}
+            onClick={handleAddAsset}
             className="modal-skill-interest-save-btn"
           >
             Save
@@ -1297,7 +1379,11 @@ const ProjectNew = () => {
         </Modal.Footer>
       </Modal>
 
-      <Modal show={showAssetModal} onHide={() => setShowAssetModal(false)}>
+      <Modal
+        show={showAssetModal}
+        onHide={() => setShowAssetModal(false)}
+        customAsset={customAsset}
+      >
         <Modal.Header closeButton>
           <Row className="justify-content-center my-2">
             <Modal.Title style={{ color: "var(--color-blue-03)" }}>
@@ -1314,7 +1400,7 @@ const ProjectNew = () => {
                   className={`btn btn-outline-secondary btn-custom-asset ${
                     assetType === "Component" ? "active" : ""
                   }`}
-                  onClick={handleAssetTypeChange}
+                  onClick={() => handleAssetTypeChange("Component")}
                   style={{
                     width: "8rem",
                     height: "3rem",
@@ -1328,7 +1414,7 @@ const ProjectNew = () => {
                   className={`btn btn-outline-secondary btn-custom-asset ${
                     assetType === "Resource" ? "active" : ""
                   }`}
-                  onClick={handleAssetTypeChange}
+                  onClick={() => handleAssetTypeChange("Resource")}
                   style={{
                     width: "8rem",
                     height: "3rem",
@@ -1350,6 +1436,7 @@ const ProjectNew = () => {
                 <Form.Control
                   type="text"
                   name="name"
+                  value={asset.name}
                   onChange={handleAssetChange}
                   required
                 />
@@ -1362,6 +1449,7 @@ const ProjectNew = () => {
                 <Form.Control
                   type="text"
                   name="description"
+                  value={asset.description}
                   onChange={handleAssetChange}
                   required
                 />
@@ -1374,6 +1462,7 @@ const ProjectNew = () => {
                 <Form.Control
                   type="number"
                   name="partNumber"
+                  value={asset.partNumber}
                   onChange={handleAssetChange}
                   required
                 />
@@ -1386,6 +1475,7 @@ const ProjectNew = () => {
                 <Form.Control
                   type="text"
                   name="brand"
+                  value={asset.brand}
                   onChange={handleAssetChange}
                   required
                 />
@@ -1400,6 +1490,7 @@ const ProjectNew = () => {
                 <Form.Control
                   type="text"
                   name="supplier"
+                  value={asset.supplier}
                   onChange={handleAssetChange}
                   required
                 />
@@ -1412,6 +1503,7 @@ const ProjectNew = () => {
                 <Form.Control
                   type="text"
                   name="supplierContact"
+                  value={asset.supplierContact}
                   onChange={handleAssetChange}
                   required
                 />
@@ -1424,6 +1516,7 @@ const ProjectNew = () => {
                 <Form.Control
                   type="number"
                   name="quantity"
+                  value={asset.quantity}
                   onChange={handleAssetChange}
                   min={1}
                   required
@@ -1437,6 +1530,7 @@ const ProjectNew = () => {
                 <Form.Control
                   as="textarea"
                   name="notes"
+                  value={asset.observations}
                   onChange={handleAssetChange}
                   style={{ resize: "none" }}
                 />

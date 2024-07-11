@@ -59,19 +59,9 @@ function MainSidebar() {
         <Nav.Link onClick={() => navigate("/domcast/message-hub")}>
           Message Hub
         </Nav.Link>
-        <Nav.Link onClick={toggleExpandAssets}>
-          Assets<span className="arrow">{expandedAssets ? "▲" : "▼"}</span>
+        <Nav.Link onClick={() => navigate("/domcast/assets/list")}>
+        Assets
         </Nav.Link>
-        {expandedAssets && (
-          <div className="ml-3">
-            <Nav.Link onClick={() => navigate("/domcast/assets/list")}>
-              All Assets
-            </Nav.Link>
-            <Nav.Link onClick={() => navigate("/domcast/asset/new")}>
-              New Asset
-            </Nav.Link>
-          </div>
-        )}
         {loggedUser.type === 300 && (
           <Nav.Link onClick={() => navigate("/domcast/admin-dashboard")}>
             Dashboard

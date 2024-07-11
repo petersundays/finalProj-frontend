@@ -66,3 +66,24 @@
 .modal-team-save-btn:hover {
   background-color: var(--color-yellow-02);
 }
+
+.btn .btn-outline-secondary .btn-custom-asset:active{
+  background-color: var(--color-blue-01) !important;
+  color: var(--color-white) !important;
+  border: var(--color-blue-01) !important;
+  cursor: pointer;
+}
+
+.btn .btn-outline-secondary .btn-custom-asset{
+  background-color: var(--color-white) !important;
+  color: var(--color-blue-04) !important;
+  border: var(--color-blue-01) !important;
+  cursor: pointer;
+}
+
+.btn .btn-outline-secondary .btn-custom-asset:hover{
+  background-color: none !important;
+  color: none !important;
+  border: none !important;
+  cursor: pointer;
+}

@@ -115,20 +115,9 @@ function MainOffcanvasLogged({ show, handleClose }) {
               Message Hub
             </Nav.Link>
             <Nav className="d-flex flex-column justify-content-between sidebarNavbar">
-              <Nav.Link onClick={toggleExpandAssets}>
+              <Nav.Link onClick={() => navigate("/domcast/assets/list")}>
                 Assets
-                <span className="arrow">{expandedAssets ? "▲" : "▼"}</span>
               </Nav.Link>
-              {expandedAssets && (
-                <div className="ml-3">
-                  <Nav.Link onClick={() => navigate("/domcast/assets/list")}>
-                    All Assets
-                  </Nav.Link>
-                  <Nav.Link onClick={() => navigate("/domcast/asset/new")}>
-                    New Asset
-                  </Nav.Link>
-                </div>
-              )}
             </Nav>
             {loggedUser.type === 300 && (
               <Nav.Link onClick={() => navigate("/domcast/admin-dashboard")}>
