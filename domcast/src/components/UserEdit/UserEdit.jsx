@@ -31,19 +31,20 @@ const UserEdit = () => {
   const { t } = useTranslation();
 
   const [skillsList, setSkillsList] = useState([]);
-  const [interestsList, setInterestsList] = useState([]);
   const [customSkill, setCustomSkill] = useState("");
-  const [customInterest, setCustomInterest] = useState("");
   const [skillType, setSkillType] = useState(1);
-  const [interestType, setInterestType] = useState(1);
   const [skillsInputValue, setSkillsInputValue] = useState("");
-  const [interestsInputValue, setInterestsInputValue] = useState("");
   const [customSkillList, setCustomSkillList] = useState([]);
+  const [showSkills, setShowSkills] = useState([]);
+
+  const [interestsList, setInterestsList] = useState([]);
+  const [customInterest, setCustomInterest] = useState("");
+  const [interestType, setInterestType] = useState(1);
+  const [interestsInputValue, setInterestsInputValue] = useState("");
   const [customInterestList, setCustomInterestList] = useState([]);
+  const [showInterests, setShowInterests] = useState([]);
 
   const loggedUser = useStore(userStore, (state) => state.loggedUser);
-  const setLoggedUser = useStore(userStore, (state) => state.setLoggedUser);
-  const clearLoggedUser = useStore(userStore, (state) => state.clearLoggedUser);
   const visibility = useStore(userStore, (state) => state.visibility);
 
   const [labList, setLabList] = useState([]);
@@ -58,124 +59,142 @@ const UserEdit = () => {
   const [photoPreview, setPhotoPreview] = useState(
     loggedUser.photo || defaultProfilePic
   );
+  const [photoToSend, setPhotoToSend] = useState(null);
+
+  const [user, setUser] = useState({
+    firstName: loggedUser.firstName,
+    lastName: loggedUser.lastName,
+    nickname: loggedUser.nickname,
+    biography: loggedUser.biography,
+    workplace: loggedUser.workplace,
+    visible: loggedUser.visible,
+    interests: loggedUser.interests,
+    skills: loggedUser.skills,
+    interestDtos: customInterestList,
+    skillDtos: customSkillList,
+  });
 
 
   useEffect(() => {
-    if (!loggedUser.sessionToken) {
-      clearLoggedUser();
-      navigate("/");
-    }
-
-    const fetchSkills = async () => {
-      try {
-        const skillsResponse = await fetch(`${Base_url_skills}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            token: loggedUser.sessionToken,
-            id: id,
-          },
-        });
-        if (skillsResponse.ok) {
-          const skillsData = await skillsResponse.json();
-          setSkillsList(skillsData);
-          console.log("Skills fetched:", skillsData);
-        }
-      } catch (error) {
-        console.error("Error fetching skills:", error);
-      }
-    };
-
-    const fetchInterests = async () => {
-      try {
-        const interestsResponse = await fetch(`${Base_url_interests}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            token: loggedUser.sessionToken,
-            id: id,
-          },
-        });
-        if (interestsResponse.ok) {
-          const interestsData = await interestsResponse.json();
-          setInterestsList(interestsData);
-          console.log("Interests fetched:", interestsData);
-        }
-      } catch (error) {
-        console.error("Error fetching interests:", error);
-      }
-    };
-
-    const fetchLabs = async () => {
-      try {
-        const labsResponse = await fetch(`${Base_url_lab}enum`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            token: loggedUser.sessionToken,
-            id: id,
-          },
-        });
-        if (labsResponse.ok) {
-          const labsData = await labsResponse.json();
-          setLabList(labsData);
-          console.log("Labs fetched:", labsData);
-        }
-      } catch (error) {
-        console.error("Error fetching labs:", error);
-      }
-    };
-
-    const fetchSkillCategories = async () => {
-      try {
-        const skillCategoriesResponse = await fetch(`${Base_url_skills}enum`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            token: loggedUser.sessionToken,
-            id: id,
-          },
-        });
-        if (skillCategoriesResponse.ok) {
-          const skillCategoriesData = await skillCategoriesResponse.json();
-          setSkillCategoryList(skillCategoriesData);
-          console.log("Skill categories fetched:", skillCategoriesData);
-        }
-      } catch (error) {
-        console.error("Error fetching skill categories:", error);
-      }
-    };
-
-    const fetchInterestCategories = async () => {
-      try {
-        const interestCategoriesResponse = await fetch(
-          `${Base_url_interests}enum`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              token: loggedUser.sessionToken,
-              id: id,
-            },
-          }
-        );
-        if (interestCategoriesResponse.ok) {
-          const interestCategoriesData =
-            await interestCategoriesResponse.json();
-          setInterestCategoryList(interestCategoriesData);
-          console.log("Interest categories fetched:", interestCategoriesData);
-        }
-      } catch (error) {
-        console.error("Error fetching interest categories:", error);
-      }
-    };
-
     fetchSkills();
     fetchInterests();
     fetchLabs();
     fetchSkillCategories();
     fetchInterestCategories();
   }, []);
+
+  useEffect(() => {
+    setShowSkills(user.skills);
+    console.log("showSkills:", user.skills);
+  }, [user.skills]);
+
+  useEffect(() => {
+    setShowInterests(user.interests);
+    console.log("showInterests:", user.interests);
+  }, [user.interests]);
+
+  const fetchSkills = async () => {
+    try {
+      const skillsResponse = await fetch(`${Base_url_skills}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          token: loggedUser.sessionToken,
+          id: id,
+        },
+      });
+      if (skillsResponse.ok) {
+        const skillsData = await skillsResponse.json();
+        setSkillsList(skillsData);
+        console.log("Skills fetched:", skillsData);
+      }
+    } catch (error) {
+      console.error("Error fetching skills:", error);
+    }
+  };
+
+  const fetchInterests = async () => {
+    try {
+      const interestsResponse = await fetch(`${Base_url_interests}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          token: loggedUser.sessionToken,
+          id: id,
+        },
+      });
+      if (interestsResponse.ok) {
+        const interestsData = await interestsResponse.json();
+        setInterestsList(interestsData);
+        console.log("Interests fetched:", interestsData);
+      }
+    } catch (error) {
+      console.error("Error fetching interests:", error);
+    }
+  };
+
+  const fetchLabs = async () => {
+    try {
+      const labsResponse = await fetch(`${Base_url_lab}enum`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          token: loggedUser.sessionToken,
+          id: id,
+        },
+      });
+      if (labsResponse.ok) {
+        const labsData = await labsResponse.json();
+        setLabList(labsData);
+        console.log("Labs fetched:", labsData);
+      }
+    } catch (error) {
+      console.error("Error fetching labs:", error);
+    }
+  };
+
+  const fetchSkillCategories = async () => {
+    try {
+      const skillCategoriesResponse = await fetch(`${Base_url_skills}enum`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          token: loggedUser.sessionToken,
+          id: id,
+        },
+      });
+      if (skillCategoriesResponse.ok) {
+        const skillCategoriesData = await skillCategoriesResponse.json();
+        setSkillCategoryList(skillCategoriesData);
+        console.log("Skill categories fetched:", skillCategoriesData);
+      }
+    } catch (error) {
+      console.error("Error fetching skill categories:", error);
+    }
+  };
+
+  const fetchInterestCategories = async () => {
+    try {
+      const interestCategoriesResponse = await fetch(
+        `${Base_url_interests}enum`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            token: loggedUser.sessionToken,
+            id: id,
+          },
+        }
+      );
+      if (interestCategoriesResponse.ok) {
+        const interestCategoriesData = await interestCategoriesResponse.json();
+        setInterestCategoryList(interestCategoriesData);
+        console.log("Interest categories fetched:", interestCategoriesData);
+      }
+    } catch (error) {
+      console.error("Error fetching interest categories:", error);
+    }
+  };
 
   const formatCategoryName = (name) => {
     return name
@@ -194,7 +213,11 @@ const UserEdit = () => {
   };
 
   const generateSkillOptions = () => {
-    let options = skillsList.map((skill) => skill.name || skill);
+    const userSkills = user.skills.map((skill) => skill.name || skill);
+    let options = skillsList
+      .filter((skill) => !userSkills.includes(skill.name || skill))
+      .map((skill) => skill.name || skill);
+
     if (skillsInputValue.trim().length > 0) {
       const isSkillExist = skillsList.some(
         (skill) =>
@@ -209,7 +232,13 @@ const UserEdit = () => {
   };
 
   const generateInterestOptions = () => {
-    let options = interestsList.map((interest) => interest.name || interest);
+    const userInterests = user.interests.map(
+      (interest) => interest.name || interest
+    );
+    let options = interestsList
+      .filter((interest) => !userInterests.includes(interest.name || interest))
+      .map((interest) => interest.name || interest);
+
     if (interestsInputValue.trim().length > 0) {
       const isInterestExist = interestsList.some(
         (interest) =>
@@ -223,7 +252,7 @@ const UserEdit = () => {
     return options;
   };
 
-  const handleTypeaheadChange = (labelKey, selected) => {
+  const handleTypeaheadSkillsChange = (labelKey, selected) => {
     if (labelKey === "skills") {
       const trimmedInputValue = skillsInputValue.trim();
       if (
@@ -234,9 +263,13 @@ const UserEdit = () => {
         setCustomSkill(trimmedInputValue);
         setShowSkillModal(true);
       } else {
-        setLoggedUser({ ...loggedUser, skills: selected });
+        setUser({ ...user, skills: selected });
       }
-    } else if (labelKey === "interests") {
+    }
+  };
+
+  const handleTypeaheadInterestsChange = (labelKey, selected) => {
+    if (labelKey === "interests") {
       const trimmedInputValue = interestsInputValue.trim();
       if (
         trimmedInputValue.length > 0 &&
@@ -246,7 +279,7 @@ const UserEdit = () => {
         setCustomInterest(trimmedInputValue);
         setShowInterestModal(true);
       } else {
-        setLoggedUser({ ...loggedUser, interests: selected });
+        setUser({ ...user, interests: selected });
       }
     }
   };
@@ -261,15 +294,9 @@ const UserEdit = () => {
     const newSkillDto = { name: customSkill, type: skillType };
     const updatedSkillsList = [...skillsList, newSkillDto];
 
-    setLoggedUser({
-      ...loggedUser,
-      skillDtos: [...loggedUser.skillDtos, newSkillDto],
-      skills: [...loggedUser.skills, customSkill],
-    });
-
     setCustomSkillList([...customSkillList, newSkillDto]);
     setSkillsList(updatedSkillsList);
-    handleTypeaheadChange("skills", [...loggedUser.skills, customSkill]);
+    handleTypeaheadSkillsChange("skills", [...user.skills, customSkill]);
 
     setShowSkillModal(false);
     setCustomSkill("");
@@ -287,16 +314,10 @@ const UserEdit = () => {
     const newInterestDto = { name: customInterest, type: interestType };
     const updatedInterestsList = [...interestsList, newInterestDto];
 
-    setLoggedUser((prevloggedUser) => ({
-      ...prevloggedUser,
-      interestDtos: [...prevloggedUser.interestDtos, newInterestDto], // Ensure you are adding the new interest DTO correctly
-      interests: [...prevloggedUser.interests, customInterest],
-    }));
-
     setCustomInterestList([...customInterestList, newInterestDto]);
     setInterestsList(updatedInterestsList);
-    handleTypeaheadChange("interests", [
-      ...loggedUser.interests,
+    handleTypeaheadInterestsChange("interests", [
+      ...user.interests,
       customInterest,
     ]);
 
@@ -311,13 +332,14 @@ const UserEdit = () => {
     if (file) {
       const photoUrl = URL.createObjectURL(file);
       setPhotoPreview(photoUrl);
-      setLoggedUser({ ...loggedUser, photo: file });
+      setUser({ ...user, photo: file });
+      setPhotoToSend(file);
     }
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setLoggedUser({ ...loggedUser, [name]: value });
+    setUser({ ...user, [name]: value });
   };
 
   const handleSkillCategoryChange = (e) => {
@@ -329,8 +351,27 @@ const UserEdit = () => {
   };
 
   const toggleVisibility = () => {
-    const newVisibility = !loggedUser.visible;
-    setLoggedUser({ visible: newVisibility });
+    const newVisibility = !user.visible;
+    setUser({ visible: newVisibility });
+  };
+
+  const userChangesOrNot = () => {
+    // check if the user attributes are different from the loggedUser attributes, if they are different, the user has made changes
+    if (
+      user.firstName !== loggedUser.firstName ||
+      user.lastName !== loggedUser.lastName ||
+      user.workplace !== loggedUser.workplace ||
+      user.biography !== loggedUser.biography ||
+      user.nickname !== loggedUser.nickname ||
+      user.visible !== loggedUser.visible ||
+      user.interests !== loggedUser.interests ||
+      user.skills !== loggedUser.skills ||
+      customInterestList !== [] ||
+      customSkillList !== []
+    ) {
+      return true;
+    }
+    return false;
   };
 
   // falta testar se os valores obtidos estão corretos (em especial visibility e skills e interests)
@@ -338,49 +379,51 @@ const UserEdit = () => {
 
   const handleSubmit = async () => {
     const formData = new FormData();
-    formData.append("user", JSON.stringify(loggedUser));
-    console.log("User data:", loggedUser);
-    if (loggedUser.photo !== null) {
-      formData.append("photo", loggedUser.photo);
-      console.log("Photo:", loggedUser.photo);
-    }
-    formData.append("skillDtos", JSON.stringify(customSkillList));
-    console.log("skillDtos:", customSkillList);
-
-    formData.append("interestDtos", JSON.stringify(customInterestList));
-    console.log("interestDtos:", customInterestList);
-
-    try {
-      const response = await fetch(`${Base_url_users}`, {
-        method: "PUT",
-        headers: {
-          token: loggedUser.sessionToken,
-          id: id,
-        },
-        body: formData,
-      });
-      if (response.ok) {
-        const data = await response.json();
-        console.log("User updated:", data);
-        toast.success(t("updateSuccess"));
-        setStep(1);
-        navigate(-1);
-      } else {
-        const errorData = await response.json();
-        console.error("Failed to update user:", errorData);
-        toast.error(t("updateFailure"));
+    // Add user fields to formData
+    for (const key in user) {
+      if (user.hasOwnProperty(key)) {
+        formData.append(key, user[key]);
       }
-    } catch (error) {
-      console.error("Error:", error);
-      toast.error(t("updateFailure"));
+    }
+
+    // Add photo to formData if it exists
+    if (photoToSend !== null) {
+      formData.append("photo", photoToSend);
+      console.log("Photo:", photoToSend);
+    } else {
+      console.log("User:", user);
+
+      try {
+        const response = await fetch(`${Base_url_users}`, {
+          method: "PUT",
+          headers: {
+            token: loggedUser.sessionToken,
+            id: loggedUser.id,
+          },
+          body: formData,
+        });
+        if (response.ok) {
+          const data = JSON.parse(data);
+          console.log("Parsed JSON data:", data);
+          toast.success(t("updateSuccess"));
+          setStep(1);
+          navigate(-1);
+        } else {
+          console.error("Failed to update user:", response);
+          toast.error(t("updateFailed"));
+        }
+      } catch (error) {
+        console.error("Error updating user:", error);
+        toast.error(t("updateFailed"));
+      }
     }
   };
 
   const validateStep1 = () => {
     if (
-      loggedUser.firstName === "" ||
-      loggedUser.lastName === "" ||
-      loggedUser.workplace === ""
+      user.firstName === "" ||
+      user.lastName === "" ||
+      user.workplace === ""
     ) {
       console.log("Please fill in all required fields");
       toast.error(t("requiredFieldsMissing"));
@@ -405,7 +448,9 @@ const UserEdit = () => {
   };
 
   const handleCancel = () => {
-    navigate(-1);
+    setCustomInterestList([]);
+    setCustomSkillList([]);
+    setStep(1);
   };
 
   const renderStep = () => {
@@ -466,7 +511,7 @@ const UserEdit = () => {
                     type="text"
                     placeholder="First Name"
                     onChange={handleChange}
-                    value={loggedUser.firstName}
+                    value={user.firstName}
                     required
                   />
                 </FloatingLabel>
@@ -481,7 +526,7 @@ const UserEdit = () => {
                     type="text"
                     placeholder="Last Name"
                     onChange={handleChange}
-                    value={loggedUser.lastName}
+                    value={user.lastName}
                     required
                   />
                 </FloatingLabel>
@@ -490,9 +535,9 @@ const UserEdit = () => {
                   controlid="floatingLab"
                   className="mb-3"
                   style={{ width: "25rem" }}
-                  value={loggedUser.workplace}
+                  value={user.workplace}
                   onChange={(e) =>
-                    setLoggedUser({ ...loggedUser, workplace: e.target.value })
+                    setUser({ ...user, workplace: e.target.value })
                   }
                 >
                   <option value="" disabled>
@@ -540,7 +585,7 @@ const UserEdit = () => {
                     width: "24rem",
                     overflow: "auto",
                   }}
-                  value={loggedUser.biography}
+                  value={user.biography}
                 />
               </FloatingLabel>
             </Row>
@@ -556,7 +601,7 @@ const UserEdit = () => {
                   type="text"
                   placeholder="Nickname"
                   onChange={handleChange}
-                  value={loggedUser.nickname}
+                  value={user.nickname}
                 />
               </FloatingLabel>
             </Row>
@@ -602,10 +647,10 @@ const UserEdit = () => {
                     labelKey="name"
                     multiple
                     options={generateSkillOptions()}
-                    selected={loggedUser.skills}
+                    selected={showSkills}
                     onInputChange={handleSkillsInputChange}
                     onChange={(selected) =>
-                      handleTypeaheadChange("skills", selected)
+                      handleTypeaheadSkillsChange("skills", selected)
                     }
                     placeholder="Choose your skills..."
                     className="mb-3"
@@ -625,10 +670,10 @@ const UserEdit = () => {
                     labelKey="name"
                     multiple
                     options={generateInterestOptions()}
-                    selected={loggedUser.interests}
+                    selected={showInterests}
                     onInputChange={handleInterestsInputChange}
                     onChange={(selected) =>
-                      handleTypeaheadChange("interests", selected)
+                      handleTypeaheadInterestsChange("interests", selected)
                     }
                     placeholder="Choose your interests..."
                     className="mb-3"
