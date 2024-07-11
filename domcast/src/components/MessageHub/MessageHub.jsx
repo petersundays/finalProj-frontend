@@ -1,198 +1,81 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, Button, Row, Col } from "react-bootstrap";
 import "./MessageHub.css";
 import MessageHubSent from "../MessageHubSent/MessageHubSent";
 import MessageHubInbox from "../MessageHubInbox/MessageHubInbox";
+import { useTranslation } from "react-i18next";
+import { Base_url_lab_messages } from "../../functions/UsersFunctions";
+import { userStore } from "../../stores/UserStore.jsx";
 
 const MessageHub = () => {
+  const loggedUser = userStore((state) => state.loggedUser);
+  const { t } = useTranslation();
   const [showInbox, setShowInbox] = useState(true);
 
-  const dataInbox = [
-    {
-      sender: "Sender 1",
-      title: "Title 1",
-      content: "Message 1",
-      timestamp: "2022-01-01",
-      read: false,
-    },
-    {
-      sender: "Sender 2",
-      title: "Title 2",
-      message: "Message 2",
-      date: "2022-01-02",
-    },
-    {
-      sender: "Sender 3",
-      title: "Title 3",
-      message: "Message 3",
-      date: "2022-01-03",
-    },
-    {
-      sender: "Sender 4",
-      title: "Title 4",
-      message: "Message 4",
-      date: "2022-01-04",
-    },
-    {
-      sender: "just because I don't be givin",
-      title: "no man a foot massage",
-      message: "don't make it right for Marsellus to throw Antwone into a glass motherfuckin' house, fuckin' up the way the nigger talks",
-      date: "2022-01-05",
-    },
-    {
-      sender: "Sender 6",
-      title: "Title 6",
-      message: "Message 6",
-      date: "2022-01-06",
-    },
-    {
-      sender: "Sender 7",
-      title: "Title 7",
-      message: "Message 7",
-      date: "2022-01-07",
-    },
-    {
-      sender: "Sender 8",
-      title: "Title 8",
-      message: "Message 8",
-      date: "2022-01-08",
-    },
-    {
-      sender: "Sender 9",
-      title: "Title 9",
-      message: "Message 9",
-      date: "2022-01-09",
-    },
-    {
-      sender: "Sender 10",
-      title: "Title 10",
-      message: "Message 10",
-      date: "2022-01-10",
-    },
-  ];
+  const [dataSent, setDataSent] = useState([]);
+  const [dataInbox, setDataInbox] = useState([]);
 
-  const dataSent = [
-    {
-      receiver: "Receiver 1",
-      title: "Title 1",
-      message: "Message 1",
-      date: "2022-01-01",
-    },
-    {
-      receiver: "Receiver 2",
-      title: "Title 2",
-      message: "Message 2",
-      date: "2022-01-02",
-    },
-    {
-      receiver: "Receiver 3",
-      title: "Title 3",
-      message: "Message 3",
-      date: "2022-01-03",
-    },
-    {
-      receiver: "Receiver 4",
-      title: "Title 4",
-      message: "Message 4",
-      date: "2022-01-04",
-    },
-    {
-      receiver: "Receiver 5",
-      title: "Title 5",
-      message: "Message 5",
-      date: "2022-01-05",
-    },
-    {
-      receiver: "Receiver 6",
-      title: "Title 6",
-      message: "Message 6",
-      date: "2022-01-06",
-    },
-    {
-      receiver: "Receiver 7",
-      title: "Title 7",
-      message: "Message 7",
-      date: "2022-01-07",
-    },
-    {
-      receiver: "Receiver 8",
-      title: "Title 8",
-      message: "Message 8",
-      date: "2022-01-08",
-    },
-    {
-      receiver: "Receiver 9",
-      title: "Title 9",
-      message: "Message 9",
-      date: "2022-01-09",
-    },
-    {
-      receiver: "Receiver 10",
-      title: "Title 10",
-      message: "Message 10",
-      date: "2022-01-10",
-    },
-    {
-      receiver: "Receiver 11",
-      title: "Title 11",
-      message: "Message 11",
-      date: "2022-01-11",
-    },
-    {
-      receiver: "Receiver 12",
-      title: "Title 12",
-      message: "Message 12",
-      date: "2022-01-12",
-    },
-    {
-      receiver: "Receiver 13",
-      title: "Title 13",
-      message: "Message 13",
-      date: "2022-01-13",
-    },
-    {
-      receiver: "Receiver 14",
-      title: "Title 14",
-      message: "Message 14",
-      date: "2022-01-14",
-    },
-    {
-      receiver: "Receiver 15",
-      title: "Title 15",
-      message: "Message 15",
-      date: "2022-01-15",
-    },
-    {
-      receiver: "Receiver 16",
-      title: "Title 16",
-      message: "Message 16",
-      date: "2022-01-16",
-    },
-    {
-      receiver: "Receiver 17",
-      title: "Title 17",
-      message: "Message 17",
-      date: "2022-01-17",
-    },
-    {
-      receiver: "Receiver 18",
-      title: "Title 18",
-      message: "Message 18",
-      date: "2022-01-18",
-    },
-    {
-      receiver: "Receiver 19",
-      title: "Title 19",
-      message: "Message 19",
-      date: "2022-01-19",
-    },
-    {
-      receiver: "Receiver 20",
-      title: "Title 20",
-      message: "Message 20",
-      date: "2022-01-20",
-    },
-  ];
+  useEffect(() => {
+    fetchMessages();
+  }, []);
+
+  const fetchMessages = async () => {
+    try {
+      const sentResponse = await fetch(
+        `${Base_url_lab_messages}personal-sent`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            token: loggedUser.sessionToken,
+            id: loggedUser.id,
+          },
+        }
+      );
+
+      if (sentResponse.ok) {
+        const sent = await sentResponse.json();
+        const formattedSent = sent.map(item => ({
+          receiver: `${item.receiver.firstName} ${item.receiver.lastName}`,
+          title: item.subject,
+          message: item.content,
+          date: item.timestamp.split('T')[0]
+        }));
+        setDataSent(formattedSent);
+        console.log("Sent messages: ", formattedSent);
+      }
+    } catch (error) {
+      console.error("Error fetching sent messages", error);
+    }
+
+    try {
+      const inboxResponse = await fetch(
+        `${Base_url_lab_messages}personal-received`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            token: loggedUser.sessionToken,
+            id: loggedUser.id,
+          },
+        }
+      );
+
+      if (inboxResponse.ok) {
+        const inbox = await inboxResponse.json();
+        const formattedInbox = inbox.map(item => ({
+          sender: `${item.sender.firstName} ${item.sender.lastName}`,
+          title: item.subject,
+          message: item.content,
+          date: item.timestamp.split('T')[0]
+        }));
+        setDataInbox(formattedInbox);
+        console.log("Inbox messages: ", formattedInbox);
+      }
+    } catch (error) {
+      console.error("Error fetching inbox messages", error);
+    }
+  };
 
   const handleInbox = () => {
     setShowInbox(true);

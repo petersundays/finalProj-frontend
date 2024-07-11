@@ -6,12 +6,12 @@ export const userStore = create(
   persist(
     (set) => ({
       unconfirmedUser: {
-        validationToken: '',
-        firstName: '',
-        lastName: '',
-        workplace: '',
-        nickname: '',
-        biography: '',
+        validationToken: "",
+        firstName: "",
+        lastName: "",
+        workplace: "",
+        nickname: "",
+        biography: "",
         visible: false,
         interests: [],
         skills: [],
@@ -22,64 +22,68 @@ export const userStore = create(
       loggedUser: {
         id: null,
         type: null,
-        sessionToken: '',
-        firstName: '',
-        lastName: '',
-        nickname: '',
-        photo: '',
-        biography: '',
+        sessionToken: "",
+        firstName: "",
+        lastName: "",
+        nickname: "",
+        photo: "",
+        biography: "",
         visible: false,
-        workplace: '',
+        workplace: "",
         interests: [],
         skills: [],
       },
+      updatePhoto: null,
       userList: [],
       setUnconfirmedUser: (newUser) =>
         set((state) => ({
           unconfirmedUser: { ...state.unconfirmedUser, ...newUser },
         })),
-        setLoggedUser: (newUser) => set((state) => {
+      setUnconfirmedPhoto: (photo) => set(() => ({ unconfirmedPhoto: photo })),
+      setDefaultUnconfirmedPhoto: () =>
+        set(() => ({ unconfirmedPhoto: defaultProfilePic })),
+      setLoggedUser: (newUser) =>
+        set((state) => {
           const updatedUser = { ...state.loggedUser, ...newUser };
-          console.log('Updated user:', updatedUser); // Check the state here
+          console.log("Updated user:", updatedUser); // Check the state here
           return { loggedUser: updatedUser };
         }),
-      setUnconfirmedPhoto: (photo) => set(() => ({ unconfirmedPhoto: photo })),
-      clearUnconfirmedUser: () => set(() => ({
-        unconfirmedUser: {
-          validationToken: '',
-          firstName: '',
-          lastName: '',
-          workplace: '',
-          nickname: '',
-          biography: '',
-          visible: false,
-          interests: [],
-          skills: [],
-          interestDtos: [],
-          skillDtos: [],
-        },
-        unconfirmedPhoto: defaultProfilePic,
-      })),
-      setDefaultUnconfirmedPhoto: () => set(() => ({ unconfirmedPhoto: defaultProfilePic })),
+      setUserList: (usersData) => set({ userList: usersData }),
+      clearUnconfirmedUser: () =>
+        set(() => ({
+          unconfirmedUser: {
+            validationToken: "",
+            firstName: "",
+            lastName: "",
+            workplace: "",
+            nickname: "",
+            biography: "",
+            visible: false,
+            interests: [],
+            skills: [],
+            interestDtos: [],
+            skillDtos: [],
+          },
+          unconfirmedPhoto: defaultProfilePic,
+        })),
       clearLoggedUser: () => {
         set(() => ({
           loggedUser: {
             id: null,
-            sessionToken: '',
-            firstName: '',
-            lastName: '',
-            nickname: '',
-            photo: '',
-            biography: '',
+            sessionToken: "",
+            firstName: "",
+            lastName: "",
+            nickname: "",
+            photo: "",
+            biography: "",
             visible: false,
-            workplace: '',
+            workplace: "",
             interests: [],
             skills: [],
           },
         }));
-        sessionStorage.removeItem('userStore');
+        sessionStorage.removeItem("userStore");
       },
-      setUserList: (usersData) => set({ userList: usersData }),
     }),
     {
       name: "userStore",

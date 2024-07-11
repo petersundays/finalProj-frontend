@@ -20,7 +20,7 @@ function AssetList() {
   useEffect(() => {
     fetchAssets();
     console.log("Asset Enums: ", assetsEnum);
-  }, []);
+  }, [showAssetNewModal]);
 
   const fetchAssets = async () => {
     try {

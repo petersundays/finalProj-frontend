@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import { Modal, Form, FloatingLabel, Row, Col, Button } from "react-bootstrap";
-import { toast } from "react-toastify";
 import { Base_url_components_resources } from "../../functions/UsersFunctions.jsx";
 import { userStore } from "../../stores/UserStore.jsx";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
 function AssetNewModal({ show, onHide }) {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
   const loggedUser = userStore((state) => state.loggedUser);
   const [assetType, setAssetType] = useState("Component");
   const [formData, setFormData] = useState({
@@ -63,6 +67,7 @@ function AssetNewModal({ show, onHide }) {
       if (assetsResponse.ok) {
         toast.success("Asset added successfully");
         onHide();
+        navigate("/domcast/assets/list")
       } else {
         toast.error("Error adding asset");
       }

@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, Table, Button } from "react-bootstrap";
 import "../MessageHub/MessageHub.css";
+import { useTranslation } from "react-i18next";
 
 const MessageHubSent = ({ data }) => {
+  const { t } = useTranslation();
   const [visibleRows, setVisibleRows] = useState(10);
 
   const handleShowMore = () => {
@@ -23,9 +25,36 @@ const MessageHubSent = ({ data }) => {
         <tbody>
           {data.slice(0, visibleRows).map((item, index) => (
             <tr key={index} className="message-hub-row">
-              <td className="message-hub-cell">{item.receiver}</td>
-              <td className="message-hub-cell">{item.title}</td>
-              <td className="message-hub-cell">{item.message}</td>
+              <td
+                className="message-hub-cell"
+                style={{
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {item.receiver}
+              </td>
+              <td
+                className="message-hub-cell"
+                style={{
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {item.title}
+              </td>
+              <td
+                className="message-hub-cell"
+                style={{
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {item.message}
+              </td>
               <td className="message-hub-cell">{item.date}</td>
             </tr>
           ))}
