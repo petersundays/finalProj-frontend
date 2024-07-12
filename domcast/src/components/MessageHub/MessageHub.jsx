@@ -32,10 +32,11 @@ const MessageHub = () => {
         title: messageReceived.subject,
         message: messageReceived.content,
         date: `${messageReceived.timestamp.split("T")[0]} ${messageReceived.timestamp.split("T")[1].split(":")[0]}:${messageReceived.timestamp.split("T")[1].split(":")[1]}`,
+        read: messageReceived.read,
       };
       newMessage.id = messageReceived.id;
+      messageReceived.invitedTo && (newMessage.invitedTo = messageReceived.invitedTo);
       userStore.getState().prependToDataInbox(newMessage);
-
     }
   }, [messageReceived]);
 
@@ -50,6 +51,7 @@ const MessageHub = () => {
   useEffect(() => {
     fetchMessages();
   }, []);
+
 
   const fetchMessages = async () => {
     try {
@@ -72,7 +74,6 @@ const MessageHub = () => {
           id: item.id,
         }));
         setDataSent(formattedSent);
-        console.log("Sent messages: ", formattedSent);
       }
     } catch (error) {
       console.error("Error fetching sent messages", error);
@@ -93,17 +94,19 @@ const MessageHub = () => {
 
       if (inboxResponse.ok) {
         const inbox = await inboxResponse.json();
+        console.log("Inbox messages: ", inbox);
         const formattedInbox = inbox.map((item) => ({
           sender: `${item.sender.firstName} ${item.sender.lastName}`,
           title: item.subject,
           message: item.content,
           date: `${item.timestamp.split("T")[0]} , ${item.timestamp.split("T")[1].split(":")[0]}:${item.timestamp.split("T")[1].split(":")[1]}`,
           id: item.id,
+          invitedTo: item.invitedTo ? item.invitedTo : null,
+          read: item.read,
         }));
         setDataInbox(formattedInbox);
-        console.log("Inbox messages: ", formattedInbox);
-
-        userStore.getState().setDataInbox(formattedInbox);      }
+        userStore.getState().setDataInbox(formattedInbox);      
+      }
     } catch (error) {
       console.error("Error fetching inbox messages", error);
     }

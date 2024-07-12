@@ -1,21 +1,61 @@
-import React, { useEffect, useState } from "react";
-import { Modal, Form, Button, FloatingLabel } from "react-bootstrap";
+import React, { useState } from "react";
+import { Modal, Button } from "react-bootstrap";
 import "./ModalMessage.css";
+import { Base_url_projects } from "../../functions/UsersFunctions";
 import { userStore } from "../../stores/UserStore.jsx";
+import { toast } from "react-toastify";
+import { t } from "i18next";
 
-function ModalReadMessage({ id, show, handleClose, message }) {
+function ModalReadMessage({ show, handleClose, message }) {
 
-  /* const [message, setMessage] = useState(null);
-  const dataInbox = userStore((state) => state.dataInbox);
- */
-/*   useEffect(() => {
+  const loggedUser = userStore((state) => state.loggedUser);
+
+  const [dataInbox, setDataInbox] = userStore((state) => state.dataInbox);
+
+
+  const handleAnswerInvitation = async (projectId, answer) => {
+
+    await answerInvitation(projectId, answer);
+    handleClose();
+  
+  };
+  
+  const answerInvitation = async (projectId, answer) => {
     
-    const foundMessage = dataInbox.find((msg) => msg.id === id);
-    setMessage(foundMessage);
+    const url = new URL(`${Base_url_projects}answer-invitation`);
+    url.searchParams.append("projectId", projectId);
+    url.searchParams.append("answer", answer);
+    try {
+      const response = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          token: loggedUser.sessionToken,
+          id: loggedUser.id,
+        },
+      });
 
-  }, [id, dataInbox]); */
+      if (response.ok) {
+        const success = await response.json();
+        if (success) {
+          dataInbox.find((msg) => msg.id === projectId).invitedTo = false;
+          userStore.dataInbox.set(dataInbox);
+          toast.success("Your answer has been sent");
+        } else {
+          toast.error("Error sending your answer");
+        }
+        
+      } else {
+        console.log("Error sending answer");
+        toast.error("Error sending your answer");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("Error sending your answer");
+    }
+    
+  };
 
-console.log("message in modal ", message);
 return (
   message && (
   <Modal show={show} onHide={handleClose} centered>
@@ -38,6 +78,26 @@ return (
       </div>
     </Modal.Body>
     <Modal.Footer className="justify-content-center">
+      {message.invitedTo && 
+        <>
+          <Button
+              variant="secondary"
+              className="modal-message-cancel-btn mx-2"
+              style={{ backgroundColor: "var(--color-blue-01)" }}
+              onClick={() => handleAnswerInvitation(message.invitedTo, false)}
+            >
+            Reject
+          </Button>
+          <Button
+              variant="secondary"
+              className="modal-message-cancel-btn mx-2"
+              style={{ backgroundColor: "var(--color-yellow-02)" }}
+              onClick={() => handleAnswerInvitation(message.invitedTo, true)}
+            >
+            Accept
+          </Button>
+        </>
+      }
       <Button
         variant="secondary"
         className="modal-message-cancel-btn mx-2"
