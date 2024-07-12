@@ -1,38 +1,38 @@
-import React, { useState } from 'react';
-import { Card, Row, Col, Form, Button, FloatingLabel } from 'react-bootstrap';
-import { Typeahead } from 'react-bootstrap-typeahead';
-import Base_url_record from "../../functions/UsersFunctions.jsx";
-import './LogNew.css';
-import { userStore } from '../../stores/UserStore';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { Card, Row, Col, Form, Button, FloatingLabel } from "react-bootstrap";
+import { Typeahead } from "react-bootstrap-typeahead";
+import { Base_url_record } from "../../functions/UsersFunctions.jsx";
+import "./LogNew.css";
+import { userStore } from "../../stores/UserStore";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
-function LogNew ({ onAdd, onCancel, projectPrivateId }) {
+function LogNew({ onAdd, onCancel, projectPrivateId }) {
   const { t } = useTranslation();
   const loggedUser = userStore((state) => state.loggedUser);
-  const [description, setDescription] = useState('');
+  const [description, setDescription] = useState("");
   const navigate = useNavigate();
 
   const handleAdd = async () => {
-    if (description === '') {
+    if (description === "") {
       toast.error(t("Please write the log"));
       return;
     } else {
       try {
         const urlRecord = new URL(Base_url_record);
-        urlRecord.searchParams.append('projectId', projectPrivateId);
-  
+        urlRecord.searchParams.append("projectId", projectPrivateId);
+
         const response = await fetch(urlRecord, {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             token: loggedUser.sessionToken,
             id: loggedUser.id,
           },
           body: description,
         });
-  
+
         if (response.ok) {
           toast.success(t("Log added"));
           navigate(`/domcast/myproject/view/${projectPrivateId}`);
@@ -45,17 +45,20 @@ function LogNew ({ onAdd, onCancel, projectPrivateId }) {
     }
   };
 
-
   return (
     <Card>
       <Row>
         <Col md={6}>
-          <FloatingLabel controlId="floatingDescription" label="Description" className="mb-3">
+          <FloatingLabel
+            controlId="floatingDescription"
+            label="Description"
+            className="mb-3"
+          >
             <Form.Control
               as="textarea"
               name="description"
               value={description}
-              onChange={e => setDescription(e.target.value)}
+              onChange={(e) => setDescription(e.target.value)}
               placeholder="Description"
             />
           </FloatingLabel>
@@ -73,6 +76,6 @@ function LogNew ({ onAdd, onCancel, projectPrivateId }) {
       </Row>
     </Card>
   );
-};
+}
 
 export default LogNew;

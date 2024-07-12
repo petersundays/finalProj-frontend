@@ -30,6 +30,7 @@ function ProjectPrivate() {
   const currentState = 0;
   const [stateValue, setStateValue] = useState(0);
   const [isProjectFetched, setIsProjectFetched] = useState(false);
+  const privateProjectId = projectPrivate.id;
 
 
   useEffect(() => {
@@ -584,6 +585,19 @@ function ProjectPrivate() {
                   onClick={openChat}
                 >
                   Chat
+                </Button>
+              </Col>
+              <Col md={3}>
+                <Button
+                  variant="secondary"
+                  style={{
+                    width: "10rem",
+                    color: "var(--color-coal",
+                    backgroundColor: "var(--color-yellow-01",
+                  }}
+                  onClick={navigate("/domcast//logs/list", { state: { privateProjectId } })}
+                >
+                  Log List
                 </Button>
               </Col>
             </Row>
