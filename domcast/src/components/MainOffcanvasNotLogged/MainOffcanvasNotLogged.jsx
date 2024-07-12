@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Offcanvas, Nav } from "react-bootstrap";
 import ModalLogin from "../ModalLogin/ModalLogin";
 import ModalSignUp from "../ModalSignUp/ModalSignUp";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
 function MainOffcanvasNotLogged({
   show,
@@ -9,6 +11,7 @@ function MainOffcanvasNotLogged({
   handleLanguageChange,
   language,
 }) {
+  const { t } = useTranslation();
   const [showModalLogin, setShowModalLogin] = useState(false);
   const [showModalSignUp, setShowModalSignUp] = useState(false);
 

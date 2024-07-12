@@ -9,8 +9,11 @@ import {
 } from "../../functions/UsersFunctions.jsx";
 import { userStore } from "../../stores/UserStore.jsx";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
-const ProjectUserList = () => {
+function ProjectUserList () {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const loggedUser = userStore((state) => state.loggedUser);
 

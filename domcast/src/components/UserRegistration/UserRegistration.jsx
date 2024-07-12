@@ -21,11 +21,11 @@ import { useStore } from "zustand";
 import { Typeahead } from "react-bootstrap-typeahead";
 import "./UserRegistration.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { toast } from "react-toastify";
-import { useTranslation } from "react-i18next";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
-const UserRegistration = () => {
+function UserRegistration () {
   const { token } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();

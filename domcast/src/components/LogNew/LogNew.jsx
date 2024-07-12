@@ -2,8 +2,11 @@ import React, { useState } from 'react';
 import { Container, Row, Col, Form, Button, FloatingLabel } from 'react-bootstrap';
 import { Typeahead } from 'react-bootstrap-typeahead';
 import './LogNew.css';
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
-const LogNew = ({ onAdd, onCancel }) => {
+function LogNew ({ onAdd, onCancel }) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     title: '',
     description: '',

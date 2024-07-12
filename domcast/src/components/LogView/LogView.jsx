@@ -1,6 +1,11 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
-function LogList() {
+function LogView() {
+    const { t } = useTranslation();
+
+
     return (
         <div>
         LogList
@@ -9,4 +14,4 @@ function LogList() {
     }
 
 
-export default LogList;
+export default LogView;

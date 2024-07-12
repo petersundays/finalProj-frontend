@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import { Card, Table, Button } from "react-bootstrap";
 import "../MessageHub/MessageHub.css";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
-const MessageHubInbox = ({ data }) => {
+function MessageHubInbox ({ data }) {
   const { t } = useTranslation();
   const [visibleRows, setVisibleRows] = useState(10);
 

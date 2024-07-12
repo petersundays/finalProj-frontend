@@ -2,8 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Chart } from 'react-google-charts';
 import { Container, Row, Col } from 'react-bootstrap';
 import './TaskListGantt.css';
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
-const TaskListGantt = () => {
+function TaskListGantt () {
+  const { t } = useTranslation();
   const [chartData, setChartData] = useState([]);
   const [period, setPeriod] = useState('month');
 

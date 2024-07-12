@@ -11,8 +11,11 @@ import {
 import { Typeahead } from "react-bootstrap-typeahead";
 import "react-bootstrap-typeahead/css/Typeahead.css";
 import "./ProjectEdit.css";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
-const ProjectEdit = ({ onCreate, onCancel }) => {
+function ProjectEdit ({ onCreate, onCancel }) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     title: "",
     lab: "",

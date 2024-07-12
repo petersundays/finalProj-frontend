@@ -4,8 +4,11 @@ import "./ModalRedefinePassword.css";
 import { Base_url_users } from "../../functions/UsersFunctions";
 import { userStore } from "../../stores/UserStore.jsx";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
 function ModalRedefinePassword({ show, handleClose }) {
+  const { t } = useTranslation();
   const [oldPassword, setOldPassword] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");

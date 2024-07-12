@@ -11,17 +11,17 @@ import TaskListGantt from "../../TaskList/TaskListGantt/TaskListGantt";
 import TaskListMobile from "../../TaskList/TaskListMobile/TaskListMobile";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 
-const ProjectPrivate = ({project,
-  labsEnum,
-  stateEnum }) => {
+function ProjectPrivate () {
   const loggedUser = userStore((state) => state.loggedUser);
 /*   const [labsEnum, setLabsEnum] = useState([]);
   const [stateEnum, setStateEnum] = useState([]);
   const [project, setProject] = useState({}); */
   const { t } = useTranslation();
   const { id } = useParams();
+  const location = useLocation();
+  const { projectPrivate, labsEnum, stateEnum } = location.state || {};
 
 /*   useEffect(() => {
     fetchProject();
@@ -82,17 +82,7 @@ const ProjectPrivate = ({project,
   };
  */
   const onEdit = () => {
-    const projectUsers = project.projectUsers.map(
-      (projectUser) => projectUser.id
-    );
-    if (
-      project.mainManager.id === loggedUser.id ||
-      projectUsers.includes(loggedUser.id)
-    ) {
-      <ProjectEdit id={id} />;
-    } else {
-      toast.error(t("projectPrivate.notAuthorized"));
-    }
+
   };
 
   const onPlanner = () => {
@@ -106,26 +96,26 @@ const ProjectPrivate = ({project,
   return (
     <Card>
       <Card.Body>
-        <Card.Title>{project.name}</Card.Title>
+        <Card.Title>{projectPrivate.name}</Card.Title>
         <Card.Subtitle className="mb-2 text-muted">
-          {labsEnum.find((lab) => lab.id === project.labId)?.name}
+          {labsEnum.find((lab) => lab.id === projectPrivate.labId)?.name}
         </Card.Subtitle>
         <Card.Text>
-          {stateEnum.find((state) => state.id === project.state)?.name}
+          {stateEnum.find((state) => state.id === projectPrivate.state)?.name}
         </Card.Text>
-        <Card.Text>{project.description}</Card.Text>
+        <Card.Text>{projectPrivate.description}</Card.Text>
         <Card.Text>
-          Start Date: {project.projectedStartDate.split("T")[0]}
+          Start Date: {projectPrivate.projectedStartDate.split("T")[0]}
         </Card.Text>
-        <Card.Text>Duration: {project.deadline.split("T")[0]}</Card.Text>
+        <Card.Text>Duration: {projectPrivate.deadline.split("T")[0]}</Card.Text>
         <div>
           <h6 style={{ fontWeight: "bold", color: "var(--color-yellow-02)" }}>
             Team:
           </h6>
           <span style={{ fontWeight: "bold", color: "var(--color-blue-01)" }}>
-            {project.mainManager.firstName} {project.mainManager.lastName}
+            {projectPrivate.mainManager.firstName} {projectPrivate.mainManager.lastName}
           </span>
-          {project.projectUsers.map((member, index) => (
+          {projectPrivate.projectUsers.map((member, index) => (
             <span
               key={index}
               style={{ color: "var(--color-blue-03)" }}
@@ -139,7 +129,7 @@ const ProjectPrivate = ({project,
           <h6 style={{ fontWeight: "bold", color: "var(--color-yellow-02)" }}>
             Keywords:
           </h6>
-          {project.keywords.map((keyword, index) => (
+          {projectPrivate.keywords.map((keyword, index) => (
             <span
               key={index}
               style={{ color: "var(--color-blue-03)" }}
@@ -153,7 +143,7 @@ const ProjectPrivate = ({project,
           <h6 style={{ fontWeight: "bold", color: "var(--color-yellow-02)" }}>
             Skills:
           </h6>
-          {project.skills.map((skill, index) => (
+          {projectPrivate.skills.map((skill, index) => (
             <span
               key={index}
               style={{ color: "var(--color-blue-03)" }}
@@ -167,7 +157,7 @@ const ProjectPrivate = ({project,
           <h6 style={{ fontWeight: "bold", color: "var(--color-yellow-02)" }}>
             Components:
           </h6>
-          {project.resources
+          {projectPrivate.resources
             .filter((resource) => resource.type === 1)
             .map((asset, index) => (
               <span
@@ -183,7 +173,7 @@ const ProjectPrivate = ({project,
           <h6 style={{ fontWeight: "bold", color: "var(--color-yellow-02)" }}>
             Resources:
           </h6>
-          {project.resources
+          {projectPrivate.resources
             .filter((resource) => resource.type === 2)
             .map((asset, index) => (
               <span
@@ -195,7 +185,7 @@ const ProjectPrivate = ({project,
               </span>
             ))}
         </div>
-        {(project.mainManager || project.projectUsers.type === 2) && (
+        {(projectPrivate.mainManager || projectPrivate.projectUsers.type === 2) && (
           <Button variant="primary" onClick={onEdit} className="mt-3 me-2">
             Edit project infos
           </Button>

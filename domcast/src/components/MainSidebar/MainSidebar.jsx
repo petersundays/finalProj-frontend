@@ -3,8 +3,11 @@ import { Nav, Col } from "react-bootstrap";
 import "./MainSidebar.css";
 import { useNavigate } from "react-router-dom";
 import { userStore } from "../../stores/UserStore.jsx";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
 function MainSidebar() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [expandedProjects, setExpandedProjects] = useState(false);
   const [expandedAssets, setExpandedAssets] = useState(false);

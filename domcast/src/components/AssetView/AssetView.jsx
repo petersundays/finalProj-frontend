@@ -1,8 +1,10 @@
 import React from "react";
 import { Card, Button } from "react-bootstrap";
 import "./AssetView.css";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
-const AssetView = ({
+function AssetView({
   name,
   description,
   partNumber,
@@ -12,7 +14,9 @@ const AssetView = ({
   quantity,
   notes,
   onEdit,
-}) => {
+}) {
+  const { t } = useTranslation();
+
   return (
     <Card>
       <Card.Body>
@@ -30,6 +34,6 @@ const AssetView = ({
       </Card.Body>
     </Card>
   );
-};
+}
 
 export default AssetView;

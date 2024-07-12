@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { Modal, Form, Button, FormText } from "react-bootstrap";
 import { Base_url_users } from "../../functions/UsersFunctions";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
 function ModalForgotPassword({ show, handleClose }) {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
 
   const emailRegex =

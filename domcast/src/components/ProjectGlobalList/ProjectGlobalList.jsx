@@ -11,8 +11,11 @@ import {
 } from "../../functions/UsersFunctions.jsx";
 import { Typeahead } from "react-bootstrap-typeahead";
 import { userStore } from "../../stores/UserStore.jsx";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
-const ProjectGlobalList = () => {
+function ProjectGlobalList () {
+  const { t } = useTranslation();
   const loggedUser = userStore((state) => state.loggedUser);
 
   const [cards, setCards] = useState([]);

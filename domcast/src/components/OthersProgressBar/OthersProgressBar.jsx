@@ -4,7 +4,7 @@ import { ProgressBar, Step } from "react-step-progress-bar";
 import "react-step-progress-bar/styles.css";
 import "./OthersProgressBar.css";
 
-const OthersProgressBar = ({ step, steps }) => {
+function OthersProgressBar ({ step, steps }) {
   const percent = ((step - 1) / (steps.length - 1)) * 100 + 20;
 
   return (

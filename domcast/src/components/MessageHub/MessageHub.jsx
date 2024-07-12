@@ -3,11 +3,12 @@ import { Card, Button, Row, Col } from "react-bootstrap";
 import "./MessageHub.css";
 import MessageHubSent from "../MessageHubSent/MessageHubSent";
 import MessageHubInbox from "../MessageHubInbox/MessageHubInbox";
-import { useTranslation } from "react-i18next";
 import { Base_url_lab_messages } from "../../functions/UsersFunctions";
 import { userStore } from "../../stores/UserStore.jsx";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
-const MessageHub = () => {
+function MessageHub () {
   const loggedUser = userStore((state) => state.loggedUser);
   const { t } = useTranslation();
   const [showInbox, setShowInbox] = useState(true);

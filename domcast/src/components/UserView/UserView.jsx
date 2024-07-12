@@ -4,8 +4,11 @@ import { Card, Button, Badge, Form, Row, Col } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import { Base_url_projects } from "../../functions/UsersFunctions";
 import ModalMessage from "../ModalMessage/ModalMessage";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
-const UserView = () => {
+function UserView () {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams();
   console.log("urlId:", id);

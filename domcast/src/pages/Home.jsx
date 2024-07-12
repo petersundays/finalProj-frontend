@@ -8,8 +8,11 @@ import MainFooter from "../components/MainFooter/MainFooter";
 import ProjectGlobalList from "../components/ProjectGlobalList/ProjectGlobalList";
 import OthersBannerLogin from "../components/OthersBannerLogin/OthersBannerLogin";
 import backgroundPic from "../multimedia/background-pic.png";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
 function Home() {
+  const { t } = useTranslation();
   const [show, setShow] = useState(false);
   const [expandedProjects, setExpandedProjects] = useState(false);
   const [language, setLanguage] = useState("EN");

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Card, Button } from "react-bootstrap";
 import "./ProjectPublic.css";
 import { userStore } from "../../../stores/UserStore";
@@ -7,34 +7,10 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
 
-const ProjectPublic = ({ projectPublic }) => {
+function ProjectPublic ({ projectPublic }) {
   const loggedUser = userStore((state) => state.loggedUser);
   const { t } = useTranslation();
-  // const [projectPublic, setProjectPublic] = useState({});
   const { id } = useParams();
-
-/*   useEffect(() => {
-    console.log("loggedUser", loggedUser);
-    fetchProject();
-    console.log("project public", projectPublic);
-  }, []);
-
-   const fetchProject = async () => {
-    try {
-      const projectResponse = await fetch(`${Base_url_projects}public?id=${id}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          token: loggedUser.sessionToken,
-          id: loggedUser.id,
-        },
-      });
-      const projectData = await projectResponse.json();
-      setProjectPublic(projectData);
-    } catch (error) {
-      console.error(error);
-    }
-  }; */
 
   const onJoin = async () => {
     try {

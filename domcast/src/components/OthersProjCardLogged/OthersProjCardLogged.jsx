@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Card, Button, Modal } from "react-bootstrap";
 import "./OthersProjCardLogged.css";
-import ProjectPrivate from "../ProjectView/ProjectPrivate/ProjectPrivate";
-import ProjectPublic from "../ProjectView/ProjectPublic/ProjectPublic";
 import { userStore } from "../../stores/UserStore";
 import {
   Base_url_projects,
@@ -30,6 +28,7 @@ const OthersProjCardLogged = ({
 
   useEffect(() => {
     fetchProject();
+    fetchData();
   }, []);
 
   const fetchProject = async () => {
@@ -53,66 +52,71 @@ const OthersProjCardLogged = ({
     }
   };
 
-  const goToProject = async () => {
-    // check if loggedUser is the main manager or a collaborator of the projectPublic
-    const projectUsers = projectPublic.projectUsers.map(
-      (projectUser) => projectUser.id
-    );
-    if (
-      projectPublic.mainManager.id === loggedUser.id ||
-      projectUsers.includes(loggedUser.id)
-    ) {
-      try {
-        const labsEnumResponse = await fetch(`${Base_url_lab}enum`, {
+  const fetchData = async () => {
+    try {
+      const labsEnumResponse = await fetch(`${Base_url_lab}enum`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          token: loggedUser.sessionToken,
+          id: loggedUser.id,
+        },
+      });
+      const labsEnumData = await labsEnumResponse.json();
+      console.log("labsEnumData", labsEnumData);
+      setLabsEnum(labsEnumData);
+    } catch (error) {
+      console.error(error);
+    }
+
+    try {
+      const projectEnumResponse = await fetch(
+        `${Base_url_projects}state-enum`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const projectEnumData = await projectEnumResponse.json();
+      console.log("projectEnumData", projectEnumData);
+      setStateEnum(projectEnumData);
+    } catch (error) {
+      console.error(error);
+    }
+
+    try {
+      const projectResponse = await fetch(
+        `${Base_url_projects}private?id=${id}`,
+        {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
             token: loggedUser.sessionToken,
             id: loggedUser.id,
           },
-        });
-        const labsEnumData = await labsEnumResponse.json();
-        console.log("labsEnumData", labsEnumData);
-        setLabsEnum(labsEnumData);
-      } catch (error) {
-        console.error(error);
-      }
+        }
+      );
+      const projectData = await projectResponse.json();
+      setProjectPrivate(projectData);
+    } catch (error) {
+      console.log("error", error);
+      console.error(error);
+    }
+  };
 
-      try {
-        const projectEnumResponse = await fetch(
-          `${Base_url_projects}state-enum`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-        const projectEnumData = await projectEnumResponse.json();
-        console.log("projectEnumData", projectEnumData);
-        setStateEnum(projectEnumData);
-      } catch (error) {
-        console.error(error);
-      }
+  const goToProject = async () => {
+    // check if loggedUser is the main manager or a collaborator of the projectPublic
 
-      try {
-        const projectResponse = await fetch(
-          `${Base_url_projects}private?id=${id}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              token: loggedUser.sessionToken,
-              id: loggedUser.id,
-            },
-          }
-        );
-        const projectData = await projectResponse.json();
-        setProjectPrivate(projectData);
-      } catch (error) {
-        console.log("error", error);
-        console.error(error);
-      }
+    if (
+      projectPublic.mainManager.id === loggedUser.id ||
+      projectPublic.projectUsers.some((user) => user.id === loggedUser.id)
+    ) {
+      console.log("projectPrivate", projectPrivate);
+      console.log("labsEnum", labsEnum);
+      console.log("stateEnum", stateEnum);
+      console.log("projectPublic", projectPublic);
 
       navigate(`/domcast/myproject/view/${projectPrivate.id}`, {
         state: {

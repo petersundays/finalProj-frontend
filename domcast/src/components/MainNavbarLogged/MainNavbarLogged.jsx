@@ -9,8 +9,11 @@ import { projectStore } from "../../stores/ProjectStore.jsx";
 import { Base_url_users } from "../../functions/UsersFunctions.jsx";
 import ModalRedefinePassword from "../ModalRedefinePassword/ModalRedefinePassword.jsx";
 import { NotificationWS } from "../../websockets/NotificationWS.jsx";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
 function MainNavbarLogged({ handleShow, handleLanguageChange, language }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const loggedUser = userStore((state) => state.loggedUser);
   const clearLoggedUser = userStore((state) => state.clearLoggedUser);
