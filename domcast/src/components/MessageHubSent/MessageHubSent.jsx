@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Card, Table, Button } from "react-bootstrap";
 import "../MessageHub/MessageHub.css";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 import ModalReadMessage from "../ModalReadMessage/ModalReadMessage";
 
-const MessageHubSent = ({ data }) => {
+function MessageHubSent ({ data }) {
   const { t } = useTranslation();
   const [visibleRows, setVisibleRows] = useState(10);
 

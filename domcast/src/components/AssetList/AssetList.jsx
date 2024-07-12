@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Card, Table, Button, Row, Col } from "react-bootstrap";
 import "./AssetList.css";
-import { toast } from "react-toastify";
 import { Base_url_components_resources } from "../../functions/UsersFunctions";
 import { useNavigate } from "react-router-dom";
 import { userStore } from "../../stores/UserStore.jsx";
 import AssetNewModal from "../AssetNew/AssetNewModal";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
 function AssetList() {
   const navigate = useNavigate();

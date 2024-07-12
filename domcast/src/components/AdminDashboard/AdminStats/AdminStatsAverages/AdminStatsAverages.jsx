@@ -1,8 +1,13 @@
 import React from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import './AdminStatsAverages.css';
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
-const AdminStatsAverages = ({ avgMembers, avgExecutionTime, avgTasks }) => {
+function AdminStatsAverages ({ avgMembers, avgExecutionTime, avgTasks }) {
+  const { t } = useTranslation();
+
+
   return (
     <Container>
       <Row>

@@ -21,11 +21,11 @@ import { useStore } from "zustand";
 import { Typeahead } from "react-bootstrap-typeahead";
 import "./UserEdit.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { toast } from "react-toastify";
-import { useTranslation } from "react-i18next";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
-const UserEdit = () => {
+function UserEdit () {
   const { id } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -45,6 +45,7 @@ const UserEdit = () => {
   const [showInterests, setShowInterests] = useState([]);
 
   const loggedUser = useStore(userStore, (state) => state.loggedUser);
+  const setLoggedUser = useStore(userStore, (state) => state.setLoggedUser);
   const visibility = useStore(userStore, (state) => state.visibility);
 
   const [labList, setLabList] = useState([]);
@@ -73,7 +74,6 @@ const UserEdit = () => {
     interestDtos: customInterestList,
     skillDtos: customSkillList,
   });
-
 
   useEffect(() => {
     fetchSkills();
@@ -355,6 +355,14 @@ const UserEdit = () => {
     setUser({ visible: newVisibility });
   };
 
+  const arraysEqual = (arr1, arr2) => {
+    if (arr1.length !== arr2.length) return false;
+    for (let i = 0; i < arr1.length; i++) {
+      if (arr1[i] !== arr2[i]) return false;
+    }
+    return true;
+  };
+
   const userChangesOrNot = () => {
     // check if the user attributes are different from the loggedUser attributes, if they are different, the user has made changes
     if (
@@ -364,57 +372,58 @@ const UserEdit = () => {
       user.biography !== loggedUser.biography ||
       user.nickname !== loggedUser.nickname ||
       user.visible !== loggedUser.visible ||
-      user.interests !== loggedUser.interests ||
-      user.skills !== loggedUser.skills ||
-      customInterestList !== [] ||
-      customSkillList !== []
+      !arraysEqual(user.interests, loggedUser.interests) ||
+      !arraysEqual(user.skills, loggedUser.skills) ||
+      customInterestList.length > 0 ||
+      customSkillList.length > 0
     ) {
       return true;
+    } else {
+      return false;
     }
-    return false;
   };
 
-  // falta testar se os valores obtidos estão corretos (em especial visibility e skills e interests)
-  // falta testar handleSubmit e handleChangePassword
-
   const handleSubmit = async () => {
-    const formData = new FormData();
-    // Add user fields to formData
-    for (const key in user) {
-      if (user.hasOwnProperty(key)) {
-        formData.append(key, user[key]);
-      }
-    }
-
-    // Add photo to formData if it exists
-    if (photoToSend !== null) {
-      formData.append("photo", photoToSend);
-      console.log("Photo:", photoToSend);
+    if (!userChangesOrNot()) {
+      toast.error(t("noChanges"));
     } else {
-      console.log("User:", user);
+      const formData = new FormData();
+      // Add user fields to formData
+      formData.append('user', JSON.stringify(user));
 
-      try {
-        const response = await fetch(`${Base_url_users}`, {
-          method: "PUT",
-          headers: {
-            token: loggedUser.sessionToken,
-            id: loggedUser.id,
-          },
-          body: formData,
-        });
-        if (response.ok) {
-          const data = JSON.parse(data);
-          console.log("Parsed JSON data:", data);
-          toast.success(t("updateSuccess"));
-          setStep(1);
-          navigate(-1);
-        } else {
-          console.error("Failed to update user:", response);
+      // Add photo to formData if it exists
+      if (photoToSend !== null) {
+        formData.append("photo", photoToSend);
+        console.log("Photo:", photoToSend);
+      } else {
+        console.log("User:", user);
+
+        try {
+          const response = await fetch(`${Base_url_users}`, {
+            method: "PUT",
+            headers: {
+              token: loggedUser.sessionToken,
+              id: loggedUser.id,
+            },
+            body: formData,
+          });
+          if (response.ok) {
+            const data = await response.json();
+            console.log("Parsed JSON data:", data);
+            toast.success(t("updateSuccess"));
+            setLoggedUser(data);
+            fetchSkills();
+            fetchInterests();
+            setStep(1);
+            navigate(`/domcast/myprojects/`);
+          } else {
+            console.error("Failed to update user:", response);
+            toast.error(t("updateFailed"));
+          }
+        } catch (error) {
+          console.error("Error updating user:", error);
           toast.error(t("updateFailed"));
         }
-      } catch (error) {
-        console.error("Error updating user:", error);
-        toast.error(t("updateFailed"));
       }
     }
   };

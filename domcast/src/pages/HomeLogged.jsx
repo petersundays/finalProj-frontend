@@ -10,7 +10,6 @@ import AssetList from "../components/AssetList/AssetList";
 import AssetView from "../components/AssetView/AssetView";
 import LogList from "../components/LogList/LogList";
 import LogNew from "../components/LogNew/LogNew";
-import LogView from "../components/LogView/LogView";
 import MainFooter from "../components/MainFooter/MainFooter";
 import MainNavbarLogged from "../components/MainNavbarLogged/MainNavbarLogged";
 import MainOffcanvasLogged from "../components/MainOffcanvasLogged/MainOffcanvasLogged";
@@ -81,7 +80,6 @@ function HomeLogged() {
                   <Route path="/asset/view/:id" element={<AssetView />} />
                   <Route path="/logs/list" element={<LogList />} />
                   <Route path="/log/new" element={<LogNew />} />
-                  <Route path="/log/view/:id" element={<LogView />} />
                   <Route path="/message-hub/*" element={<MessageHub />} />
                   <Route path="/myprojects" element={<ProjectUserList />} />
                   <Route path="/project/edit/:id" element={<ProjectEdit />} />

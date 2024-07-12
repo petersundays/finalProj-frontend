@@ -5,8 +5,11 @@ import { userStore } from "../../stores/UserStore";
 import { useNavigate } from "react-router-dom";
 import UserCard from "../UserCard/UserCard";
 import { Base_url_users } from "../../functions/UsersFunctions";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
 function UserList() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const storeUsersList = userStore((state) => state.userList);
   const loggedUser = userStore((state) => state.loggedUser);

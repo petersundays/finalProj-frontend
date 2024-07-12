@@ -5,8 +5,11 @@ import { useNavigate } from "react-router-dom";
 import { userStore } from "../../stores/UserStore.jsx";
 import "./MainOffcanvasLogged.css";
 import ModalRedefinePassword from "../ModalRedefinePassword/ModalRedefinePassword.jsx";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
 function MainOffcanvasLogged({ show, handleClose }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const loggedUser = userStore((state) => state.loggedUser);
   const clearLoggedUser = userStore((state) => state.clearLoggedUser);

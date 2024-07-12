@@ -6,8 +6,11 @@ import MainNavbaNotLogged from "../components/MainNavbaNotLogged/MainNavbaNotLog
 import MainOffcanvasNotLogged from "../components/MainOffcanvasNotLogged/MainOffcanvasNotLogged";
 import MainFooter from "../components/MainFooter/MainFooter";
 import UserRegistration from "../components/UserRegistration/UserRegistration";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
 function ConfirmRegistration() {
+  const { t } = useTranslation();
   const [show, setShow] = useState(false);
   const [expandedProjects, setExpandedProjects] = useState(false);
   const [language, setLanguage] = useState("EN");

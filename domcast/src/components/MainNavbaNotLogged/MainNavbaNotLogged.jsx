@@ -4,8 +4,12 @@ import logo from "../../multimedia/logo/domcast-05-navbar-logo.png";
 import "./MainNavbaNotLogged.css";
 import ModalLogin from "../ModalLogin/ModalLogin";
 import ModalSignUp from "../ModalSignUp/ModalSignUp";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
 function MainNavbaNotLogged({ handleShow, handleLanguageChange, language }) {
+  const { t } = useTranslation();
+
   const [showModalLogin, setShowModalLogin] = useState(false);
   const [showModalSignUp, setShowModalSignUp] = useState(false);
 

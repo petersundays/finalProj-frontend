@@ -21,12 +21,11 @@ import { useStore } from "zustand";
 import { Typeahead } from "react-bootstrap-typeahead";
 import "./UserRegistration.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { toast } from "react-toastify";
-import { useTranslation } from "react-i18next";
 import { useParams, useNavigate } from "react-router-dom";
-import { use } from "i18next";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
-const UserRegistration = () => {
+function UserRegistration () {
   const { token } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -42,7 +41,7 @@ const UserRegistration = () => {
 
   const user = useStore(userStore, (state) => state.unconfirmedUser);
   const setUser = useStore(userStore, (state) => state.setUnconfirmedUser);
-  const photo = useStore(userStore, (state) => state.unconfirmedPhoto);
+  const photo = useState("");
   const setPhoto = useStore(userStore, (state) => state.setUnconfirmedPhoto);
   const setDefaultUnconfirmedPhoto = useStore(
     userStore,
@@ -324,7 +323,7 @@ const UserRegistration = () => {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
+    if (file && file !== defaultProfilePic) {
       const photoUrl = URL.createObjectURL(file);
       setPhotoPreview(photoUrl);
       setPhoto(file);
@@ -344,14 +343,24 @@ const UserRegistration = () => {
     setInterestType(e.target.value);
   };
 
+  // verify if photo is different from unconfirmedPhoto on the userStore
+  const isPhotoDifferent = () => {
+    if (photo !== defaultProfilePic) {
+      return false;
+    }
+    return true;
+  };
+
+
   const handleSubmit = async () => {
     const formData = new FormData();
     formData.append("user", JSON.stringify(user));
     console.log("User data:", user);
-    if (photo !== null) {
+
+/*     if (photo !== null) {
       formData.append("photo", photo);
       console.log("Photo:", photo);
-    }
+    } */
     console.log("Formdata:", formData);
 
     try {
@@ -360,8 +369,6 @@ const UserRegistration = () => {
         body: formData,
       });
       if (response.ok) {
-        const data = await response.json();
-        console.log("User confirmed:", data);
         toast.success(t("registrationSuccess"));
         clearUser();
         setDefaultUnconfirmedPhoto();

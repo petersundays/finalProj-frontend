@@ -5,8 +5,11 @@ import { useNavigate } from "react-router-dom";
 import { Base_url_users } from "../../functions/UsersFunctions.jsx";
 import { userStore } from "../../stores/UserStore.jsx";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
 function ModalLogin({ show, handleClose }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { setLoggedUser } = userStore();
   const [showModalForgotPassword, setShowModalForgotPassword] = useState(false);

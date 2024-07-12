@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { Container, Row, Col, Form, Button, FloatingLabel } from 'react-bootstrap';
 import './AdminSettings.css';
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
-const AdminSettings = ({ settings, onSave }) => {
+function AdminSettings ({ settings, onSave }) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState(settings);
 
   const handleChange = (e) => {

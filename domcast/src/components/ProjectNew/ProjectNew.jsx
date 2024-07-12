@@ -27,7 +27,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
-const ProjectNew = () => {
+function ProjectNew () {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const loggedUser = userStore((state) => state.loggedUser);

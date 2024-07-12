@@ -1,11 +1,11 @@
 import React from "react";
-import { Card, Button } from "react-bootstrap";
+import { Card } from "react-bootstrap";
 import "./OthersProjCardNotLogged.css";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
-const OthersProjCardNotLogged = ({ id, title, lab, description, state }) => {
+function OthersProjCardNotLogged ({ id, title, lab, description, state }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
 

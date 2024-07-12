@@ -6,8 +6,9 @@ import { Base_url_users } from "../../functions/UsersFunctions";
 import { useNavigate, useParams } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
-const PassRecover = () => {
+function PassRecover () {
   const { token } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
