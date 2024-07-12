@@ -13,7 +13,7 @@ const MessageHub = () => {
   const { t } = useTranslation();
   const [showInbox, setShowInbox] = useState(true);
 
-  const inboxDataFromStore = userStore((state) => state.dataInbox); // Assuming 'dataInbox' is now part of your store
+  const inboxDataFromStore = userStore((state) => state.dataInbox);
 
   const [dataSent, setDataSent] = useState([]);
   const [dataInbox, setDataInbox] = useState(inboxDataFromStore);
@@ -31,9 +31,11 @@ const MessageHub = () => {
         sender: `${messageReceived.sender.firstName} ${messageReceived.sender.lastName}`,
         title: messageReceived.subject,
         message: messageReceived.content,
-        date: messageReceived.timestamp.split("T")[0],
+        date: `${messageReceived.timestamp.split("T")[0]} ${messageReceived.timestamp.split("T")[1].split(":")[0]}:${messageReceived.timestamp.split("T")[1].split(":")[1]}`,
       };
+      newMessage.id = messageReceived.id;
       userStore.getState().prependToDataInbox(newMessage);
+
     }
   }, [messageReceived]);
 
@@ -66,7 +68,8 @@ const MessageHub = () => {
           receiver: `${item.receiver.firstName} ${item.receiver.lastName}`,
           title: item.subject,
           message: item.content,
-          date: item.timestamp.split("T")[0],
+          date: `${item.timestamp.split("T")[0]} , ${item.timestamp.split("T")[1].split(":")[0]}:${item.timestamp.split("T")[1].split(":")[1]}`,
+          id: item.id,
         }));
         setDataSent(formattedSent);
         console.log("Sent messages: ", formattedSent);
@@ -94,7 +97,8 @@ const MessageHub = () => {
           sender: `${item.sender.firstName} ${item.sender.lastName}`,
           title: item.subject,
           message: item.content,
-          date: item.timestamp.split("T")[0],
+          date: `${item.timestamp.split("T")[0]} , ${item.timestamp.split("T")[1].split(":")[0]}:${item.timestamp.split("T")[1].split(":")[1]}`,
+          id: item.id,
         }));
         setDataInbox(formattedInbox);
         console.log("Inbox messages: ", formattedInbox);

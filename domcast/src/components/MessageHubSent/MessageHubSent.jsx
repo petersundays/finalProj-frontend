@@ -2,10 +2,28 @@ import React, { useState, useEffect } from "react";
 import { Card, Table, Button } from "react-bootstrap";
 import "../MessageHub/MessageHub.css";
 import { useTranslation } from "react-i18next";
+import ModalReadMessage from "../ModalReadMessage/ModalReadMessage";
 
 const MessageHubSent = ({ data }) => {
   const { t } = useTranslation();
   const [visibleRows, setVisibleRows] = useState(10);
+
+  const [showMessageModal, setShowMessageModal] = useState(false);
+  const [messageId, setMessageId] = useState(0);
+  const [message, setMessage] = useState(null);
+
+  const openMessageModal = (id) => {
+    setMessageId(id);
+    const foundMessage = data.find((msg) => msg.id === id);
+    setMessage(foundMessage);
+    setShowMessageModal(true);
+  };
+
+  const closeMessageModal = () => {
+    setMessageId(0);
+    setMessage(null);
+    setShowMessageModal(false);
+  };
 
   const handleShowMore = () => {
     setVisibleRows((prev) => Math.min(prev + 10, data.length));
@@ -24,7 +42,7 @@ const MessageHubSent = ({ data }) => {
         </thead>
         <tbody>
           {data.slice(0, visibleRows).map((item, index) => (
-            <tr key={index} className="message-hub-row">
+            <tr key={index} className="message-hub-row" onClick={() => openMessageModal(item.id)}>
               <td
                 className="message-hub-cell"
                 style={{
@@ -76,6 +94,7 @@ const MessageHubSent = ({ data }) => {
           </Button>
         </div>
       )}
+      <ModalReadMessage id={messageId} show={showMessageModal} handleClose={closeMessageModal} message={message} />
     </Card>
   );
 };
