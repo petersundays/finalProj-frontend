@@ -94,6 +94,7 @@ export const userStore = create(
             if (!exists) {
                 return { dataInbox: [newMessage, ...state.dataInbox] };
             }
+            
             return state;
         }),
     
