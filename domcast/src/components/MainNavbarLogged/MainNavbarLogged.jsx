@@ -8,7 +8,6 @@ import { userStore } from "../../stores/UserStore.jsx";
 import { projectStore } from "../../stores/ProjectStore.jsx";
 import { Base_url_users } from "../../functions/UsersFunctions.jsx";
 import ModalRedefinePassword from "../ModalRedefinePassword/ModalRedefinePassword.jsx";
-import { NotificationWS } from "../../websockets/NotificationWS.jsx";
 
 function MainNavbarLogged({ handleShow, handleLanguageChange, language }) {
   const navigate = useNavigate();
@@ -17,8 +16,6 @@ function MainNavbarLogged({ handleShow, handleLanguageChange, language }) {
   const resetDetailedProject = projectStore((state) => state.resetDetailedProject);
   const resetNewProject = projectStore((state) => state.resetNewProject);
 
-
-  const { ws } = NotificationWS();
 
   const userId = userStore((state) => state.loggedUser.id);
 

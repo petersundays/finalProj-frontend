@@ -4,16 +4,46 @@ import "./MessageHub.css";
 import MessageHubSent from "../MessageHubSent/MessageHubSent";
 import MessageHubInbox from "../MessageHubInbox/MessageHubInbox";
 import { useTranslation } from "react-i18next";
-import { Base_url_lab_messages } from "../../functions/UsersFunctions";
+import { Base_url_messages } from "../../functions/UsersFunctions";
 import { userStore } from "../../stores/UserStore.jsx";
+import { PersonalMessageWS } from "../../websockets/PersonalMessageWS.jsx";
 
 const MessageHub = () => {
   const loggedUser = userStore((state) => state.loggedUser);
   const { t } = useTranslation();
   const [showInbox, setShowInbox] = useState(true);
 
+  const inboxDataFromStore = userStore((state) => state.dataInbox); // Assuming 'dataInbox' is now part of your store
+
   const [dataSent, setDataSent] = useState([]);
-  const [dataInbox, setDataInbox] = useState([]);
+  const [dataInbox, setDataInbox] = useState(inboxDataFromStore);
+
+  const { ws } = PersonalMessageWS();
+
+  const { prependToDataInbox, messageReceived } = userStore((state) => ({
+    prependToDataInbox: state.prependToDataInbox,
+    messageReceived: state.messageReceived,
+  }));
+
+  useEffect(() => {
+    if (messageReceived) {
+      const newMessage = {
+        sender: `${messageReceived.sender.firstName} ${messageReceived.sender.lastName}`,
+        title: messageReceived.subject,
+        message: messageReceived.content,
+        date: messageReceived.timestamp.split("T")[0],
+      };
+      userStore.getState().prependToDataInbox(newMessage);
+    }
+  }, [messageReceived]);
+
+  useEffect(() => {
+    const unsubscribe = userStore.subscribe((state) => {
+      setDataInbox(state.dataInbox);
+    }, (state) => state.dataInbox);
+  
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     fetchMessages();
@@ -21,25 +51,22 @@ const MessageHub = () => {
 
   const fetchMessages = async () => {
     try {
-      const sentResponse = await fetch(
-        `${Base_url_lab_messages}personal-sent`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            token: loggedUser.sessionToken,
-            id: loggedUser.id,
-          },
-        }
-      );
+      const sentResponse = await fetch(`${Base_url_messages}/personal-sent`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          token: loggedUser.sessionToken,
+          id: loggedUser.id,
+        },
+      });
 
       if (sentResponse.ok) {
         const sent = await sentResponse.json();
-        const formattedSent = sent.map(item => ({
+        const formattedSent = sent.map((item) => ({
           receiver: `${item.receiver.firstName} ${item.receiver.lastName}`,
           title: item.subject,
           message: item.content,
-          date: item.timestamp.split('T')[0]
+          date: item.timestamp.split("T")[0],
         }));
         setDataSent(formattedSent);
         console.log("Sent messages: ", formattedSent);
@@ -50,7 +77,7 @@ const MessageHub = () => {
 
     try {
       const inboxResponse = await fetch(
-        `${Base_url_lab_messages}personal-received`,
+        `${Base_url_messages}/personal-received`,
         {
           method: "GET",
           headers: {
@@ -63,15 +90,16 @@ const MessageHub = () => {
 
       if (inboxResponse.ok) {
         const inbox = await inboxResponse.json();
-        const formattedInbox = inbox.map(item => ({
+        const formattedInbox = inbox.map((item) => ({
           sender: `${item.sender.firstName} ${item.sender.lastName}`,
           title: item.subject,
           message: item.content,
-          date: item.timestamp.split('T')[0]
+          date: item.timestamp.split("T")[0],
         }));
         setDataInbox(formattedInbox);
         console.log("Inbox messages: ", formattedInbox);
-      }
+
+        userStore.getState().setDataInbox(formattedInbox);      }
     } catch (error) {
       console.error("Error fetching inbox messages", error);
     }

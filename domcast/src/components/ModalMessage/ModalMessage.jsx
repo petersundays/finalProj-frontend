@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Modal, Form, Button, FloatingLabel } from "react-bootstrap";
 import "./ModalMessage.css";
 import { userStore } from "../../stores/UserStore.jsx";
+import { Base_url_messages } from "../../functions/UsersFunctions.jsx";
 
 function ModalMessage({ id, show, handleClose }) {
   const loggedUser = userStore((state) => state.loggedUser);
@@ -15,14 +16,14 @@ function ModalMessage({ id, show, handleClose }) {
   const handleSend = async (event) => {
     event.preventDefault();
     const message = {
-      senderId: loggedUser.id,
-      receiverId: id,
       subject: subject,
-      messageText: messageText,
+      content: messageText,
     };
 
     try {
-      const response = await fetch("http://localhost:8080/messages", {
+      const urlMessages = new URL(Base_url_messages);
+      urlMessages.searchParams.append("receiver", id); 
+      const response = await fetch(urlMessages, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
