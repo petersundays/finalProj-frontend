@@ -2,10 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Card, Button } from "react-bootstrap";
 import "./ProjectPrivate.css";
 import { userStore } from "../../../stores/UserStore";
-import {
-  Base_url_projects,
-  Base_url_lab,
-} from "../../../functions/UsersFunctions";
+
 import ProjectEdit from "../../ProjectEdit/ProjectEdit";
 import TaskListGantt from "../../TaskList/TaskListGantt/TaskListGantt";
 import TaskListMobile from "../../TaskList/TaskListMobile/TaskListMobile";
@@ -15,72 +12,11 @@ import { useParams, useLocation } from "react-router-dom";
 
 function ProjectPrivate () {
   const loggedUser = userStore((state) => state.loggedUser);
-/*   const [labsEnum, setLabsEnum] = useState([]);
-  const [stateEnum, setStateEnum] = useState([]);
-  const [project, setProject] = useState({}); */
   const { t } = useTranslation();
   const { id } = useParams();
   const location = useLocation();
   const { projectPrivate, labsEnum, stateEnum } = location.state || {};
 
-/*   useEffect(() => {
-    fetchProject();
-  }, []);
-
-  const fetchProject = async () => {
-    try {
-      const labsEnumResponse = await fetch(`${Base_url_lab}enum`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          token: loggedUser.sessionToken,
-          id: loggedUser.id,
-        },
-      });
-      const labsEnumData = await labsEnumResponse.json();
-      console.log("labsEnumData", labsEnumData);
-      setLabsEnum(labsEnumData);
-    } catch (error) {
-      console.error(error);
-    }
-
-    try {
-      const projectEnumResponse = await fetch(
-        `${Base_url_projects}state-enum`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const projectEnumData = await projectEnumResponse.json();
-      console.log("projectEnumData", projectEnumData);
-      setStateEnum(projectEnumData);
-    } catch (error) {
-      console.error(error);
-    }
-
-    try {
-      const projectResponse = await fetch(
-        `${Base_url_projects}private?id=${id}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            token: loggedUser.sessionToken,
-            id: loggedUser.id,
-          },
-        }
-      );
-      const projectData = await projectResponse.json();
-      setProject(projectData);
-    } catch (error) {
-      console.log("error", error);
-      console.error(error);
-    }
-  };
- */
   const onEdit = () => {
 
   };

@@ -12,9 +12,7 @@ function ModalRedefinePassword({ show, handleClose }) {
   const [oldPassword, setOldPassword] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const user = userStore();
-  const token = user.token;
-  const id = user.id;
+  const loggedUser = userStore((state) => state.loggedUser);
 
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -56,8 +54,8 @@ function ModalRedefinePassword({ show, handleClose }) {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            token: token,
-            id: id,
+            token: loggedUser.sessionToken,
+            id: loggedUser.id,
             oldPassword: oldPassword,
             newPassword: password,
           },

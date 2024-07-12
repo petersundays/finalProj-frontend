@@ -4,6 +4,7 @@ import { Card, Button, Badge, Form, Row, Col } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import { Base_url_projects } from "../../functions/UsersFunctions";
 import ModalMessage from "../ModalMessage/ModalMessage";
+import defaultProfilePhoto from "../../multimedia/default-profile-pic.png";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
@@ -15,60 +16,63 @@ function UserView () {
   const urlId = parseInt(id);
   const loggedUser = userStore((state) => state.loggedUser);
   const usersList = userStore((state) => state.userList);
+  const [performSearch, setPerformSearch] = useState(false);
 
   const [projectsOrderBy, setProjectsOrderBy] = useState("state");
   const [projectsOrderAsc, setProjectsOrderAsc] = useState(true);
   const projectsSearchQuery = useState("");
   const [projects, setProjects] = useState([]);
+  const [projectQty, setProjectQty] = useState(0);
   const showMoreProjects = 100;
 
   const [showMessageModal, setShowMessageModal] = useState(false);
 
   useEffect(() => {
     if (usersList.length > 0) {
+      const fetchProjects = async () => {
+        if (!projectsSearchQuery && !projectsOrderBy && !projectsOrderAsc) {
+          setProjectsOrderBy("name");
+          setProjectsOrderAsc(true);
+        } else {
+          try {
+            const user = usersList.find((user) => user.id === urlId);
+            if (!user) {
+              console.error("User not found");
+              return;
+            }
+            const userId = user.id === loggedUser.id ? loggedUser.id : user.id;
+
+            const urlProjects = new URL(`${Base_url_projects}`);
+            urlProjects.searchParams.append("userId", userId);
+            urlProjects.searchParams.append("orderBy", projectsOrderBy);
+            urlProjects.searchParams.append("orderAsc", projectsOrderAsc);
+            urlProjects.searchParams.append("pageSize", showMoreProjects);
+            urlProjects.searchParams.append("pageNumber", 1);
+
+            const projectsResponse = await fetch(urlProjects.toString(), {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+
+            if (projectsResponse.ok) {
+              const projectsData = await projectsResponse.json();
+              setProjects(projectsData.projects);
+              setProjectQty(projectsData.total);
+              console.log("Projects fetched:", projectsData);
+            } else {
+              console.error("Error fetching projects:", projectsResponse);
+            }
+          } catch (error) {
+            console.error("Error fetching projects:", error);
+          }
+        }
+      };
       fetchProjects();
     }
-  }, [usersList]);
-
-  const fetchProjects = async () => {
-    if (!projectsSearchQuery && !projectsOrderBy && !projectsOrderAsc) {
-      setProjectsOrderBy("name");
-      setProjectsOrderAsc(true);
-    } else {
-      try {
-        const user = usersList.find((user) => user.id === urlId);
-        if (!user) {
-          console.error("User not found");
-          return;
-        }
-        const userId = user.id === loggedUser.id ? loggedUser.id : user.id;
-
-        const urlProjects = new URL(`${Base_url_projects}`);
-        urlProjects.searchParams.append("userId", userId);
-        urlProjects.searchParams.append("orderBy", projectsOrderBy);
-        urlProjects.searchParams.append("orderAsc", projectsOrderAsc);
-        urlProjects.searchParams.append("pageSize", showMoreProjects);
-        urlProjects.searchParams.append("pageNumber", 1);
-
-        const projectsResponse = await fetch(urlProjects.toString(), {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (projectsResponse.ok) {
-          const projectsData = await projectsResponse.json();
-          setProjects(projectsData.projects);
-          console.log("Projects fetched:", projectsData);
-        } else {
-          console.error("Error fetching projects:", projectsResponse);
-        }
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-      }
-    }
-  };
+    console.log("Projects fetched 2:", projects);
+  }, [usersList, performSearch]);
 
   const editProfile = () => {
     navigate(`/user/edit/${userId}`);
@@ -79,7 +83,7 @@ function UserView () {
   };
 
   const handleSearch = () => {
-    fetchProjects();
+    setPerformSearch(!performSearch);
   };
 
   const user = usersList.find((user) => user.id === urlId);
@@ -100,7 +104,7 @@ function UserView () {
   return (
     <Card>
       <Card.Body>
-        <Card.Img variant="top" src={user.photo} />
+        <Card.Img variant="top" src={user.photo || defaultProfilePhoto} />
         <Card.Title>{`${user.firstName} ${user.lastName}`}</Card.Title>
         <Card.Text>{user.nickname}</Card.Text>
         <Card.Text>{user.lab}</Card.Text>
