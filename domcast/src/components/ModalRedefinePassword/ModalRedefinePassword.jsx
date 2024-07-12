@@ -4,14 +4,15 @@ import "./ModalRedefinePassword.css";
 import { Base_url_users } from "../../functions/UsersFunctions";
 import { userStore } from "../../stores/UserStore.jsx";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
 function ModalRedefinePassword({ show, handleClose }) {
+  const { t } = useTranslation();
   const [oldPassword, setOldPassword] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const user = userStore();
-  const token = user.token;
-  const id = user.id;
+  const loggedUser = userStore((state) => state.loggedUser);
 
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -53,8 +54,8 @@ function ModalRedefinePassword({ show, handleClose }) {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
-            token: token,
-            id: id,
+            token: loggedUser.sessionToken,
+            id: loggedUser.id,
             oldPassword: oldPassword,
             newPassword: password,
           },

@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import { Card, Row, Col, Button } from "react-bootstrap";
 import OthersProjCardLogged from "../OthersProjCardLogged/OthersProjCardLogged";
 import "./AdminProjectsApprovalList.css";
-import { use } from "i18next";
 import { Base_url_projects } from "../../functions/UsersFunctions";
 import { userStore } from "../../stores/UserStore";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
 const AdminProjectsApprovalList = () => {
+  const { t } = useTranslation();
   const [cards, setCards] = useState([]);
   const [visibleRows, setVisibleRows] = useState(2);
   const loggedUser = userStore((state) => state.loggedUser);
@@ -18,7 +20,7 @@ const AdminProjectsApprovalList = () => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            token: loggedUser.token,
+            token: loggedUser.sessionToken,
             id: loggedUser.id,
           },
         }
@@ -35,7 +37,7 @@ const AdminProjectsApprovalList = () => {
     };
     fetchProjects();
   }
-  , [loggedUser.token, loggedUser.id]);
+  , [loggedUser.sessionToken, loggedUser.id]);
 
   
   const handleShowMore = () => {

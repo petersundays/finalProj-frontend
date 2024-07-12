@@ -3,8 +3,11 @@ import { Modal, Form, Button, FloatingLabel, FormText } from "react-bootstrap";
 import { Base_url_users } from "../../functions/UsersFunctions";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import "./ModalSignUp.css";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
 function ModalSignUp({ show, handleClose }) {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");

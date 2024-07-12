@@ -2,9 +2,12 @@ import React, { useState } from "react";
 import { Modal, Form, Button, FloatingLabel } from "react-bootstrap";
 import "./ModalMessage.css";
 import { userStore } from "../../stores/UserStore.jsx";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 import { Base_url_messages } from "../../functions/UsersFunctions.jsx";
 
 function ModalMessage({ id, show, handleClose }) {
+  const { t } = useTranslation();
   const loggedUser = userStore((state) => state.loggedUser);
   const storeUserList = userStore((state) => state.userList);
   const otherUser = storeUserList.find((user) => user.id === id);

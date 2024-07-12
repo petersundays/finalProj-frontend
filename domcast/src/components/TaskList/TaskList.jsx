@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import TaskListMobile from './TaskListMobile/TaskListMobile';
 import TaskListGantt from './TaskListGantt/TaskListGantt';
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
-const TaskList = () => {
+function TaskList () {
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {

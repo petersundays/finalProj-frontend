@@ -10,8 +10,11 @@ import {
 } from "react-bootstrap";
 import { Typeahead } from "react-bootstrap-typeahead";
 import "./TaskEdit.css";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
-const TaskEdit = ({ onSave, onCancel }) => {
+function TaskEdit ({ onSave, onCancel }) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     title: "",
     description: "",

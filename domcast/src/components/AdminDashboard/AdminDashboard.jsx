@@ -5,8 +5,13 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./AdminDashboard.css";
 import AdminSettings from "../AdminDashboard/AdminSettings/AdminSettings";
 import AdminStats from "../AdminDashboard/AdminStats/AdminStats";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
 function AdminDashboard() {
+    const { t } = useTranslation();
+
+
     return (
         <div className="Layout">
         <Container fluid>

@@ -1,7 +1,11 @@
 import React from "react";
 import "./OthersBannerLogin.css";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
 function OthersBannerLogin() {
+  const { t } = useTranslation();
+  
   return (
 <div 
     className="banner py-5 text-center" 

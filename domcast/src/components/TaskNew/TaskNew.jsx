@@ -12,8 +12,11 @@ import { Typeahead } from "react-bootstrap-typeahead";
 import "react-bootstrap-typeahead/css/Typeahead.css";
 import "./TaskNew.css";
 import OthersProgressBar from "../OthersProgressBar/OthersProgressBar";
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
-const TaskNew = ({ onAdd, onCancel }) => {
+function TaskNew ({ onAdd, onCancel }) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     title: "",
     description: "",

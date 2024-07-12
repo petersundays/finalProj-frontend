@@ -1,6 +1,7 @@
 html,
 body,
 .Layout,
+
 .Mainsidebar {
   height: 100%;
   background-color: var(--color-white);

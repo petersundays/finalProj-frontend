@@ -2,8 +2,12 @@ import React, { useState } from 'react';
 import { Container, Row, Col, Form, Button, FloatingLabel } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './AssetEdit.css';
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
-const AssetEdit = ({ onSave, onCancel }) => {
+function AssetEdit ({ onSave, onCancel }) {
+    const { t } = useTranslation();
+    
     const [formData, setFormData] = useState({
       name: '',
       description: '',

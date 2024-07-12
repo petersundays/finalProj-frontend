@@ -1,8 +1,13 @@
 import React from 'react';
 import { Card, Badge, Button } from 'react-bootstrap';
 import './TaskView.css';
+import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 
-const TaskView = ({ title, description, state, owner, startDate, endDate, dependsOn, prerequisiteFor, stakeholders, onEdit }) => {
+function TaskView ({ title, description, state, owner, startDate, endDate, dependsOn, prerequisiteFor, stakeholders, onEdit }) {
+  const { t } = useTranslation();
+
+  
   return (
     <Card>
       <Card.Body>
