@@ -3,7 +3,7 @@ import { Card, Button, Row, Col } from "react-bootstrap";
 import "./MessageHub.css";
 import MessageHubSent from "../MessageHubSent/MessageHubSent";
 import MessageHubInbox from "../MessageHubInbox/MessageHubInbox";
-import { Base_url_lab_messages } from "../../functions/UsersFunctions";
+import { Base_url_messages } from "../../functions/UsersFunctions";
 import { userStore } from "../../stores/UserStore.jsx";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
@@ -23,7 +23,7 @@ function MessageHub () {
   const fetchMessages = async () => {
     try {
       const sentResponse = await fetch(
-        `${Base_url_lab_messages}personal-sent`,
+        `${Base_url_messages}personal-sent`,
         {
           method: "GET",
           headers: {
@@ -51,7 +51,7 @@ function MessageHub () {
 
     try {
       const inboxResponse = await fetch(
-        `${Base_url_lab_messages}personal-received`,
+        `${Base_url_messages}personal-received`,
         {
           method: "GET",
           headers: {

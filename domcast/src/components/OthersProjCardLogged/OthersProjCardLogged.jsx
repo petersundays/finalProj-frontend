@@ -33,17 +33,17 @@ const OthersProjCardLogged = ({
 
   const fetchProject = async () => {
     try {
-      const projectResponse = await fetch(
-        `${Base_url_projects}public?id=${id}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            token: loggedUser.sessionToken,
-            id: loggedUser.id,
-          },
-        }
-      );
+      const urlPubProj = new URL(`${Base_url_projects}public`);
+      urlPubProj.searchParams.append("id", id);
+
+      const projectResponse = await fetch(urlPubProj, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          token: loggedUser.sessionToken,
+          id: loggedUser.id,
+        },
+      });
       const projectData = await projectResponse.json();
       setProjectPublic(projectData);
       console.log("projectData em cada card", projectData);
@@ -85,25 +85,6 @@ const OthersProjCardLogged = ({
     } catch (error) {
       console.error(error);
     }
-
-    try {
-      const projectResponse = await fetch(
-        `${Base_url_projects}private?id=${id}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            token: loggedUser.sessionToken,
-            id: loggedUser.id,
-          },
-        }
-      );
-      const projectData = await projectResponse.json();
-      setProjectPrivate(projectData);
-    } catch (error) {
-      console.log("error", error);
-      console.error(error);
-    }
   };
 
   const goToProject = async () => {
@@ -113,24 +94,9 @@ const OthersProjCardLogged = ({
       projectPublic.mainManager.id === loggedUser.id ||
       projectPublic.projectUsers.some((user) => user.id === loggedUser.id)
     ) {
-      console.log("projectPrivate", projectPrivate);
-      console.log("labsEnum", labsEnum);
-      console.log("stateEnum", stateEnum);
-      console.log("projectPublic", projectPublic);
-
-      navigate(`/domcast/myproject/view/${projectPrivate.id}`, {
-        state: {
-          projectPrivate,
-          labsEnum,
-          stateEnum,
-        },
-      });
+      navigate(`/domcast/myproject/view/${projectPublic.id}`, {});
     } else {
-      navigate(`/domcast/project/view/${projectPublic.id}`, {
-        state: {
-          projectPublic,
-        },
-      });
+      navigate(`/domcast/project/view/${projectPublic.id}`);
     }
   };
 

@@ -8,9 +8,10 @@ import TaskListGantt from "../../TaskList/TaskListGantt/TaskListGantt";
 import TaskListMobile from "../../TaskList/TaskListMobile/TaskListMobile";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 
-function ProjectPrivate () {
+function ProjectPrivate() {
+  const navigate = useNavigate();
   const loggedUser = userStore((state) => state.loggedUser);
   const { t } = useTranslation();
   const { id } = useParams();
@@ -18,7 +19,10 @@ function ProjectPrivate () {
   const { projectPrivate, labsEnum, stateEnum } = location.state || {};
 
   const onEdit = () => {
-
+    console.log("projectPrivate", projectPrivate);
+    navigate(`/domcast/project/edit/${id}`, {
+      state: { projectPrivate, labsEnum, stateEnum },
+    });
   };
 
   const onPlanner = () => {
@@ -49,7 +53,8 @@ function ProjectPrivate () {
             Team:
           </h6>
           <span style={{ fontWeight: "bold", color: "var(--color-blue-01)" }}>
-            {projectPrivate.mainManager.firstName} {projectPrivate.mainManager.lastName}
+            {projectPrivate.mainManager.firstName}{" "}
+            {projectPrivate.mainManager.lastName}
           </span>
           {projectPrivate.projectUsers.map((member, index) => (
             <span
@@ -121,17 +126,36 @@ function ProjectPrivate () {
               </span>
             ))}
         </div>
-        {(projectPrivate.mainManager || projectPrivate.projectUsers.type === 2) && (
-          <Button variant="primary" onClick={onEdit} className="mt-3 me-2">
+        {(projectPrivate.mainManager ||
+          projectPrivate.projectUsers.type === 2) && (
+          <Button
+            variant="primary me-4"
+            style={{
+              width: "10rem",
+              color: "var(--color-white",
+              backgroundColor: "var(--color-blue-01",
+            }}
+            onClick={onEdit}
+            className="mt-3 me-2"
+          >
             Edit project infos
           </Button>
         )}
-        <Button variant="secondary" onClick={onPlanner} className="mt-3">
+        <Button
+          variant="secondary"
+          style={{
+            width: "10rem",
+            color: "var(--color-coal",
+            backgroundColor: "var(--color-yellow-01",
+          }}
+          onClick={onPlanner}
+          className="mt-3"
+        >
           Planner
         </Button>
       </Card.Body>
     </Card>
   );
-};
+}
 
 export default ProjectPrivate;

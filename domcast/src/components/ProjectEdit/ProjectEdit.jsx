@@ -13,23 +13,24 @@ import "react-bootstrap-typeahead/css/Typeahead.css";
 import "./ProjectEdit.css";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import { useLocation } from "react-router-dom";
 
-function ProjectEdit ({ onCreate, onCancel }) {
+function ProjectEdit({ onCreate, onCancel }) {
+  const location = useLocation();
+  const { projectPrivate, labsEnum, stateEnum } = location.state || {};
+
   const { t } = useTranslation();
   const [formData, setFormData] = useState({
-    title: "",
-    lab: "",
-    description: "",
-    startDate: "",
-    duration: "",
-    team: [],
-    keywords: [],
-    skills: [],
-    assets: [],
+    name: projectPrivate.name,
+    labId: projectPrivate.labId,
+    description: projectPrivate.description,
+    projectedStartDate: projectPrivate.projectedStartDate.split("T")[0],
+    deadline: projectPrivate.deadline.split("T")[0],
+    keywords: projectPrivate.keywords,
+    skills: projectPrivate.skills,
+    resources: projectPrivate.resources,
   });
 
-  const [newMember, setNewMember] = useState("");
-  const [members, setMembers] = useState([]);
   const [newKeyword, setNewKeyword] = useState("");
   const [newSkill, setNewSkill] = useState("");
   const [newAsset, setNewAsset] = useState({
@@ -46,21 +47,6 @@ function ProjectEdit ({ onCreate, onCancel }) {
       ...formData,
       [name]: value,
     });
-  };
-
-  const handleAddMember = (selected) => {
-    if (selected.length > 0) {
-      const role = document.getElementById("team-role").value;
-      setFormData({
-        ...formData,
-        team: [...formData.team, { name: selected[0], role }],
-      });
-      setNewMember("");
-    }
-  };
-
-  const handleRemoveMember = (memberToRemove) => {
-    setMembers(members.filter((member) => member !== memberToRemove));
   };
 
   const handleAddKeyword = (selected) => {
@@ -110,21 +96,21 @@ function ProjectEdit ({ onCreate, onCancel }) {
         <Col md={6}>
           <FloatingLabel
             controlId="floatingTitle"
-            label="Title"
+            label="Name"
             className="mb-3"
           >
             <Form.Control
               type="text"
-              name="title"
-              value={formData.title}
+              name="name"
+              value={formData.name}
               onChange={handleChange}
-              placeholder="Title"
+              placeholder="Name"
             />
           </FloatingLabel>
           <FloatingLabel controlId="floatingLab" label="Lab" className="mb-3">
             <Form.Select
-              name="lab"
-              value={formData.lab}
+              name="labId"
+              value={formData.labId}
               onChange={handleChange}
               placeholder="Lab name"
             >
@@ -157,8 +143,8 @@ function ProjectEdit ({ onCreate, onCancel }) {
           >
             <Form.Control
               type="date"
-              name="startDate"
-              value={formData.startDate}
+              name="projectedStartDate"
+              value={formData.projectedStartDate}
               onChange={handleChange}
               placeholder="DDMMYYYY"
             />
@@ -170,48 +156,14 @@ function ProjectEdit ({ onCreate, onCancel }) {
           >
             <Form.Control
               type="text"
-              name="duration"
-              value={formData.duration}
+              name="deadline"
+              value={formData.deadline}
               onChange={handleChange}
               placeholder="Duration in days"
             />
           </FloatingLabel>
         </Col>
         <Col md={6}>
-          <FloatingLabel controlId="floatingTeam" label="Team" className="mb-3">
-            <Typeahead
-              id="team-search"
-              onChange={handleAddMember}
-              options={[]}
-              placeholder="Search user..."
-            />
-            <Form.Select id="team-role" className="mt-2">
-              <option value="Manager">Manager</option>
-              <option value="Contributor">Contributor</option>
-            </Form.Select>
-            <Button
-              variant="primary"
-              onClick={() => handleAddMember([{ name: newMember }])}
-              className="mt-2"
-            >
-              Add
-            </Button>
-          </FloatingLabel>
-          <div>
-            {formData.team.map((member, index) => (
-              <Badge key={index} pill bg="primary" className="me-1">
-                {member.name}{" "}
-                <Button
-                  variant="light"
-                  size="sm"
-                  onClick={() => handleRemoveMember(member)}
-                >
-                  x
-                </Button>
-              </Badge>
-            ))}
-          </div>
-
           <FloatingLabel
             controlId="floatingKeywords"
             label="Keywords"
@@ -353,6 +305,6 @@ function ProjectEdit ({ onCreate, onCancel }) {
       </Row>
     </Container>
   );
-};
+}
 
 export default ProjectEdit;
