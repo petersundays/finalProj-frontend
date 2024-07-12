@@ -20,7 +20,7 @@ const AdminProjectsApprovalList = () => {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            token: loggedUser.token,
+            token: loggedUser.sessionToken,
             id: loggedUser.id,
           },
         }
@@ -37,7 +37,7 @@ const AdminProjectsApprovalList = () => {
     };
     fetchProjects();
   }
-  , [loggedUser.token, loggedUser.id]);
+  , [loggedUser.sessionToken, loggedUser.id]);
 
   
   const handleShowMore = () => {

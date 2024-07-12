@@ -1,81 +1,69 @@
 import React, { useState } from 'react';
-import { Container, Row, Col, Form, Button, FloatingLabel } from 'react-bootstrap';
+import { Card, Row, Col, Form, Button, FloatingLabel } from 'react-bootstrap';
 import { Typeahead } from 'react-bootstrap-typeahead';
+import Base_url_record from "../../functions/UsersFunctions.jsx";
 import './LogNew.css';
+import { userStore } from '../../stores/UserStore';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 
-function LogNew ({ onAdd, onCancel }) {
+function LogNew ({ onAdd, onCancel, projectPrivateId }) {
   const { t } = useTranslation();
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    associatedTask: ''
-  });
+  const loggedUser = userStore((state) => state.loggedUser);
+  const [description, setDescription] = useState('');
+  const navigate = useNavigate();
 
-  const [newAssociatedTask, setNewAssociatedTask] = useState('');
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleAddAssociatedTask = () => {
-    if (newAssociatedTask) {
-      setFormData({ ...formData, associatedTask: newAssociatedTask });
-      setNewAssociatedTask('');
+  const handleAdd = async () => {
+    if (description === '') {
+      toast.error(t("Please write the log"));
+      return;
+    } else {
+      try {
+        const urlRecord = new URL(Base_url_record);
+        urlRecord.searchParams.append('projectId', projectPrivateId);
+  
+        const response = await fetch(urlRecord, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            token: loggedUser.sessionToken,
+            id: loggedUser.id,
+          },
+          body: description,
+        });
+  
+        if (response.ok) {
+          toast.success(t("Log added"));
+          navigate(`/domcast/myproject/view/${projectPrivateId}`);
+        } else {
+          toast.error(t("Error adding log"));
+        }
+      } catch (error) {
+        toast.error(t("Error adding log"));
+      }
     }
   };
 
-  const handleAdd = () => {
-    onAdd(formData);
-  };
 
   return (
-    <Container>
+    <Card>
       <Row>
         <Col md={6}>
-          <FloatingLabel controlId="floatingTitle" label="Title" className="mb-3">
-            <Form.Control
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              placeholder="Title"
-            />
-          </FloatingLabel>
           <FloatingLabel controlId="floatingDescription" label="Description" className="mb-3">
             <Form.Control
               as="textarea"
               name="description"
-              value={formData.description}
-              onChange={handleChange}
+              value={description}
+              onChange={e => setDescription(e.target.value)}
               placeholder="Description"
             />
-          </FloatingLabel>
-          <FloatingLabel controlId="floatingAssociatedTask" label="Associated Task" className="mb-3">
-            <Typeahead
-              id="associatedTask"
-              onChange={(selected) => {
-                if (selected.length > 0) {
-                  setNewAssociatedTask(selected[0]);
-                }
-              }}
-              options={['Task1', 'Task2', 'Task3']} // Example options
-              placeholder="Choose an associated task"
-              selected={newAssociatedTask ? [newAssociatedTask] : []}
-            />
-            <Button variant="primary" onClick={handleAddAssociatedTask} className="mt-2">
-              Add
-            </Button>
           </FloatingLabel>
         </Col>
       </Row>
       <Row className="mt-3">
         <Col>
-          <Button variant="primary" onClick={handleAdd}>
+          <Button variant="primary" onClick={setDescription}>
             Add Log
           </Button>
           <Button variant="secondary" onClick={onCancel} className="ms-2">
@@ -83,7 +71,7 @@ function LogNew ({ onAdd, onCancel }) {
           </Button>
         </Col>
       </Row>
-    </Container>
+    </Card>
   );
 };
 
