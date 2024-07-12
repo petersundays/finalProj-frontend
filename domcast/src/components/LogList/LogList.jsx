@@ -22,7 +22,7 @@ function LogList({ privateProject }) {
       <Card.Body>
         <Card.Title>{t("Logs")}</Card.Title>
         <Card.Text>
-          <Table striped bordered hover>
+          <Table striped bordered hover className="table-logs">
             <thead>
               <tr>
                 <th>{t("Author")}</th>
