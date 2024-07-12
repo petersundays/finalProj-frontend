@@ -3,8 +3,12 @@ import { Card, Table, Button } from "react-bootstrap";
 import "../MessageHub/MessageHub.css";
 import { useTranslation } from "react-i18next";
 import ModalReadMessage from "../ModalReadMessage/ModalReadMessage";
+import { Base_url_messages } from "../../functions/UsersFunctions";
+import { userStore } from "../../stores/UserStore.jsx";
 
 const MessageHubInbox = ({ data }) => {
+  const loggedUser = userStore((state) => state.loggedUser);
+
   const { t } = useTranslation();
   const [visibleRows, setVisibleRows] = useState(10);
 
@@ -12,9 +16,13 @@ const MessageHubInbox = ({ data }) => {
   const [messageId, setMessageId] = useState(0);
   const [message, setMessage] = useState(null);
 
- 
-    
+  const todayDate = new Date().toISOString().split("T");
+  const today = todayDate[0];
 
+  const markReadAndShowMessage = async (id) => {
+    await markAsRead(id);
+    openMessageModal(id);
+  };
 
   const openMessageModal = (id) => {
     setMessageId(id);
@@ -33,6 +41,35 @@ const MessageHubInbox = ({ data }) => {
     setVisibleRows((prev) => Math.min(prev + 10, data.length));
   };
 
+
+  const markAsRead = async (id) => {
+    const url = new URL(`${Base_url_messages}/mark-personal-read`);
+    url.searchParams.append("message", id);
+    try {
+      const response = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          token: loggedUser.sessionToken,
+          id: loggedUser.id,
+        },
+      });
+
+      if (response.ok) {
+        const read = await response.json();
+        data.find((msg) => msg.id === id).read = read;
+        setMessage({ ...message, read: read });
+        
+      } else {
+        console.log("Error marking message as read");
+      }
+    } catch (error) {
+      console.error("Error fetching sent messages", error);
+    }
+    
+  };
+
+
   return (
     <Card className="message-hub-card mt-2 mb-4" style={{ border: "none" }}>
       <Table className="message-hub-table">
@@ -46,13 +83,14 @@ const MessageHubInbox = ({ data }) => {
         </thead>
         <tbody>
           {data.slice(0, visibleRows).map((item, index) => (
-            <tr key={index} className="message-hub-row" onClick={() => openMessageModal(item.id)}>
+            <tr key={index} className="message-hub-row" onClick={() => markReadAndShowMessage(item.id)}>
               <td
-                className="message-hub-cell"
+                className="message-hub-cell" 
                 style={{
                   whiteSpace: "nowrap",
                   overflow: "hidden",
                   textOverflow: "ellipsis",
+                  fontWeight: item.read === false ? "bold" : "normal",
                 }}
               >
                 {item.sender}
@@ -63,6 +101,7 @@ const MessageHubInbox = ({ data }) => {
                   whiteSpace: "nowrap",
                   overflow: "hidden",
                   textOverflow: "ellipsis",
+                  fontWeight: item.read === false ? "bold" : "normal",
                 }}
               >
                 {item.title}
@@ -73,11 +112,20 @@ const MessageHubInbox = ({ data }) => {
                   whiteSpace: "nowrap",
                   overflow: "hidden",
                   textOverflow: "ellipsis",
+                  fontWeight: item.read === false ? "bold" : "normal",
                 }}
               >
                 {item.message}
               </td>
-              <td className="message-hub-cell">{item.date}</td>
+              <td 
+                className="message-hub-cell"
+                style={{
+                  fontWeight: item.read === false ? "bold" : "normal", 
+                }}
+                >
+                {item.date}
+                </td>
+              
             </tr>
           ))}
         </tbody>
@@ -98,7 +146,7 @@ const MessageHubInbox = ({ data }) => {
           </Button>
         </div>
       )}
-      <ModalReadMessage id={messageId} show={showMessageModal} handleClose={closeMessageModal} message = {message}/>
+      <ModalReadMessage show={showMessageModal} handleClose={closeMessageModal} message = {message}/>
     </Card>
   );
 };
