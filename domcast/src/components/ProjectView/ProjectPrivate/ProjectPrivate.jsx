@@ -133,7 +133,7 @@ function ProjectPrivate() {
   const onEdit = () => {
     console.log("projectPrivate", projectPrivate);
     navigate(`/domcast/project/edit/${id}`, {
-      state: { projectPrivate, labsEnum, stateEnum },
+      state: { projectPrivate },
     });
   };
 
