@@ -88,12 +88,12 @@ function ProjectPublic() {
   };
 
   return (
-    <Card style={{border: "none"}}>
+    <Card style={{ border: "none" }}>
       {projectPublic && labsEnum.length > 0 && stateEnum.length > 0 && (
         <Card.Body className="p-3">
           <Card.Title className="my-5">{projectPublic.name}</Card.Title>
           <Card.Subtitle className="my-2 text-muted">
-          <Row>
+            <Row>
               <Col md={1}>
                 <h6
                   style={{
@@ -104,8 +104,12 @@ function ProjectPublic() {
                   Lab:
                 </h6>
               </Col>
-              <Col md={3}>{projectPublic.labId}</Col>
-              </Row>
+              {projectPublic.labId && (
+                <Col md={3}>
+                  {labsEnum.find((lab) => lab.id === projectPublic.labId)?.name}
+                </Col>
+              )}
+            </Row>
           </Card.Subtitle>
           <Card.Text>
             <Row>
@@ -119,7 +123,15 @@ function ProjectPublic() {
                   State:
                 </h6>
               </Col>
-              <Col md={3}>{projectPublic.state}</Col>
+              {projectPublic.state && (
+                <Col md={3}>
+                  {
+                    stateEnum.find(
+                      (state) => state.intValue === projectPublic.state
+                    )?.name
+                  }
+                </Col>
+              )}
             </Row>
           </Card.Text>
           <Card.Text>
@@ -134,7 +146,9 @@ function ProjectPublic() {
                   Description & Motivation:
                 </h6>
               </Col>
-              <Col md={3}>{projectPublic.description}</Col>
+              {projectPublic.description && (
+                <Col md={3}>{projectPublic.description}</Col>
+              )}
             </Row>
           </Card.Text>
           <Card.Text>
@@ -149,7 +163,11 @@ function ProjectPublic() {
                   Start Date:
                 </h6>
               </Col>
-              <Col md={3}>{projectPublic.projectedStartDate.split('T')[0]}</Col>
+              {projectPublic.projectedStartDate && (
+                <Col md={3}>
+                  {projectPublic.projectedStartDate.split("T")[0]}
+                </Col>
+              )}
             </Row>
           </Card.Text>
           <Card.Text>
@@ -164,7 +182,9 @@ function ProjectPublic() {
                   End Date:
                 </h6>
               </Col>
-              <Col md={3}>{projectPublic.deadline.split('T')[0]}</Col>
+              {projectPublic.deadline && (
+                <Col md={3}>{projectPublic.deadline.split("T")[0]}</Col>
+              )}
             </Row>
           </Card.Text>
           <Row className="my-2">
@@ -172,18 +192,32 @@ function ProjectPublic() {
               <h6
                 style={{ fontWeight: "bold", color: "var(--color-yellow-02)" }}
               >
-                Creator:
+                Team:
               </h6>
             </Col>
-            <Col md={3}>
-              {projectPublic.mainManager && (
-                <span
-                  style={{ fontWeight: "bold", color: "var(--color-blue-01)" }}
-                >
-                  {projectPublic.mainManager.firstName}{" "}
-                  {projectPublic.mainManager.lastName}
-                </span>
-              )}
+            <Col md={6}>
+              {(projectPublic.projectUsers || [])
+                .sort((a, b) => a.role - b.role)
+                .map((projectUser, index) => (
+                  <span
+                    key={index}
+                    style={{
+                      color:
+                        projectUser.role === 1 || projectUser.role === 2
+                          ? "var(--color-blue-01)"
+                          : "var(--color-blue-03)",
+
+                      fontWeight:
+                        projectUser.role === 1 || projectUser.role === 2
+                          ? "bold"
+                          : "normal",
+                    }}
+                    className="mx-1"
+                  >
+                    {projectUser.firstName} {projectUser.lastName}
+                    {index < projectPublic.projectUsers.length - 1 ? ", " : ""}
+                  </span>
+                ))}
             </Col>
           </Row>
           <Row className="my-2">
@@ -229,16 +263,16 @@ function ProjectPublic() {
             </Col>
           </Row>
           {projectPublic.vacancies > 0 ? (
-            <Button variant="primary" onClick={onJoin} className="mt-3">
+            <Button variant="primary" onClick={onJoin} className="mt-4">
               Join this project
             </Button>
           ) : (
             <span
-              className="mt-2"
+              className="mt-4"
               style={{
                 fontSize: "16px",
                 fontWeight: "bold",
-                color: "var(--color-yellow-02)",
+                color: "var(--color-blue-02)",
               }}
             >
               No vacancies
