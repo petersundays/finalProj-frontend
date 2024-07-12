@@ -7,19 +7,19 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
 
-const ProjectPublic = () => {
+const ProjectPublic = ({ projectPublic }) => {
   const loggedUser = userStore((state) => state.loggedUser);
   const { t } = useTranslation();
-  const [project, setProject] = useState({});
+  // const [projectPublic, setProjectPublic] = useState({});
   const { id } = useParams();
 
-  useEffect(() => {
+/*   useEffect(() => {
     console.log("loggedUser", loggedUser);
     fetchProject();
-    console.log("project public", project);
+    console.log("project public", projectPublic);
   }, []);
 
-  const fetchProject = async () => {
+   const fetchProject = async () => {
     try {
       const projectResponse = await fetch(`${Base_url_projects}public?id=${id}`, {
         method: "GET",
@@ -30,11 +30,11 @@ const ProjectPublic = () => {
         },
       });
       const projectData = await projectResponse.json();
-      setProject(projectData);
+      setProjectPublic(projectData);
     } catch (error) {
       console.error(error);
     }
-  };
+  }; */
 
   const onJoin = async () => {
     try {
@@ -61,22 +61,22 @@ const ProjectPublic = () => {
   return (
     <Card>
       <Card.Body>
-        <Card.Title>{project.name}</Card.Title>
+        <Card.Title>{projectPublic.name}</Card.Title>
         <Card.Subtitle className="mb-2 text-muted">
-          {project.workplace}
+          {projectPublic.workplace}
         </Card.Subtitle>
-        <Card.Text>{project.state}</Card.Text>
-        <Card.Text>{project.description}</Card.Text>
-        <Card.Text>Start Date: {project.projectedStartDate}</Card.Text>
-        <Card.Text>Duration: {project.deadline}</Card.Text>
+        <Card.Text>{projectPublic.state}</Card.Text>
+        <Card.Text>{projectPublic.description}</Card.Text>
+        <Card.Text>Start Date: {projectPublic.projectedStartDate}</Card.Text>
+        <Card.Text>Duration: {projectPublic.deadline}</Card.Text>
         <div>
           <h6 style={{ fontWeight: "bold", color: "var(--color-yellow-02)" }}>
             Team:
           </h6>
           <span style={{ fontWeight: "bold", color: "var(--color-blue-01)" }}>
-            {project.mainManager}
+            {projectPublic.mainManager}
           </span>
-          {project.projectUsers.map((member, index) => (
+          {projectPublic.projectUsers.map((member, index) => (
             <span
               key={index}
               style={{ color: "var(--color-blue-03)" }}
@@ -90,7 +90,7 @@ const ProjectPublic = () => {
           <h6 style={{ fontWeight: "bold", color: "var(--color-yellow-02)" }}>
             Keywords:
           </h6>
-          {project.keywords.map((keyword, index) => (
+          {projectPublic.keywords.map((keyword, index) => (
             <span
               key={index}
               style={{ color: "var(--color-blue-03)" }}
@@ -104,7 +104,7 @@ const ProjectPublic = () => {
           <h6 style={{ fontWeight: "bold", color: "var(--color-yellow-02)" }}>
             Skills:
           </h6>
-          {project.skills.map((skill, index) => (
+          {projectPublic.skills.map((skill, index) => (
             <span
               key={index}
               style={{ color: "var(--color-blue-03)" }}
@@ -114,7 +114,7 @@ const ProjectPublic = () => {
             </span>
           ))}
         </div>
-        {project.vacancies > 0 ? (
+        {projectPublic.vacancies > 0 ? (
         <Button variant="primary" onClick={onJoin} className="mt-3">
           Join this project
         </Button>

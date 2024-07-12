@@ -13,15 +13,17 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
 
-const ProjectPrivate = () => {
+const ProjectPrivate = ({project,
+  labsEnum,
+  stateEnum }) => {
   const loggedUser = userStore((state) => state.loggedUser);
-  const [labsEnum, setLabsEnum] = useState([]);
+/*   const [labsEnum, setLabsEnum] = useState([]);
   const [stateEnum, setStateEnum] = useState([]);
-  const [project, setProject] = useState({});
+  const [project, setProject] = useState({}); */
   const { t } = useTranslation();
   const { id } = useParams();
 
-  useEffect(() => {
+/*   useEffect(() => {
     fetchProject();
   }, []);
 
@@ -78,7 +80,7 @@ const ProjectPrivate = () => {
       console.error(error);
     }
   };
-
+ */
   const onEdit = () => {
     const projectUsers = project.projectUsers.map(
       (projectUser) => projectUser.id

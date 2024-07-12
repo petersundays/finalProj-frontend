@@ -22,7 +22,8 @@ const OthersProjCardLogged = ({
 }) => {
   const navigate = useNavigate();
   const loggedUser = userStore((state) => state.loggedUser);
-  const [project, setProject] = useState({});
+  const [projectPrivate, setProjectPrivate] = useState({});
+  const [projectPublic, setProjectPublic] = useState({});
   const [labsEnum, setLabsEnum] = useState([]);
   const [stateEnum, setStateEnum] = useState([]);
   const { t } = useTranslation();
@@ -45,7 +46,7 @@ const OthersProjCardLogged = ({
         }
       );
       const projectData = await projectResponse.json();
-      setProject(projectData);
+      setProjectPublic(projectData);
       console.log("projectData em cada card", projectData);
     } catch (error) {
       console.error(error);
@@ -53,12 +54,12 @@ const OthersProjCardLogged = ({
   };
 
   const goToProject = async () => {
-    // check if loggedUser is the main manager or a collaborator of the project
-    const projectUsers = project.projectUsers.map(
+    // check if loggedUser is the main manager or a collaborator of the projectPublic
+    const projectUsers = projectPublic.projectUsers.map(
       (projectUser) => projectUser.id
     );
     if (
-      project.mainManager.id === loggedUser.id ||
+      projectPublic.mainManager.id === loggedUser.id ||
       projectUsers.includes(loggedUser.id)
     ) {
       try {
@@ -107,21 +108,25 @@ const OthersProjCardLogged = ({
           }
         );
         const projectData = await projectResponse.json();
-        setProject(projectData);
+        setProjectPrivate(projectData);
       } catch (error) {
         console.log("error", error);
         console.error(error);
       }
 
-      navigate(`/domcast/myproject/view/${project.id}`, {
+      navigate(`/domcast/myproject/view/${projectPrivate.id}`, {
         state: {
-          project,
+          projectPrivate,
           labsEnum,
           stateEnum,
         },
       });
     } else {
-      navigate(`/domcast/project/view/${project.id}`);
+      navigate(`/domcast/project/view/${projectPublic.id}`, {
+        state: {
+          projectPublic,
+        },
+      });
     }
   };
 

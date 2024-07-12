@@ -163,6 +163,7 @@ const ProjectUserList = () => {
           console.log("Projects fetched:", cardsData);
         } else {
           console.log("Error fetching projects");
+          navigate("/domcast/projects/list");
         }
       } catch (error) {
         console.error("Error:", error);
