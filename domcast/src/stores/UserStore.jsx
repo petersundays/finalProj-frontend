@@ -84,6 +84,19 @@ export const userStore = create(
         }));
         sessionStorage.removeItem("userStore");
       },
+      messageReceived: null, 
+      setMessageReceived: (message) => set({ messageReceived: message }),
+      dataInbox: [],
+      setDataInbox: (inboxData) => set({ dataInbox: inboxData }),
+      prependToDataInbox: (newMessage) =>
+        set((state) => {
+            const exists = state.dataInbox.some(message => message.id === newMessage.id);
+            if (!exists) {
+                return { dataInbox: [newMessage, ...state.dataInbox] };
+            }
+            return state;
+        }),
+    
     }),
     {
       name: "userStore",

@@ -8,9 +8,11 @@ import { userStore } from "../../stores/UserStore.jsx";
 import { projectStore } from "../../stores/ProjectStore.jsx";
 import { Base_url_users } from "../../functions/UsersFunctions.jsx";
 import ModalRedefinePassword from "../ModalRedefinePassword/ModalRedefinePassword.jsx";
+
 import { NotificationWS } from "../../websockets/NotificationWS.jsx";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+
 
 function MainNavbarLogged({ handleShow, handleLanguageChange, language }) {
   const { t } = useTranslation();
@@ -20,8 +22,6 @@ function MainNavbarLogged({ handleShow, handleLanguageChange, language }) {
   const resetDetailedProject = projectStore((state) => state.resetDetailedProject);
   const resetNewProject = projectStore((state) => state.resetNewProject);
 
-
-  const { ws } = NotificationWS();
 
   const userId = userStore((state) => state.loggedUser.id);
 

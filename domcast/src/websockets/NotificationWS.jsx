@@ -56,11 +56,13 @@ export const NotificationWS = () => {
             ws.onclose = (event) => {
                 console.log("Disconnected from websocket");
                 notificationWSClient.current = null;
+                console.log("loggedUser.sessionToken : ", loggedUser);
+
                 // If the WebSocket was closed for a reason other than the user logging out, try to reconnect
-                if (!event.wasClean && loggedUser && loggedUser.sessionToken) {
+               /*  if (!event.wasClean && loggedUser && loggedUser.sessionToken && shouldReconnect) {
                     console.log("Reconnecting to websocket...");
                     setTimeout(connect, 5000);  // Try to reconnect after a delay
-                }
+                } */
             };
         };
 
