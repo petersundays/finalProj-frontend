@@ -69,6 +69,7 @@ const MessageHub = () => {
           title: item.subject,
           message: item.content,
           date: `${item.timestamp.split("T")[0]} , ${item.timestamp.split("T")[1].split(":")[0]}:${item.timestamp.split("T")[1].split(":")[1]}`,
+          id: item.id,
         }));
         setDataSent(formattedSent);
         console.log("Sent messages: ", formattedSent);
@@ -97,6 +98,7 @@ const MessageHub = () => {
           title: item.subject,
           message: item.content,
           date: `${item.timestamp.split("T")[0]} , ${item.timestamp.split("T")[1].split(":")[0]}:${item.timestamp.split("T")[1].split(":")[1]}`,
+          id: item.id,
         }));
         setDataInbox(formattedInbox);
         console.log("Inbox messages: ", formattedInbox);
