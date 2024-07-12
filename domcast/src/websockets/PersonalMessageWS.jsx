@@ -16,10 +16,8 @@ export const PersonalMessageWS = () => {
     const [shouldReconnect, setShouldReconnect] = useState(true);
 
     useEffect(() => {
-        console.log("PersonalMessageWS WS_URL 1 : ", WS_URL);
         
         const connect = () => {
-            console.log("PersonalMessageWS WS_URL 2 : ", WS_URL);
 
             if (messageWSClient.current && messageWSClient.current.readyState === WebSocket.OPEN) {
                 console.log("WebSocket is already connected");
@@ -46,10 +44,10 @@ export const PersonalMessageWS = () => {
                 console.log("Disconnected from websocket");
                 messageWSClient.current = null;
                 // If the WebSocket was closed for a reason other than the user logging out, try to reconnect
-                if (!event.wasClean && loggedUser && loggedUser.sessionToken && shouldReconnect) {
+                /* if (!event.wasClean && loggedUser && loggedUser.sessionToken && shouldReconnect) {
                     console.log("Reconnecting to websocket...");
                     setTimeout(connect, 5000);  // Try to reconnect after a delay
-                }
+                } */
             };
         };
 

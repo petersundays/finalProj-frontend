@@ -14,7 +14,7 @@ function MessageHub () {
   const { t } = useTranslation();
   const [showInbox, setShowInbox] = useState(true);
 
-  const inboxDataFromStore = userStore((state) => state.dataInbox); // Assuming 'dataInbox' is now part of your store
+  const inboxDataFromStore = userStore((state) => state.dataInbox);
 
   const [dataSent, setDataSent] = useState([]);
   const [dataInbox, setDataInbox] = useState(inboxDataFromStore);
@@ -32,8 +32,11 @@ function MessageHub () {
         sender: `${messageReceived.sender.firstName} ${messageReceived.sender.lastName}`,
         title: messageReceived.subject,
         message: messageReceived.content,
-        date: messageReceived.timestamp.split("T")[0],
+        date: `${messageReceived.timestamp.split("T")[0]} ${messageReceived.timestamp.split("T")[1].split(":")[0]}:${messageReceived.timestamp.split("T")[1].split(":")[1]}`,
+        read: messageReceived.read,
       };
+      newMessage.id = messageReceived.id;
+      messageReceived.invitedTo && (newMessage.invitedTo = messageReceived.invitedTo);
       userStore.getState().prependToDataInbox(newMessage);
     }
   }, [messageReceived]);
@@ -49,6 +52,7 @@ function MessageHub () {
   useEffect(() => {
     fetchMessages();
   }, []);
+
 
   const fetchMessages = async () => {
     try {
@@ -67,10 +71,10 @@ function MessageHub () {
           receiver: `${item.receiver.firstName} ${item.receiver.lastName}`,
           title: item.subject,
           message: item.content,
-          date: item.timestamp.split("T")[0],
+          date: `${item.timestamp.split("T")[0]} , ${item.timestamp.split("T")[1].split(":")[0]}:${item.timestamp.split("T")[1].split(":")[1]}`,
+          id: item.id,
         }));
         setDataSent(formattedSent);
-        console.log("Sent messages: ", formattedSent);
       }
     } catch (error) {
       console.error("Error fetching sent messages", error);
@@ -91,16 +95,19 @@ function MessageHub () {
 
       if (inboxResponse.ok) {
         const inbox = await inboxResponse.json();
+        console.log("Inbox messages: ", inbox);
         const formattedInbox = inbox.map((item) => ({
           sender: `${item.sender.firstName} ${item.sender.lastName}`,
           title: item.subject,
           message: item.content,
-          date: item.timestamp.split("T")[0],
+          date: `${item.timestamp.split("T")[0]} , ${item.timestamp.split("T")[1].split(":")[0]}:${item.timestamp.split("T")[1].split(":")[1]}`,
+          id: item.id,
+          invitedTo: item.invitedTo ? item.invitedTo : null,
+          read: item.read,
         }));
         setDataInbox(formattedInbox);
-        console.log("Inbox messages: ", formattedInbox);
-
-        userStore.getState().setDataInbox(formattedInbox);      }
+        userStore.getState().setDataInbox(formattedInbox);      
+      }
     } catch (error) {
       console.error("Error fetching inbox messages", error);
     }
