@@ -11,7 +11,7 @@ function LogList({ privateProject }) {
   const privateProjectId = privateProject.id;
 
   const handleAdd = () => {
-    navigate("/logs/new", { state: { privateProjectId } });
+    navigate("/domcast/logs/new", { state: { privateProjectId } });
   };
 
   return (
