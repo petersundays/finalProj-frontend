@@ -105,13 +105,6 @@ function ProjectNew () {
   const steps = ["Step 1", "Step 2", "Step 3"];
 
   useEffect(() => {
-    console.log("Project state updated:", project);
-    console.log("Custom skill list:", customSkillList);
-    console.log("Custom asset list:", customAssetList);
-    console.log("Team store:", teamStore);
-  }, [project]);
-
-  useEffect(() => {
     fetchEnums();
     setEnumsFetched(true);
   }, []);

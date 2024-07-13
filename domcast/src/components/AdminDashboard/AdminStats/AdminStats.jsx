@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import "./AdminStats.css";
 import { useTranslation } from "react-i18next";
+import {useReactToPrint} from 'react-to-print';
+import { useRef } from "react";
 import { toast } from "react-toastify";
 
 import AdminStatsAverages from "./AdminStatsAverages/AdminStatsAverages";

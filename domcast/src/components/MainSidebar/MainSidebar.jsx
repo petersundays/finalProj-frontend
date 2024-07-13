@@ -57,7 +57,7 @@ function MainSidebar() {
             </Nav.Link>
             {loggedUser.type === 300 && (
               <Nav.Link
-                onClick={() => navigate("/domcast/projects/approval-list")}
+                onClick={() => navigate("/domcast/admin-projects/approval-list")}
               >
                 Approval List
               </Nav.Link>

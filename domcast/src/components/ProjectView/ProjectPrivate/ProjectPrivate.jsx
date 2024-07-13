@@ -2,9 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Card, Button, Row, Col, Form, Table, Modal } from "react-bootstrap";
 import "./ProjectPrivate.css";
 import { userStore } from "../../../stores/UserStore";
-import ProjectEdit from "../../ProjectEdit/ProjectEdit";
-import TaskListGantt from "../../TaskList/TaskListGantt/TaskListGantt";
-import TaskListMobile from "../../TaskList/TaskListMobile/TaskListMobile";
 import {
   Base_url_projects,
   Base_url_lab,
@@ -32,12 +29,15 @@ function ProjectPrivate() {
   const [isProjectFetched, setIsProjectFetched] = useState(false);
   const privateProjectId = projectPrivate.id;
 
-
   useEffect(() => {
-    if (!isProjectFetched) {
-      fetchProject();
-      fetchData();
-    }
+    const fetchData = async () => {
+      if (!isProjectFetched && id !== undefined) {
+        await fetchProject();
+        await fetchData1();
+        await fetchData2();
+      }
+    };
+    fetchData();
   }, [id, isProjectFetched]);
 
   const fetchProject = async () => {
@@ -56,12 +56,13 @@ function ProjectPrivate() {
       const projectData = await projectResponse.json();
       setProjectPrivate(projectData);
       setIsProjectFetched(true);
+      console.log("projectData", projectData);
     } catch (error) {
       console.error(error);
     }
   };
 
-  const fetchData = async () => {
+  const fetchData1 = async () => {
     try {
       const labsEnumResponse = await fetch(`${Base_url_lab}enum-unconfirmed`, {
         method: "GET",
@@ -83,7 +84,9 @@ function ProjectPrivate() {
     } catch (error) {
       console.error(error);
     }
+  };
 
+  const fetchData2 = async () => {
     try {
       const userEnumResponse = await fetch(`${Base_url_projects}user-enum`, {
         method: "GET",
@@ -133,16 +136,16 @@ function ProjectPrivate() {
   const onEdit = () => {
     console.log("projectPrivate", projectPrivate);
     navigate(`/domcast/project/edit/${id}`, {
-      state: { projectPrivate, labsEnum, stateEnum },
+      state: { projectPrivate },
     });
   };
 
   const onPlanner = () => {
-    if (window.screen.width > 768) {
-      return <TaskListGantt id={id} />;
-    } else {
-      return <TaskListMobile id={id} />;
-    }
+    navigate(`/domcast/tasks/list/${privateProjectId}`);
+  };
+
+  const goToLogList = () => {
+    navigate(`/domcast/logs/list/${privateProjectId}`);
   };
 
   const openChat = () => {
@@ -257,274 +260,389 @@ function ProjectPrivate() {
     }
   };
 
+  const userListFiltered = userList.filter(
+    (user) =>
+      user.id !== projectPrivate.mainManager.id &&
+      !projectPrivate.projectUsers.find(
+        (projectUser) => projectUser.id === user.id
+      )
+  );
+
+  const sendInvite = async (userId) => {
+    const urlInvite = new URL(`${Base_url_projects}invite`);
+    urlInvite.searchParams.append("projectId", projectPrivate.id);
+    urlInvite.searchParams.append("userId", userId);
+    urlInvite.searchParams.append("role", 3);
+
+    try {
+      const inviteResponse = await fetch(urlInvite, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          token: loggedUser.sessionToken,
+          id: loggedUser.id,
+        },
+      });
+      if (inviteResponse.ok) {
+        toast.success(t("User invited successfully"));
+      } else {
+        toast.error(t("Error inviting user"));
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <>
-      <Row>
-        <Col style={{ width: "30rem" }}>
-          <Card style={{ border: "none" }}>
-            {projectPrivate && labsEnum.length > 0 && stateEnum.length > 0 && (
-              <Card.Body className="p-3">
-                <Card.Title className="my-5">{projectPrivate.name}</Card.Title>
-                <Card.Subtitle className="my-2 text-muted">
-                  <Row>
-                    <Col md={2}>
-                      <h6
-                        style={{
-                          fontWeight: "bold",
-                          color: "var(--color-yellow-02)",
-                        }}
-                      >
-                        Lab:
-                      </h6>
-                    </Col>
-                    {projectPrivate.labId && (
-                      <Col md={6}>
-                        {
-                          labsEnum.find(
-                            (lab) => lab.id === projectPrivate.labId
-                          )?.name
-                        }
-                      </Col>
-                    )}
-                  </Row>
-                </Card.Subtitle>
-                <Card.Text>
-                  <Row>
-                    <Col md={2}>
-                      <h6
-                        style={{
-                          fontWeight: "bold",
-                          color: "var(--color-yellow-02)",
-                        }}
-                      >
-                        State:
-                      </h6>
-                    </Col>
-                    {projectPrivate.state && (
-                      <Col md={6}>
-                        {
-                          stateEnum.find(
-                            (state) => state.intValue === projectPrivate.state
-                          )?.name
-                        }
-                      </Col>
-                    )}
-                  </Row>
-                </Card.Text>
-                <Card.Text>
-                  <Row>
-                    <Col md={2}>
-                      <h6
-                        style={{
-                          fontWeight: "bold",
-                          color: "var(--color-yellow-02)",
-                        }}
-                      >
-                        Description & Motivation:
-                      </h6>
-                    </Col>
-                    {projectPrivate.description && (
-                      <Col md={6}>{projectPrivate.description}</Col>
-                    )}
-                  </Row>
-                </Card.Text>
-                <Card.Text>
-                  <Row>
-                    <Col md={2}>
-                      <h6
-                        style={{
-                          fontWeight: "bold",
-                          color: "var(--color-yellow-02)",
-                        }}
-                      >
-                        Start Date:
-                      </h6>
-                    </Col>
-                    {projectPrivate.projectedStartDate && (
-                      <Col md={6}>
-                        {projectPrivate.projectedStartDate.split("T")[0]}
-                      </Col>
-                    )}
-                  </Row>
-                </Card.Text>
-                <Card.Text>
-                  <Row>
-                    <Col md={2}>
-                      <h6
-                        style={{
-                          fontWeight: "bold",
-                          color: "var(--color-yellow-02)",
-                        }}
-                      >
-                        End Date:
-                      </h6>
-                    </Col>
-                    {projectPrivate.deadline && (
-                      <Col md={6}>{projectPrivate.deadline.split("T")[0]}</Col>
-                    )}
-                  </Row>
-                </Card.Text>
-                <Row className="my-2">
-                  <Col md={2}>
-                    <h6
-                      style={{
-                        fontWeight: "bold",
-                        color: "var(--color-yellow-02)",
-                      }}
-                    >
-                      Team:
-                    </h6>
-                  </Col>
-                  <Col md={6}>
-                    {(projectPrivate.projectUsers || [])
-                      .sort((a, b) => a.role - b.role)
-                      .map((projectUser, index) => (
-                        <span
-                          key={index}
-                          style={{
-                            color:
-                              projectUser.role === 1 || projectUser.role === 2
-                                ? "var(--color-blue-01)"
-                                : "var(--color-blue-03)",
+      {projectPrivate && id ? (
+        <>
+          <Row>
+            <Col style={{ width: "30rem" }}>
+              <Card style={{ border: "none" }}>
+                {projectPrivate &&
+                  labsEnum.length > 0 &&
+                  stateEnum.length > 0 && (
+                    <Card.Body className="p-3">
+                      <Card.Title className="my-5">
+                        {projectPrivate.name}
+                      </Card.Title>
+                      <Card.Subtitle className="my-2 text-muted">
+                        <Row>
+                          <Col md={2}>
+                            <h6
+                              style={{
+                                fontWeight: "bold",
+                                color: "var(--color-yellow-02)",
+                              }}
+                            >
+                              Lab:
+                            </h6>
+                          </Col>
+                          {projectPrivate.labId && (
+                            <Col md={6}>
+                              {
+                                labsEnum.find(
+                                  (lab) => lab.id === projectPrivate.labId
+                                )?.name
+                              }
+                            </Col>
+                          )}
+                        </Row>
+                      </Card.Subtitle>
+                      <Card.Text>
+                        <Row>
+                          <Col md={2}>
+                            <h6
+                              style={{
+                                fontWeight: "bold",
+                                color: "var(--color-yellow-02)",
+                              }}
+                            >
+                              State:
+                            </h6>
+                          </Col>
+                          {projectPrivate.state && (
+                            <Col md={6}>
+                              {
+                                stateEnum.find(
+                                  (state) =>
+                                    state.intValue === projectPrivate.state
+                                )?.name
+                              }
+                            </Col>
+                          )}
+                        </Row>
+                      </Card.Text>
+                      <Card.Text>
+                        <Row>
+                          <Col md={2}>
+                            <h6
+                              style={{
+                                fontWeight: "bold",
+                                color: "var(--color-yellow-02)",
+                              }}
+                            >
+                              Description & Motivation:
+                            </h6>
+                          </Col>
+                          {projectPrivate.description && (
+                            <Col md={6}>{projectPrivate.description}</Col>
+                          )}
+                        </Row>
+                      </Card.Text>
+                      <Card.Text>
+                        <Row>
+                          <Col md={2}>
+                            <h6
+                              style={{
+                                fontWeight: "bold",
+                                color: "var(--color-yellow-02)",
+                              }}
+                            >
+                              Start Date:
+                            </h6>
+                          </Col>
+                          {projectPrivate.projectedStartDate && (
+                            <Col md={6}>
+                              {projectPrivate.projectedStartDate.split("T")[0]}
+                            </Col>
+                          )}
+                        </Row>
+                      </Card.Text>
+                      <Card.Text>
+                        <Row>
+                          <Col md={2}>
+                            <h6
+                              style={{
+                                fontWeight: "bold",
+                                color: "var(--color-yellow-02)",
+                              }}
+                            >
+                              End Date:
+                            </h6>
+                          </Col>
+                          {projectPrivate.deadline && (
+                            <Col md={6}>
+                              {projectPrivate.deadline.split("T")[0]}
+                            </Col>
+                          )}
+                        </Row>
+                      </Card.Text>
+                      <Row className="my-2">
+                        <Col md={2}>
+                          <h6
+                            style={{
+                              fontWeight: "bold",
+                              color: "var(--color-yellow-02)",
+                            }}
+                          >
+                            Founder:
+                          </h6>
+                        </Col>
+                        {projectPrivate.mainManager && (
+                          <Col md={6}>
+                            <span
+                              style={{
+                                color: "var(--color-blue-03)",
+                                fontWeight: "bold",
+                              }}
+                              className="mx-1"
+                            >
+                              {projectPrivate.mainManager.firstName}{" "}
+                              {projectPrivate.mainManager.lastName}
+                            </span>
+                          </Col>
+                        )}
+                      </Row>
+                      <Row className="my-2">
+                        <Col md={2}>
+                          <h6
+                            style={{
+                              fontWeight: "bold",
+                              color: "var(--color-yellow-02)",
+                            }}
+                          >
+                            Team:
+                          </h6>
+                        </Col>
+                        <Col md={6}>
+                          {(projectPrivate.projectUsers || [])
+                            .sort((a, b) => a.role - b.role)
+                            .map((projectUser, index) => (
+                              <span
+                                key={index}
+                                style={{
+                                  color:
+                                    projectUser.role === 1 ||
+                                    projectUser.role === 2
+                                      ? "var(--color-blue-01)"
+                                      : "var(--color-blue-03)",
 
-                            fontWeight:
-                              projectUser.role === 1 || projectUser.role === 2
-                                ? "bold"
-                                : "normal",
-                          }}
-                          className="mx-1"
-                        >
-                          {projectUser.firstName} {projectUser.lastName}
-                          {index < projectPrivate.projectUsers.length - 1
-                            ? ", "
-                            : ""}
-                        </span>
-                      ))}
-                  </Col>
-                </Row>
-                <Row className="my-2">
-                  <Col md={2}>
-                    <h6
-                      style={{
-                        fontWeight: "bold",
-                        color: "var(--color-yellow-02)",
-                      }}
-                    >
-                      Keywords:
-                    </h6>
-                  </Col>
-                  <Col md={6}>
-                    {(projectPrivate.keywords || []).map((keyword, index) => (
-                      <span
-                        key={index}
-                        style={{ color: "var(--color-blue-03)" }}
-                        className="mx-1"
-                      >
-                        {keyword.name}
-                        {index < projectPrivate.keywords.length - 1 ? ", " : ""}
-                      </span>
-                    ))}
-                  </Col>
-                </Row>
-                <Row className="my-2">
-                  <Col md={2}>
-                    <h6
-                      style={{
-                        fontWeight: "bold",
-                        color: "var(--color-yellow-02)",
-                      }}
-                    >
-                      Skills:
-                    </h6>
-                  </Col>
-                  <Col md={6}>
-                    {(projectPrivate.skills || []).map((skill, index) => (
-                      <span
-                        key={index}
-                        style={{ color: "var(--color-blue-03)" }}
-                        className="mx-1"
-                      >
-                        {skill.name}
-                        {index < projectPrivate.keywords.length - 1 ? ", " : ""}
-                      </span>
-                    ))}
-                  </Col>
-                </Row>
-                <Row className="my-2">
-                  <Col md={2}>
-                    <h6
-                      style={{
-                        fontWeight: "bold",
-                        color: "var(--color-yellow-02)",
-                      }}
-                    >
-                      Compon.:
-                    </h6>
-                  </Col>
-                  {projectPrivate.resources && (
-                    <Col md={6}>
-                      {projectPrivate.resources
-                        .filter((resource) => resource.type === 1)
-                        .map((asset, index) => (
-                          <span
-                            key={index}
-                            style={{ color: "var(--color-blue-03)" }}
-                            className="mx-1"
+                                  fontWeight:
+                                    projectUser.role === 1 ||
+                                    projectUser.role === 2
+                                      ? "bold"
+                                      : "normal",
+                                }}
+                                className="mx-1"
+                              >
+                                {projectUser.firstName} {projectUser.lastName}
+                                {index < projectPrivate.projectUsers.length - 1
+                                  ? ", "
+                                  : ""}
+                              </span>
+                            ))}
+                        </Col>
+                      </Row>
+                      <Row className="my-2">
+                        <Col md={2}>
+                          <h6
+                            style={{
+                              fontWeight: "bold",
+                              color: "var(--color-yellow-02)",
+                            }}
                           >
-                            {asset.name}
-                            {index < projectPrivate.keywords.length - 1
-                              ? ", "
-                              : ""}
-                          </span>
-                        ))}
-                    </Col>
+                            Keywords:
+                          </h6>
+                        </Col>
+                        <Col md={6}>
+                          {(projectPrivate.keywords || []).map(
+                            (keyword, index) => (
+                              <span
+                                key={index}
+                                style={{ color: "var(--color-blue-03)" }}
+                                className="mx-1"
+                              >
+                                {keyword.name}
+                                {index < projectPrivate.keywords.length - 1
+                                  ? ", "
+                                  : ""}
+                              </span>
+                            )
+                          )}
+                        </Col>
+                      </Row>
+                      <Row className="my-2">
+                        <Col md={2}>
+                          <h6
+                            style={{
+                              fontWeight: "bold",
+                              color: "var(--color-yellow-02)",
+                            }}
+                          >
+                            Skills:
+                          </h6>
+                        </Col>
+                        <Col md={6}>
+                          {(projectPrivate.skills || []).map((skill, index) => (
+                            <span
+                              key={index}
+                              style={{ color: "var(--color-blue-03)" }}
+                              className="mx-1"
+                            >
+                              {skill.name}
+                              {index < projectPrivate.keywords.length - 1
+                                ? ", "
+                                : ""}
+                            </span>
+                          ))}
+                        </Col>
+                      </Row>
+                      <Row className="my-2">
+                        <Col md={2}>
+                          <h6
+                            style={{
+                              fontWeight: "bold",
+                              color: "var(--color-yellow-02)",
+                            }}
+                          >
+                            Compon.:
+                          </h6>
+                        </Col>
+                        {projectPrivate.resources && (
+                          <Col md={6}>
+                            {projectPrivate.resources
+                              .filter((resource) => resource.type === 1)
+                              .map((asset, index) => (
+                                <span
+                                  key={index}
+                                  style={{ color: "var(--color-blue-03)" }}
+                                  className="mx-1"
+                                >
+                                  {asset.name}
+                                  {index < projectPrivate.keywords.length - 1
+                                    ? ", "
+                                    : ""}
+                                </span>
+                              ))}
+                          </Col>
+                        )}
+                      </Row>
+                      {projectPrivate.resources && (
+                        <Row className="my-2">
+                          <Col md={2}>
+                            <h6
+                              style={{
+                                fontWeight: "bold",
+                                color: "var(--color-yellow-02)",
+                              }}
+                            >
+                              Resources:
+                            </h6>
+                          </Col>
+                          {projectPrivate.resources && (
+                            <Col md={6}>
+                              {projectPrivate.resources
+                                .filter((resource) => resource.type === 2)
+                                .map((asset, index) => (
+                                  <span
+                                    key={index}
+                                    style={{ color: "var(--color-blue-03)" }}
+                                    className="mx-1"
+                                  >
+                                    {asset.name}
+                                    {index < projectPrivate.keywords.length - 1
+                                      ? ", "
+                                      : ""}
+                                  </span>
+                                ))}
+                            </Col>
+                          )}
+                        </Row>
+                      )}
+                    </Card.Body>
                   )}
-                </Row>
-                {projectPrivate.resources && (
-                  <Row className="my-2">
-                    <Col md={2}>
-                      <h6
-                        style={{
-                          fontWeight: "bold",
-                          color: "var(--color-yellow-02)",
-                        }}
-                      >
-                        Resources:
-                      </h6>
-                    </Col>
-                    <Col md={6}>
-                      {projectPrivate.resources
-                        .filter((resource) => resource.type === 2)
-                        .map((asset, index) => (
-                          <span
-                            key={index}
-                            style={{ color: "var(--color-blue-03)" }}
-                            className="mx-1"
-                          >
-                            {asset.name}
-                            {index < projectPrivate.keywords.length - 1
-                              ? ", "
-                              : ""}
-                          </span>
-                        ))}
-                    </Col>
-                  </Row>
-                )}
-              </Card.Body>
-            )}
-          </Card>
-        </Col>
-        {projectPrivate && labsEnum.length > 0 && stateEnum.length > 0 && (
-          <Col style={{ width: "20rem" }}>
-            {projectPrivate.projectUsers &&
-              labsEnum.length > 0 &&
-              stateEnum.length > 0 && (
+              </Card>
+            </Col>
+            {projectPrivate && labsEnum.length > 0 && stateEnum.length > 0 && (
+              <Col style={{ width: "20rem" }}>
                 <Row className="d-flex justify-content-center mt-4">
                   <Col md={3}>
-                    {projectPrivate &&
-                      projectPrivate.projectUsers &&
-                      (projectPrivate.projectUsers.type === 1 ||
-                        projectPrivate.projectUsers.type === 2) && (
+                    <Button
+                      variant="secondary"
+                      style={{
+                        width: "10rem",
+                        color: "var(--color-coal",
+                        backgroundColor: "var(--color-yellow-01",
+                      }}
+                      onClick={onPlanner}
+                    >
+                      Planner
+                    </Button>
+                  </Col>
+                  <Col md={3}>
+                    <Button
+                      variant="secondary"
+                      style={{
+                        width: "10rem",
+                        color: "var(--color-coal",
+                        backgroundColor: "var(--color-yellow-01",
+                      }}
+                      onClick={openChat}
+                    >
+                      Chat
+                    </Button>
+                  </Col>
+                  <Col md={3}>
+                    <Button
+                      variant="secondary"
+                      style={{
+                        width: "10rem",
+                        color: "var(--color-coal",
+                        backgroundColor: "var(--color-yellow-01",
+                      }}
+                      onClick={goToLogList}
+                    >
+                      Log List
+                    </Button>
+                  </Col>
+                </Row>
+                {(loggedUser.id === projectPrivate.mainManager.id ||
+                  loggedUser.type === 2) && (
+                  <>
+                    <Row className="d-flex justify-content-center mt-4">
+                      <Col md={3}>
                         <Button
                           variant="secondary me-4"
                           style={{
@@ -537,214 +655,276 @@ function ProjectPrivate() {
                         >
                           Edit project infos
                         </Button>
-                      )}
-                  </Col>
-                  <Col md={3}>
-                    <Button
-                      variant="secondary"
-                      style={{
-                        width: "10rem",
-                        color: "var(--color-coal",
-                        backgroundColor: "var(--color-yellow-01",
-                      }}
-                      onClick={onPlanner}
-                      className="mt-3"
-                    >
-                      Planner
-                    </Button>
-                  </Col>
-                </Row>
-              )}
-            <Row className="d-flex justify-content-center mt-4">
-              {projectPrivate &&
-                projectPrivate.projectUsers &&
-                projectPrivate.projectUsers.type === 2 &&
-                projectPrivate.mainManager && (
-                  <Col md={3}>
-                    <Button
-                      variant="secondary"
-                      style={{
-                        width: "10rem",
-                        color: "var(--color-coal",
-                        backgroundColor: "var(--color-yellow-01",
-                      }}
-                      onClick={() => setShowUserModal(true)}
-                    >
-                      Add members
-                    </Button>
-                  </Col>
-                )}{" "}
-              <Col md={3}>
-                <Button
-                  variant="secondary"
-                  style={{
-                    width: "10rem",
-                    color: "var(--color-coal",
-                    backgroundColor: "var(--color-yellow-01",
-                  }}
-                  onClick={openChat}
-                >
-                  Chat
-                </Button>
-              </Col>
-              <Col md={3}>
-                <Button
-                  variant="secondary"
-                  style={{
-                    width: "10rem",
-                    color: "var(--color-coal",
-                    backgroundColor: "var(--color-yellow-01",
-                  }}
-                  onClick={navigate("/domcast//logs/list", { state: { privateProjectId } })}
-                >
-                  Log List
-                </Button>
-              </Col>
-            </Row>
-            {projectPrivate && labsEnum.length > 0 && stateEnum.length > 0 && (
-              <Row className="d-flex justify-content-center mt-5">
-                <Col md={3}>
-                  <Form.Select
-                    value={projectPrivate.state}
-                    onChange={(e) => setStateValue(e.target.value)}
-                    style={{ width: "10rem" }}
-                  >
-                    <option value="" disabled>
-                      Update state
-                    </option>
-                    {filteredStateEnum.map((state) => (
-                      <option key={state.intValue} value={state.intValue}>
-                        {state.name.replace("_", " ")}
-                      </option>
-                    ))}
-                  </Form.Select>
-                </Col>
-                <Col md={3}>
-                  <Button
-                    variant="primary"
-                    style={{
-                      width: "10rem",
-                      color: "var(--color-white",
-                      backgroundColor: "var(--color-blue-01",
-                    }}
-                    onClick={updateProjectState}
-                    className="me-2"
-                  >
-                    Update state
-                  </Button>
-                </Col>
-              </Row>
-            )}
+                      </Col>
+                      <Col md={3}>
+                        <Button
+                          variant="secondary"
+                          style={{
+                            width: "10rem",
+                            color: "var(--color-coal",
+                            backgroundColor: "var(--color-yellow-01",
+                          }}
+                          className="mt-3 me-2"
+                          onClick={() => setShowUserModal(true)}
+                        >
+                          Add members
+                        </Button>
+                      </Col>
+                    </Row>
+                    <Row className="d-flex justify-content-center mt-5">
+                      <Col md={3}>
+                        <Form.Select
+                          value={projectPrivate.state}
+                          onChange={(e) => setStateValue(e.target.value)}
+                          style={{ width: "10rem" }}
+                        >
+                          <option value="" disabled>
+                            Update state
+                          </option>
+                          {filteredStateEnum.map((state) => (
+                            <option key={state.intValue} value={state.intValue}>
+                              {state.name.replace("_", " ")}
+                            </option>
+                          ))}
+                        </Form.Select>
+                      </Col>
 
-            {projectPrivate.projectUsers &&
-              userEnum.length > 0 &&
-              projectPrivate.projectUsers.type === 2 && (
-                <Row className="d-flex justify-content-center mt-5">
-                  <Col md={3}>
-                    <Form.Select
-                      value={userToChangeRole}
-                      onChange={(e) => setUserToChangeRole(e.target.value)}
-                      style={{ width: "10rem" }}
-                    >
-                      {projectPrivate.projectUsers
-                        .filter(
-                          (user) =>
-                            user !== projectPrivate.mainManager &&
-                            !(user.id === projectPrivate.mainManager.id)
-                        )
-                        .map((user) => (
-                          <option key={user.id} value={user.id}>
-                            {user.firstName} {user.lastName}
-                          </option>
-                        ))}
-                    </Form.Select>
-                  </Col>
-                  <Col md={4}>
-                    <Form.Select
-                      value={selectedUserRoleChange}
-                      onChange={(e) =>
-                        setSelectedUserRoleChange(e.target.value)
-                      }
-                      style={{ width: "10rem" }}
-                    >
-                      <option value="" disabled>
-                        Role
-                      </option>
-                      {userEnum
-                        .filter((role) => role.id === 2 || role.id === 3)
-                        .map((role) => (
-                          <option key={role.id} value={role.id}>
-                            {role.name}
-                          </option>
-                        ))}
-                    </Form.Select>
-                  </Col>
-                  <Col md={4}>
-                    <Button
-                      variant="primary"
-                      style={{
-                        width: "10rem",
-                        color: "var(--color-white",
-                        backgroundColor: "var(--color-blue-01",
-                      }}
-                      onClick={changeRole}
-                      className="me-2"
-                    >
-                      Change role
-                    </Button>
-                  </Col>
-                </Row>
-              )}
-            {projectPrivate.projectUsers &&
-              userEnum.length > 0 &&
-              projectPrivate.projectUsers.type === 2 && (
-                <Row className="d-flex justify-content-center mt-5">
-                  <Col md={3}>
-                    <Form.Select
-                      value={userToChangeRole}
-                      onChange={(e) => setUserToChangeRole(e.target.value)}
-                      style={{ width: "10rem" }}
-                    >
-                      {projectPrivate.projectUsers
-                        .filter(
-                          (user) =>
-                            user !== projectPrivate.mainManager &&
-                            !(user.id === projectPrivate.mainManager.id)
-                        )
-                        .map((user) => (
-                          <option key={user.id} value={user.id}>
-                            {user.firstName} {user.lastName}
-                          </option>
-                        ))}
-                    </Form.Select>
-                  </Col>
-                  <Col md={4}>
-                    <Button
-                      variant="primary"
-                      style={{
-                        width: "10rem",
-                        color: "var(--color-white",
-                        backgroundColor: "var(--color-blue-01",
-                      }}
-                      onClick={removeMember}
-                      className="me-2"
-                    >
-                      Remove member
-                    </Button>
-                  </Col>
-                </Row>
-              )}
-            {projectPrivate.projectUsers && (
-              <Row className="d-flex justify-content-center mt-5">
+                      <Col md={3}>
+                        <Button
+                          variant="primary"
+                          style={{
+                            width: "10rem",
+                            color: "var(--color-white",
+                            backgroundColor: "var(--color-blue-01",
+                          }}
+                          onClick={updateProjectState}
+                          className="me-2"
+                        >
+                          Update state
+                        </Button>
+                      </Col>
+                    </Row>
+
+                    <Row className="d-flex justify-content-center mt-5">
+                      {projectPrivate &&
+                        labsEnum.length > 0 &&
+                        stateEnum.length > 0 && (
+                          <Col md={3}>
+                            {projectPrivate.projectUsers && (
+                              <Form.Select
+                                value={userToChangeRole}
+                                onChange={(e) =>
+                                  setUserToChangeRole(e.target.value)
+                                }
+                                style={{ width: "10rem" }}
+                              >
+                                {projectPrivate.projectUsers
+                                  .filter(
+                                    (user) =>
+                                      user !== projectPrivate.mainManager &&
+                                      !(
+                                        user.id ===
+                                        projectPrivate.mainManager.id
+                                      )
+                                  )
+                                  .map((user) => (
+                                    <option key={user.id} value={user.id}>
+                                      {user.firstName} {user.lastName}
+                                    </option>
+                                  ))}
+                              </Form.Select>
+                            )}
+                          </Col>
+                        )}
+                      {userEnum.length > 0 && (
+                        <Col md={4}>
+                          <Form.Select
+                            value={selectedUserRoleChange}
+                            onChange={(e) =>
+                              setSelectedUserRoleChange(e.target.value)
+                            }
+                            style={{ width: "10rem" }}
+                          >
+                            <option value="" disabled>
+                              Role
+                            </option>
+                            {userEnum
+                              .filter((role) => role.id === 2 || role.id === 3)
+                              .map((role) => (
+                                <option key={role.id} value={role.id}>
+                                  {role.name}
+                                </option>
+                              ))}
+                          </Form.Select>
+                        </Col>
+                      )}
+                      <Col md={4}>
+                        <Button
+                          variant="primary"
+                          style={{
+                            width: "10rem",
+                            color: "var(--color-white",
+                            backgroundColor: "var(--color-blue-01",
+                          }}
+                          onClick={changeRole}
+                          className="me-2"
+                        >
+                          Change role
+                        </Button>
+                      </Col>
+                    </Row>
+                    {projectPrivate &&
+                      labsEnum.length > 0 &&
+                      stateEnum.length > 0 && (
+                        <Row className="d-flex justify-content-center mt-5">
+                          <Col md={3}>
+                            {projectPrivate.projectUsers && (
+                              <Form.Select
+                                value={userToChangeRole}
+                                onChange={(e) =>
+                                  setUserToChangeRole(e.target.value)
+                                }
+                                style={{ width: "10rem" }}
+                              >
+                                {projectPrivate.projectUsers
+                                  .filter(
+                                    (user) =>
+                                      user !== projectPrivate.mainManager &&
+                                      !(
+                                        user.id ===
+                                        projectPrivate.mainManager.id
+                                      )
+                                  )
+                                  .map((user) => (
+                                    <option key={user.id} value={user.id}>
+                                      {user.firstName} {user.lastName}
+                                    </option>
+                                  ))}
+                              </Form.Select>
+                            )}
+                          </Col>
+
+                          <Col md={4}>
+                            <Button
+                              variant="primary"
+                              style={{
+                                width: "10rem",
+                                color: "var(--color-white",
+                                backgroundColor: "var(--color-blue-01",
+                              }}
+                              onClick={removeMember}
+                              className="me-2"
+                            >
+                              Remove member
+                            </Button>
+                          </Col>
+                        </Row>
+                      )}
+                    <Row className="d-flex justify-content-center mt-5">
+                      {((projectPrivate.candidates.length > 0 &&
+                        projectPrivate.invited.length > 0) ||
+                        (projectPrivate.candidates.length === 0 &&
+                          projectPrivate.invited.length === 0)) && (
+                        <Table
+                          striped
+                          bordered
+                          hover
+                          style={{ width: "30rem", textAlign: "center" }}
+                        >
+                          <thead>
+                            <tr
+                              style={{
+                                color: "var(--color-white)",
+                                backgroundColor: "var(--color-blue-03)",
+                              }}
+                            >
+                              <th>User name</th>
+                              <th>Status</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {projectPrivate.candidates.map((user) => (
+                              <tr key={user.id}>
+                                <td>
+                                  {user.firstName} {user.lastName}
+                                </td>
+                                <td>
+                                  <Button
+                                    variant="primary"
+                                    style={{
+                                      width: "10rem",
+                                      color: "var(--color-white)",
+                                      backgroundColor: "var(--color-blue-01)",
+                                    }}
+                                    onClick={() => {
+                                      console.log("accept user");
+                                    }}
+                                  >
+                                    Accept
+                                  </Button>
+                                </td>
+                              </tr>
+                            ))}
+                            {projectPrivate.invited.map((user) => (
+                              <tr key={user.id}>
+                                <td>
+                                  {user.firstName} {user.lastName}
+                                </td>
+                                <td>
+                                  <span className="text-muted">Invited</span>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </Table>
+                      )}
+                    </Row>
+
+                    <Row className="d-flex justify-content-center mt-5">
+                      <Col md={3} className="d-flex justifiy-content-end">
+                        <Form.Control
+                          type="number"
+                          value={maxMembers}
+                          onChange={handleSetMaxMembers}
+                          className="ms-5"
+                          style={{ width: "5rem" }}
+                        />
+                      </Col>
+
+                      <Col md={3}>
+                        <Button
+                          variant="secondary"
+                          style={{
+                            width: "10rem",
+                            color: "var(--color-white",
+                            backgroundColor: "var(--color-blue-01",
+                          }}
+                          onClick={defineMaxMembers}
+                        >
+                          Set max members
+                        </Button>
+                      </Col>
+                    </Row>
+                  </>
+                )}
+              </Col>
+            )}
+          </Row>
+          {projectPrivate && labsEnum.length > 0 && stateEnum.length > 0 && (
+            <Modal show={showUserModal} onHide={() => setShowUserModal(false)}>
+              <Modal.Header closeButton>
+                <Modal.Title>Invite user</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
                 <Table striped bordered hover>
-                  <thead style={{}}>
+                  <thead>
                     <tr>
                       <th>User name</th>
-                      <th>Status</th>
+                      <th>Invite</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {projectPrivate.candidates.map((user) => (
+                    {userListFiltered.map((user) => (
                       <tr key={user.id}>
                         <td>
                           {user.firstName} {user.lastName}
@@ -757,99 +937,21 @@ function ProjectPrivate() {
                               color: "var(--color-white",
                               backgroundColor: "var(--color-blue-01",
                             }}
-                            onClick={() => {
-                              console.log("accept user");
-                            }}
+                            onClick={() => sendInvite(user.id)}
                           >
-                            Accept
+                            Invite
                           </Button>
-                        </td>
-                      </tr>
-                    ))}
-                    {projectPrivate.invited.map((user) => (
-                      <tr key={user.id}>
-                        <td>
-                          {user.firstName} {user.lastName}
-                        </td>
-                        <td>
-                          <span className="text-muted">Invited</span>
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </Table>
-              </Row>
-            )}
-            {projectPrivate && projectPrivate.projectUsers.type === 2 &&
-              projectPrivate.mainManager && ( 
-                <Row className="d-flex justify-content-center mt-5">
-                  <Col md={3} className="d-flex justifiy-content-end">
-                    <Form.Control
-                      type="number"
-                      value={maxMembers}
-                      onChange={handleSetMaxMembers}
-                      className="ms-5"
-                      style={{ width: "5rem" }}
-                    />
-                  </Col>
-                  <Col md={3}>
-                    <Button
-                      variant="secondary"
-                      style={{
-                        width: "10rem",
-                        color: "var(--color-white",
-                        backgroundColor: "var(--color-blue-01",
-                      }}
-                      onClick={defineMaxMembers}
-                    >
-                      Set max members
-                    </Button>
-                  </Col>
-                </Row>
-              )}
-          </Col>
-        )}
-      </Row>
-      {projectPrivate && labsEnum.length > 0 && stateEnum.length > 0 && (
-        <Modal show={showUserModal} onHide={() => setShowUserModal(false)}>
-          <Modal.Header closeButton>
-            <Modal.Title>Invite user</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Table striped bordered hover>
-              <thead>
-                <tr>
-                  <th>User name</th>
-                  <th>Invite</th>
-                </tr>
-              </thead>
-              <tbody>
-                {userList.map((user) => (
-                  <tr key={user.id}>
-                    <td>
-                      {user.firstName} {user.lastName}
-                    </td>
-                    <td>
-                      <Button
-                        variant="primary"
-                        style={{
-                          width: "10rem",
-                          color: "var(--color-white",
-                          backgroundColor: "var(--color-blue-01",
-                        }}
-                        onClick={() => {
-                          console.log("invite user");
-                        }}
-                      >
-                        Invite
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
-          </Modal.Body>
-        </Modal>
+              </Modal.Body>
+            </Modal>
+          )}
+        </>
+      ) : (
+        <h1>Loading...</h1>
       )}
     </>
   );

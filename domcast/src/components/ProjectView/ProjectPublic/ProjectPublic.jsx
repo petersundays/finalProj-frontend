@@ -69,7 +69,10 @@ function ProjectPublic() {
 
   const onJoin = async () => {
     try {
-      const response = await fetch(`${Base_url_projects}apply/${id}`, {
+      const url = new URL(`${Base_url_projects}apply`);
+      url.searchParams.append("projectId", id);
+
+      const response = await fetch(url, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

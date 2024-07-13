@@ -140,7 +140,7 @@ function AdminSettings ({ settings }) {
   return (
     <Container>
       <Row>
-        <Col md={6}>
+        <Col md={8}>
           <FloatingLabel controlId="floatingSessionTimeout" label="Session Timeout (in minutes)" className="mb-3">
             <Form.Control
               type="number"
