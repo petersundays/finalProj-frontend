@@ -19,8 +19,15 @@ function AdminDashboard() {
             <Col xs={12} className="bg-light p-0">
                 <Card className="m-0 p-0">
                 <Card.Body className="p-0">
+<<<<<<< Updated upstream
                     <AdminSettings />
                     <AdminStats />
+=======
+                    <Routes>
+                        <Route path="/admin/settings" element={<AdminSettings />} />
+                        <Route path="/admin/stats" element={<AdminStats />} />
+                    </Routes>
+>>>>>>> Stashed changes
                 </Card.Body>
                 </Card>
             </Col>
