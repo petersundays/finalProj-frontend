@@ -73,7 +73,7 @@ function HomeLogged() {
             <Card className="custom-card">
               <Card.Body className="card-body-custom">
                 <Routes>
-                  <Route path="/admin-dashboard" element={<AdminDashboard />} />
+                  <Route path="/admin-dashboard/*" element={<AdminDashboard />} />
                   <Route path="/admin-projects/approval-list" element={<AdminProjectsApprovalList />} />
                   <Route path="/asset/edit/:id" element={<AssetEdit />} />
                   <Route path="/assets/list" element={<AssetList />} />

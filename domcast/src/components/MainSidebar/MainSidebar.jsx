@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { userStore } from "../../stores/UserStore.jsx";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
+import 'boxicons';
 
 function MainSidebar() {
   const { t } = useTranslation();
@@ -13,6 +14,13 @@ function MainSidebar() {
   const [expandedAssets, setExpandedAssets] = useState(false);
 
   const loggedUser = userStore((state) => state.loggedUser);
+  const unreadMessages = userStore((state) => state.unreadMessages);
+  const setUnreadMessages = userStore((state) => state.setUnreadMessages);
+
+  const turnOffUnread = () => {
+    setUnreadMessages(false);
+    navigate("/domcast/message-hub");
+  };
 
   const toggleExpandProjects = () => {
     setExpandedProjects(!expandedProjects);
@@ -59,8 +67,14 @@ function MainSidebar() {
         <Nav.Link onClick={() => navigate("/domcast/users/list")}>
           Users
         </Nav.Link>
-        <Nav.Link onClick={() => navigate("/domcast/message-hub")}>
+        <Nav.Link onClick={() => turnOffUnread()}>
+        
           Message Hub
+
+          {unreadMessages && 
+            <box-icon name='bell-ring' type='solid' flip='horizontal' animation='tada' color='#ff0000' className='bx-lg' ></box-icon>
+          }
+
         </Nav.Link>
         <Nav.Link onClick={() => navigate("/domcast/assets/list")}>
         Assets
