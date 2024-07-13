@@ -7,14 +7,13 @@ import AdminDashboard from "../components/AdminDashboard/AdminDashboard";
 import AdminProjectsApprovalList from "../components/AdminProjectsApprovalList/AdminProjectsApprovalList";
 import AssetEdit from "../components/AssetEdit/AssetEdit";
 import AssetList from "../components/AssetList/AssetList";
-import AssetView from "../components/AssetView/AssetView";
 import LogList from "../components/LogList/LogList";
-import LogNew from "../components/LogNew/LogNew";
 import MainFooter from "../components/MainFooter/MainFooter";
 import MainNavbarLogged from "../components/MainNavbarLogged/MainNavbarLogged";
 import MainOffcanvasLogged from "../components/MainOffcanvasLogged/MainOffcanvasLogged";
 import MainSidebar from "../components/MainSidebar/MainSidebar";
 import MessageHub from "../components/MessageHub/MessageHub";
+import ProjectChat from "../components/ProjectChat/ProjectChat";
 import ProjectEdit from "../components/ProjectEdit/ProjectEdit";
 import ProjectUserList from "../components/ProjectUserList/ProjectUserList";
 import ProjectGlobalList from "../components/ProjectGlobalList/ProjectGlobalList";
@@ -77,9 +76,7 @@ function HomeLogged() {
                   <Route path="/admin-projects/approval-list" element={<AdminProjectsApprovalList />} />
                   <Route path="/asset/edit/:id" element={<AssetEdit />} />
                   <Route path="/assets/list" element={<AssetList />} />
-                  <Route path="/asset/view/:id" element={<AssetView />} />
-                  <Route path="/logs/list" element={<LogList />} />
-                  <Route path="/log/new" element={<LogNew />} />
+                  <Route path="/logs/list/:id" element={<LogList />} />
                   <Route path="/message-hub/*" element={<MessageHub />} />
                   <Route path="/myprojects" element={<ProjectUserList />} />
                   <Route path="/project/edit/:id" element={<ProjectEdit />} />
@@ -87,8 +84,9 @@ function HomeLogged() {
                   <Route path="/project/new" element={<ProjectNew />} />
                   <Route path="/project/view/:id" element={<ProjectPublic />} />
                   <Route path="/myproject/view/:id" element={<ProjectPrivate />} />
+                  <Route path="/project/chat/:id" element={<ProjectChat />} />
                   <Route path="/task/edit/:id" element={<TaskEdit />} />
-                  <Route path="/tasks/list" element={<TaskList />} />
+                  <Route path="/tasks/list/:id" element={<TaskList />} />
                   <Route path="/task/new" element={<TaskNew />} />
                   <Route path="/task/view/:id" element={<TaskView />} />
                   <Route path="/user/edit/:id" element={<UserEdit />} />

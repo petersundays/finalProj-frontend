@@ -94,7 +94,7 @@ const OthersProjCardLogged = ({
       projectPublic.mainManager.id === loggedUser.id ||
       projectPublic.projectUsers.some((user) => user.id === loggedUser.id)
     ) {
-      navigate(`/domcast/myproject/view/${projectPublic.id}`, {});
+      navigate(`/domcast/myproject/view/${projectPublic.id}`);
     } else {
       navigate(`/domcast/project/view/${projectPublic.id}`);
     }
