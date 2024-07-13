@@ -17,6 +17,7 @@ const OthersProjCardLogged = ({
   description,
   vacancies,
   state,
+  applications,
 }) => {
   const navigate = useNavigate();
   const loggedUser = userStore((state) => state.loggedUser);
@@ -87,6 +88,37 @@ const OthersProjCardLogged = ({
     }
   };
 
+  const handleApproval = async (projectId, answer) => {
+    await approveProject(projectId, answer);
+  };
+
+  const approveProject = async (projectId, answer) => {
+    const url = new URL(`${Base_url_projects}approve`);
+    url.searchParams.append("id", projectId);
+    url.searchParams.append("newState", answer);
+    try {
+      const response = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          token: loggedUser.sessionToken,
+          id: loggedUser.id,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.text();
+        toast.success(data);
+      } else {
+        console.log("Error sending your answer");
+        toast.error("Error sending your answer");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("Error sending your answer");
+    }
+  };
+
   const goToProject = async () => {
     // check if loggedUser is the main manager or a collaborator of the projectPublic
 
@@ -144,6 +176,24 @@ const OthersProjCardLogged = ({
         >
           More info »
         </Button>
+        {applications && (
+          <>
+            <Button
+              variant="tertiary"
+              style={{ color: "var(--color-green-01)" }}
+              onClick={() => handleApproval(id, 3)}
+            >
+              - Approve -
+            </Button>
+            <Button
+              variant="tertiary"
+              style={{ color: "var(--color-red-01)" }}
+              onClick={() => handleApproval(id, 1)}
+            >
+              - Decline -
+            </Button>
+          </>
+        )}
       </Card.Body>
     </Card>
   );

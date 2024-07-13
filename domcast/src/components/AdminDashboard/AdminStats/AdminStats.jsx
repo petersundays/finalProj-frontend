@@ -67,7 +67,6 @@ function AdminStats() {
     }
   };
 
-<<<<<<< Updated upstream
   return (
     <Container fluid className="main-container">
       <Row className="flex-grow-1">
@@ -91,20 +90,6 @@ function AdminStats() {
               <AdminStatsPieChart statistics={stats6} />
             </Col>
           </Row>
-=======
-  const contentDocument = useRef();
-  const handlePrint = useReactToPrint({
-      content: () => contentDocument.current,
-  });
-  
-  return (
-    <Container fluid className="main-container">
-      <Row className="flex-grow-1">
-        <Col className="content" ref={contentDocument}>
-          <AdminStatsAverages />
-          <AdminStatsBarGraph />
-          <AdminStatsPieChart />
->>>>>>> Stashed changes
         </Col>
       </Row>
     </Container>

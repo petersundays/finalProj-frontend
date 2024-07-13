@@ -69,12 +69,12 @@ function AdminStatsPieChart({ statistics }) {
   };
 
   return (
-    <div>
+    <div className="my-5">
       <h2>{labName}</h2>
       <p>Cancelled Projects {canceledPercentage}%</p>
       <p>Finished Projects {finishedPercentage}%</p>
       <p>Approved Projects {approvedPercentage}%</p>
-      <PieChart width={400} height={400}>
+      <PieChart width={400} height={400} className="mb-5">
         <Pie
           data={data}
           cx={200}
