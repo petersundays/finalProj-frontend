@@ -14,7 +14,9 @@ export const NotificationWS = () => {
     
     const clearLoggedUser = userStore((state) => state.clearLoggedUser);
     const setUserList = userStore((state) => state.setUserList);
-    
+    const unreadMessages = userStore((state) => state.unreadMessages);
+    const setUnreadMessages = userStore((state) => state.setUnreadMessages);
+        
     const WS_URL = `${Base_url_notifications}${loggedUser.sessionToken}`;
     const [shouldReconnect, setShouldReconnect] = useState(true);
 
@@ -36,7 +38,7 @@ export const NotificationWS = () => {
 
             ws.onmessage = (event) => {
                 const data = event.data;
-                                        
+                console.log("WebSocket message received: ", data);
                 if (data === "logout") {
                     console.log("User logged out");
                     toast.error(t("Session expired"), { autoClose: 5000 });
@@ -45,6 +47,10 @@ export const NotificationWS = () => {
                     navigate("/");
                     setShouldReconnect(false);
                     return;
+                } else if (data === "notification") {
+                    console.log("New notification");
+                    toast.info(t("New message"), { autoClose: 5000 });
+                    setUnreadMessages(true);
                 }
                 
             };
@@ -77,7 +83,7 @@ export const NotificationWS = () => {
             }
             setShouldReconnect(false);
         };
-    },  [loggedUser.sessionToken]);  // Depend on the user's login status
+    },  [loggedUser.sessionToken, setUnreadMessages]);  // Depend on the user's login status
 
     return { ws: notificationWSClient.current };
 };

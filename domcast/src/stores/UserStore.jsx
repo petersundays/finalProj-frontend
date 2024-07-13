@@ -97,6 +97,8 @@ export const userStore = create(
             
             return state;
         }),
+        unreadMessages: false,
+        setUnreadMessages: (unread) => set({ unreadMessages: unread }),
     
     }),
     {
